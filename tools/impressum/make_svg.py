@@ -105,8 +105,7 @@ def main():
     W, H = int(width + PAD), int(y + PAD)
     svg = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img">
 <style>
-.h{{fill:#3d7a2a}}.b{{fill:#1d2125}}
-@media (prefers-color-scheme:dark){{.h{{fill:#7ee787}}.b{{fill:#d4d9d0}}}}
+.h{{fill:#7ee787}}.b{{fill:#d4d9d0}}
 </style>
 <path class="h" d="{' '.join(heads)}"/>
 <path class="b" d="{' '.join(body)}"/>
