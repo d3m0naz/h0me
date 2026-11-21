@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Kopiert pool/*.html nach site/doku/ und ergänzt Kopfzeile und Fuß.
+"""Kopiert pool/*.html und pool/<ordner>/*.html nach site/doku/ und ergänzt Kopfzeile und Fuß.
+
+localStorage-Aufrufe werden entfernt (Seite speichert nichts im Browser).
 
 Die Originale in pool/ bleiben unverändert. Einfach nach jeder Änderung
 im pool erneut ausführen:  python3 tools/build_doku.py
@@ -20,26 +22,37 @@ STYLE = """<style>
 @media print{.vlb{display:none}}
 </style>"""
 
-HEAD = ('<header class="vlb"><div><span><b>ai</b><s>@</s><span style="color:#79c0ff">0liver4eld.com</span><s>$</s></span>'
-        '<span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>')
+HEAD = ('<header class="vlb"><div><a href="{R}" style="text-decoration:none"><b>ai</b><s>@</s><span style="color:#79c0ff">0liver4eld.com</span><s>$</s></a>'
+        '<a href="{R}docs.html">← docs</a><span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>')
 
 FOOT = ('<footer class="vlb vlb-foot"><div><span><span class="sess">[0liver4eld]</span>'
-        '<a href="../">0:index</a> &nbsp;<a href="../impressum.html">1:impressum</a> &nbsp;'
-        '<a href="../datenschutz.html">2:datenschutz</a></span>'
+        '<a href="{R}">0:index</a> &nbsp;<a href="{R}ueber-mich.html">1:über-mich</a> &nbsp;<a href="{R}docs.html">2:docs</a> &nbsp;<a href="{R}projekte.html">3:projekte</a> &nbsp;<a href="{R}musik.html">4:musik</a> &nbsp;'
+        '<a href="{R}impressum.html">5:impressum</a> &nbsp;<a href="{R}datenschutz.html">6:datenschutz</a></span>'
         '<span>cookies:<b>0</b> tracker:<b>0</b></span></div></footer>')
 
 
+STORAGE = re.compile(r"try \{[^{}]*localStorage[^{}]*\} catch \(e\) \{\}")
+
+
+def build(f, out, R):
+    html = f.read_text(encoding="utf-8")
+    html = STORAGE.sub("", html)
+    assert "localStorage" not in html and "sessionStorage" not in html, f
+    html = html.replace("</head>", '<meta name="referrer" content="no-referrer">\n'
+                        f'<link rel="icon" href="{R}assets/favicon.svg" type="image/svg+xml">\n'
+                        + STYLE + "\n</head>", 1)
+    html = re.sub(r"(<body[^>]*>)", lambda m: m.group(1) + "\n" + HEAD.replace("{R}", R), html, count=1)
+    html = html.replace("</body>", FOOT.replace("{R}", R) + "\n</body>", 1)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(html, encoding="utf-8")
+    print(out.relative_to(DST.parent))
+
+
 def main():
-    DST.mkdir(parents=True, exist_ok=True)
     for f in sorted(SRC.glob("*.html")):
-        html = f.read_text(encoding="utf-8")
-        html = html.replace("</head>", '<meta name="referrer" content="no-referrer">\n'
-                            '<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">\n'
-                            + STYLE + "\n</head>", 1)
-        html = re.sub(r"(<body[^>]*>)", r"\1\n" + HEAD, html, count=1)
-        html = html.replace("</body>", FOOT + "\n</body>", 1)
-        (DST / f.name).write_text(html, encoding="utf-8")
-        print("doku/" + f.name)
+        build(f, DST / f.name, "../")
+    for f in sorted(SRC.glob("*/*.html")):
+        build(f, DST / f.parent.name / f.name, "../../")
 
 
 if __name__ == "__main__":

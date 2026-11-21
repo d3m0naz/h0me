@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ai@0liver4eld.com</title>
-<meta name="description" content="Echte Probleme aus Homelab und Netzwerk, dokumentiert größtenteils von einer KI und von einem Menschen geprüft. ...for now.">
+<meta name="description" content="0liver4eld: Homelab, Werkzeuge und Musik. Echte Probleme, größtenteils von einer KI dokumentiert und von einem Menschen geprüft. ...for now.">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
@@ -14,12 +14,12 @@
 
 <header class="top">
   <div class="wrap">
-    <span class="brand"><span class="u">ai</span><span class="c">@</span><span class="h">0liver4eld.com</span><span class="c">$</span></span>
+    <a class="brand" href="./" aria-label="Startseite"><span class="u">ai</span><span class="c">@</span><span class="h">0liver4eld.com</span><span class="c">$</span></a>
     <nav aria-label="Hauptnavigation">
-      <a href="#doku">doku</a>
-      <a href="#projekte">projekte</a>
-      <a href="#musik">musik</a>
-      <a href="#wie">wie</a>
+      <a href="ueber-mich.html">über-mich</a>
+      <a href="docs.html">docs</a>
+      <a href="projekte.html">projekte</a>
+      <a href="musik.html">musik</a>
     </nav>
   </div>
 </header>
@@ -29,169 +29,68 @@
   <section class="hero" aria-labelledby="t">
     <div>
       <p class="kicker">// größtenteils <em>ki-generiert</em>. die probleme glücklicherweise nicht.</p>
-      <h1 id="t">Echte Probleme.<br><span class="syn">Synthetische Doku.</span></h1>
-      <p class="lead">Lüfter bleiben stehen, Platten kochen, Netzwerkkarten heißen über Nacht anders.
-      Hier steht, wie es kaputtging und wie es wieder lief. Den Text dazu hat meistens eine Maschine geschrieben.</p>
+      <h1 id="t">Echtes Leben.<br><span class="syn">Synthetischer Output.</span></h1>
+      <p class="lead">Hinter <b class="me">0liver4eld</b> steckt ein Mensch mit Homelab, zu vielen offenen
+      Terminals und einer Schwäche für Industrial Metal. Ich repariere, was kaputtgeht, baue Werkzeuge
+      für Probleme, die sonst keiner hat, und lasse mir beim Aufschreiben von einer KI helfen.</p>
 <pre class="diff" aria-label="Diff: Autor geändert von Mensch zu Sprachmodell, Probleme weiterhin aus dem echten Leben"><span class="f">--- a/README.md</span><span class="f">+++ b/README.md</span><span class="del">- geschrieben von:  mensch</span><span class="add">+ geschrieben von:  llm</span><span class="ctx">  probleme von:     echtes leben</span><span class="ctx">  geprüft von:      mensch   <span class="cm"># ...for now.</span></span></pre>
     </div>
 
-    <div class="term" role="img" aria-label="Terminal mit Systemlog: Lüfter fällt aus, Festplatte erreicht 68 Grad, SATA-Fehler, SMART unauffällig, Interface umbenannt, KI schreibt Doku, Mensch prüft.">
-      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>dmesg -T | less</span></div>
-<pre class="log" aria-hidden="true"><span><span class="ts">[    0.000]</span> 0liver4eld: booting <span class="c">real_life</span> ...</span><span><span class="ts">[ 1723.402]</span> nct6796: fan2 <span class="a">0 RPM</span></span><span><span class="ts">[ 1724.118]</span> sda: temperature <span class="r">68°C</span> (limit 65)</span><span><span class="ts">[ 1891.330]</span> ata3: <span class="a">SATA link down</span>, I/O error</span><span><span class="ts">[ 1891.902]</span> smartd: realloc=0 pending=0 <span class="g">PASSED</span></span><span><span class="ts">[ 2042.661]</span> opnsense: <span class="a">em0 not found</span>, igb0 up</span><span><span class="ts">[ 2042.700]</span> llm: writing docs ............ <span class="v">done</span></span><span><span class="ts">[ 2043.015]</span> human: reviewed, tested, <span class="g">ok</span></span><span><span class="ts">[ 2043.016]</span> human: still in charge <span class="ts">(for now)</span></span><span><span class="p">#</span> <span class="cur"></span></span></pre>
+    <div class="term" role="img" aria-label="Systeminfo im Stil von neofetch: Homelab mit Debian-NAS und OPNsense, Bash, Blender und 3D-Druck, Texte von Claude Opus 5.5, Musik von Fear Factory, unterwegs seit dem Commodore C116, heute auf einem Arch-Derivat, null Cookies.">
+      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>neofetch</span></div>
+<pre class="log nf" aria-hidden="true"><span><span class="g">0liver4eld</span>@<span class="c">h0me</span></span><span class="ts">-----------------</span><span><span class="k">os</span>       real_life <span class="ts">(rolling release)</span></span><span><span class="k">uptime</span>   seit dem c116 <span class="ts">(8 bit)</span></span><span><span class="k">distro</span>   arch-derivat <span class="g">btw</span></span><span><span class="k">shell</span>    bash <span class="ts">· posix sh, wenn's sein muss</span></span><span><span class="k">nas</span>      debian · omv 8 · ironwolf 12tb</span><span><span class="k">fw</span>       opnsense <span class="ts">(igb0, nicht mehr em0)</span></span><span><span class="k">3d</span>       blender · 3d-druck</span><span><span class="k">ghostwr.</span> <span class="v">claude opus 5.5</span></span><span><span class="k">music</span>    <span class="a">fear factory</span></span><span><span class="k">github</span>   d3m0naz</span><span><span class="k">cookies</span>  <span class="g">0</span></span><span class="pal"><i style="background:var(--red)"></i><i style="background:var(--amber)"></i><i style="background:var(--green)"></i><i style="background:var(--cyan)"></i><i style="background:var(--violet)"></i><i style="background:var(--ink)"></i></span></pre>
     </div>
   </section>
 
-  <section id="doku" aria-labelledby="h-doku">
-    <div class="sh"><h2 id="h-doku"><span class="ps">#</span> ls -lt <span class="arg">doku/</span></h2><span class="count">3 einträge</span></div>
-    <p class="intro">Fallberichte und Anleitungen, jeweils zu einem echten Problem. Aufgeschrieben, damit es beim nächsten Mal schneller geht.</p>
-
-    <ul class="incidents">
-      <li class="inc">
-        <span class="sev crit">CRIT</span>
-        <div>
-          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>nas · debian · ironwolf 12tb</span><span class="ai">ki-generiert</span></p>
-          <h3><a href="doku/nas-hdd-ueberhitzung-fallbericht.html">Überhitzte NAS-Festplatte und SATA-I/O-Fehler</a></h3>
-          <p>44 Stunden bei 62–68&nbsp;°C, weil der Gehäuselüfter stand. Der I/O-Fehler danach war kein Medienschaden, sondern ein kurzer Verbindungsabbruch.</p>
-        </div>
-        <div class="stat" aria-label="Höchstwert 68 Grad Celsius">
-          <span class="v t-red">68°C</span>
-          <svg viewBox="0 0 170 34" aria-hidden="true" preserveAspectRatio="none">
-            <line x1="0" x2="170" y1="8.9" y2="8.9" stroke="currentColor" class="t-amber" stroke-dasharray="2 3" opacity=".6"/>
-            <polyline class="t-red" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" points="0,23.3 4.9,21.5 9.7,22.4 14.6,19.7 19.4,17 24.3,20.6 29.1,22.4 34,23.3 38.9,21.5 43.7,18.8 48.6,17.9 53.4,20.6 58.3,22.4 63.1,21.5 68,19.7 72.9,7.2 77.7,3.6 82.6,2.7 87.4,1.8 92.3,3.6 97.1,4.5 102,2.7 106.9,1.8 111.7,3.6 116.6,5.4 121.4,2.7 126.3,3.6 131.1,4.5 136,19.7 140.9,28.6 145.7,29.5 150.6,29.5 155.4,30.4 160.3,29.5 165.1,30.4 170,29.5"/>
-          </svg>
-          <span class="l">temp · 14.–19.11.</span>
-        </div>
+  <section id="themen" aria-labelledby="h-themen">
+    <div class="sh"><h2 id="h-themen"><span class="ps">$</span> ls <span class="arg">~/</span></h2><span class="count">4 verzeichnisse</span></div>
+    <ul class="topics">
+      <li class="topic">
+        <p class="cd"><span class="ps">$</span> cd ~/ueber-mich</p>
+        <h3><a href="ueber-mich.html">Über mich</a></h3>
+        <p>Vom Commodore C116 bis zum Arch-Derivat: wer hier schreiben lässt und warum.</p>
+        <ul class="peek">
+          <li><span class="sev-s t-cyan">8 bit</span>Commodore C116 · C64</li>
+          <li><span class="sev-s t-cyan">16/32</span>Amiga 500 · 2000 · 1200</li>
+          <li><span class="sev-s t-green">btw</span>Arch-Derivat</li>
+        </ul>
+        <p class="more">9 stationen <span>→</span></p>
       </li>
-
-      <li class="inc">
-        <span class="sev fix">FIX</span>
-        <div>
-          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>openmediavault 8 · systemd</span><span class="ai">ki-generiert</span></p>
-          <h3><a href="doku/luefter-ueberwachung.html">Gehäuselüfter-Überwachung mit hwmon, systemd und Mail</a></h3>
-          <p>Die Konsequenz aus dem CRIT darüber: Ein Skript prüft jede Minute die Drehzahl und meldet sich genau einmal, wenn der Lüfter steht, und einmal, wenn er wieder läuft.</p>
-        </div>
-        <div class="stat" aria-label="Alarm unter 300 Umdrehungen pro Minute">
-          <span class="v t-amber">&lt;300</span>
-          <svg viewBox="0 0 170 34" aria-hidden="true" preserveAspectRatio="none">
-            <polyline class="t-green" fill="none" stroke="currentColor" stroke-width="1.6" points="0,8 60,8 62,31 108,31 110,8 170,8"/>
-            <rect class="t-amber" x="62" y="27" width="46" height="7" fill="currentColor" opacity=".18"/>
-          </svg>
-          <span class="l">rpm · 3× drunter = alarm</span>
-        </div>
+      <li class="topic">
+        <p class="cd"><span class="ps">$</span> cd ~/docs</p>
+        <h3><a href="docs.html">Docs</a></h3>
+        <p>Fallberichte und Anleitungen zu echten Problemen aus Homelab und Netzwerk.</p>
+        <ul class="peek">
+          <li><span class="sev-s t-violet">STACK</span>Lokaler KI-Stack mit Ollama</li>
+          <li><span class="sev-s t-red">CRIT</span>NAS-Platte bei 68 °C</li>
+          <li><span class="sev-s t-green">FIX</span>Lüfter-Überwachung</li>
+          <li><span class="sev-s t-cyan">TOOL</span>rename_if.sh</li>
+        </ul>
+        <p class="more">4 dokus <span>→</span></p>
       </li>
-
-      <li class="inc">
-        <span class="sev tool">TOOL</span>
-        <div>
-          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>opnsense · posix sh</span><span class="ai">ki-generiert</span></p>
-          <h3><a href="doku/rename_if_doku.html">rename_if.sh: Interface-Namen in der OPNsense-Konfiguration umbenennen</a></h3>
-          <p>Neue NICs, neuer Treiber, und <code>em0</code> passt nicht mehr. Das Skript biegt <code>config.xml</code> um, mit Diff, Rückfrage und Backup.</p>
-        </div>
-        <div class="stat" aria-label="em0 wird zu igb0">
-          <span class="v t-cyan">em0→igb0</span>
-          <span class="l">s/em([0-9]+)/igb\1/</span>
-        </div>
+      <li class="topic">
+        <p class="cd"><span class="ps">$</span> cd ~/projekte</p>
+        <h3><a href="projekte.html">Projekte</a></h3>
+        <p>Größere Sachen mit eigenem Repository und eigener Website.</p>
+        <ul class="peek">
+          <li><span class="sev-s t-green">sh</span><span>scat <span class="ts">server-tui</span></span></li>
+          <li><span class="sev-s t-cyan">py</span><span>danzhouse <span class="ts">haus 1950</span></span></li>
+          <li><span class="sev-s t-cyan">py</span>csv2pdf-gui</li>
+        </ul>
+        <p class="more">3 repos <span>→</span></p>
+      </li>
+      <li class="topic">
+        <p class="cd"><span class="ps">$</span> cd ~/musik</p>
+        <h3><a href="musik.html">Musik</a></h3>
+        <p>Der Soundtrack zur Doku: Fear Factory und ein Song, der sich an die KI richtet.</p>
+        <ul class="peek">
+          <li><span class="sev-s t-violet">▶</span>Obsolete (you will be)</li>
+          <li><span class="sev-s t-amber">1995</span>Demanufacture</li>
+          <li><span class="sev-s t-amber">1998</span>Obsolete</li>
+        </ul>
+        <p class="more">4 alben <span>→</span></p>
       </li>
     </ul>
-  </section>
-
-  <section id="projekte" aria-labelledby="h-proj">
-    <div class="sh"><h2 id="h-proj"><span class="ps">#</span> git remote -v <span class="arg">projekte/</span></h2><span class="count">3 repos</span></div>
-    <p class="intro">Größere Sachen mit eigenem Repository. Auch hier hat die KI den Großteil getippt.</p>
-
-    <ul class="repos">
-      <li class="repo">
-        <a class="shot" href="https://d3m0naz.github.io/scat/" rel="noopener" tabindex="-1" aria-hidden="true">
-          <img src="assets/thumbs/scat.jpg" alt="" width="800" height="500" loading="lazy" decoding="async">
-          <span class="cmd"><b>$</b> scat</span>
-        </a>
-        <div class="body">
-          <h3><a href="https://d3m0naz.github.io/scat/" rel="noopener">scat</a></h3>
-          <p class="tagline">Deine Server in einem Terminalfenster.</p>
-          <p>Terminal-UI, die Server per SSH überwacht: CPU, Speicher, Platten, Temperaturen, Container. Keine Agents, keine Passwörter, nur Bash.</p>
-          <div class="foot"><span><i class="dot" style="background:#89e051"></i>Shell</span><span>MIT</span><span class="ai">ki-generiert</span></div>
-          <div class="go"><a href="https://d3m0naz.github.io/scat/" rel="noopener">website ↗</a><a href="https://github.com/d3m0naz/scat" rel="noopener">github ↗</a></div>
-        </div>
-      </li>
-
-      <li class="repo">
-        <a class="shot" href="https://d3m0naz.github.io/danzhouse/" rel="noopener" tabindex="-1" aria-hidden="true">
-          <img src="assets/thumbs/danzhouse.jpg" alt="" width="800" height="500" loading="lazy" decoding="async">
-          <span class="cmd"><b>$</b> blender haus.blend</span>
-        </a>
-        <div class="body">
-          <h3><a href="https://d3m0naz.github.io/danzhouse/" rel="noopener">danzhouse</a></h3>
-          <p class="tagline">Ein Haus von 1950, zum Abheben.</p>
-          <p>Raum für Raum in Blender nachgebaut und als dreiteiliges 3D-Druckmodell: Dach und Obergeschoss lassen sich abnehmen. 1:60 oder 1:90.</p>
-          <div class="foot"><span><i class="dot" style="background:#3572a5"></i>Python</span><span>CC BY-NC</span><span class="ai">ki-unterstützt</span></div>
-          <div class="go"><a href="https://d3m0naz.github.io/danzhouse/" rel="noopener">website ↗</a><a href="https://github.com/d3m0naz/danzhouse" rel="noopener">github ↗</a></div>
-        </div>
-      </li>
-
-      <li class="repo">
-        <a class="shot" href="https://lutherschule30167.github.io/csv2pdf-gui/" rel="noopener" tabindex="-1" aria-hidden="true">
-          <img src="assets/thumbs/csv2pdf.jpg" alt="" width="800" height="500" loading="lazy" decoding="async">
-          <span class="cmd"><b>$</b> csv2pdf-gui</span>
-        </a>
-        <div class="body">
-          <h3><a href="https://lutherschule30167.github.io/csv2pdf-gui/" rel="noopener">csv2pdf-gui</a></h3>
-          <p class="tagline">Kontoauszüge aus StarMoney-CSV.</p>
-          <p>Macht aus Exporten lesbare PDF-Auszüge mit Logo, Kontoname und Datum. Für Klassenkassen: herunterladen, doppelklicken, fertig.</p>
-          <div class="foot"><span><i class="dot" style="background:#3572a5"></i>Python</span><span class="ai">100&nbsp;% ki</span></div>
-          <div class="go"><a href="https://lutherschule30167.github.io/csv2pdf-gui/" rel="noopener">website ↗</a><a href="https://github.com/Lutherschule30167/csv2pdf-gui" rel="noopener">github ↗</a></div>
-        </div>
-      </li>
-    </ul>
-  </section>
-
-  <section id="damals" aria-labelledby="h-damals">
-    <div class="sh"><h2 id="h-damals"><span class="ps">#</span> git log <span class="arg">oliverheld.com</span></h2><span class="count">vor-ki, ca. 2008</span></div>
-    <p class="intro">Diese Domain hatte jahrelang keine eigene Seite. Sie leitete einfach auf ein
-    Stück Internetgeschichte weiter: <i>The Website Is Down</i>, die Videoserie über den Sales Guy
-    und den Web Dude. Damals haben Admins ihre Witze noch selbst geschrieben, und jeder kannte
-    mindestens einen Sales Guy persönlich. Jetzt steht hier diese Seite, aber die Erinnerung
-    bleibt verlinkt.</p>
-    <div class="term retro">
-      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>bash · aus der history</span></div>
-<pre class="hdrs"><span class="ps">$</span> curl -sIL https://oliverheld.com/ | grep -iE '^(http|location)'
-<span class="st">HTTP/2 301</span>
-<span class="k">location:</span> http://www.thewebsiteisdown.com/
-<span class="st">HTTP/1.1 301 Moved Permanently</span>
-<span class="k">Location:</span> https://www.thewebsiteisdown.com/
-<span class="ok">HTTP/2 200</span>
-<span class="ps">$</span> git commit -m "oliverheld.com: zeigt jetzt auf eigene Seite"
-<span class="dim">[main] 1 file changed, 1 redirect retired. respect.</span>
-<span class="ps">$</span> <span class="cur" aria-hidden="true"></span></pre>
-    </div>
-    <p class="go-retro"><a href="https://www.thewebsiteisdown.com/" rel="noopener">thewebsiteisdown.com ↗</a><span>externe Seite, lädt Inhalte Dritter</span></p>
-  </section>
-
-  <section id="musik" aria-labelledby="h-musik">
-    <div class="sh"><h2 id="h-musik"><span class="ps">#</span> mpc <span class="arg">playlist</span></h2><span class="count">soundtrack zur doku</span></div>
-    <p class="intro">Was beim Debuggen läuft. <a href="https://en.wikipedia.org/wiki/Fear_Factory" rel="noopener">Fear Factory</a> hat
-    schon in den Neunzigern Alben über Maschinen gemacht, die den Menschen ersetzen. Damals war das
-    Industrial Metal. Heute liest es sich wie ein Changelog.</p>
-
-    <div class="np">
-      <div class="np-head"><span class="np-dot" aria-hidden="true"></span>now playing</div>
-      <h3><a href="https://www.youtube.com/watch?v=aLRmcVU2oWw" rel="noopener">Obsolete (you will be)</a></h3>
-      <p class="np-by">Claude Opus 5.5 Music Video · von Hanno Lehtiniemi</p>
-      <p>Doppeldeutig gleich zweimal: Der Titel nickt Richtung Fear Factory, und Opus 5.5 ist
-      auch das Modell, das große Teile dieser Seite geschrieben hat. Ob das eine Drohung ist oder
-      ein Selbstgespräch, bleibt offen. <i>...for now.</i></p>
-      <div class="np-bar" aria-hidden="true"><span>01:55</span><i><b></b></i><span>∞</span></div>
-      <p class="go-retro"><a href="https://www.youtube.com/watch?v=aLRmcVU2oWw" rel="noopener">youtube ↗</a><span>externe Seite, YouTube setzt eigene Cookies</span></p>
-    </div>
-
-    <div class="term pl">
-      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>fear_factory.m3u · hellseherisch</span></div>
-      <ol>
-        <li><span class="yr">1995</span><span class="tt"><a href="https://en.wikipedia.org/wiki/Demanufacture" rel="noopener">Demanufacture</a><small>Mensch gegen Maschine. Ein Einzelner gegen ein System, das alles automatisiert hat.</small></span></li>
-        <li><span class="yr">1998</span><span class="tt"><a href="https://en.wikipedia.org/wiki/Obsolete_(album)" rel="noopener">Obsolete</a><small>Konzeptalbum: Die Maschinen übernehmen, der Mensch wird überflüssig. Klang 1998 nach Science-Fiction.</small></span></li>
-        <li><span class="yr">2001</span><span class="tt"><a href="https://en.wikipedia.org/wiki/Digimortal" rel="noopener">Digimortal</a><small>Mensch und Maschine verschmelzen, bis man sie nicht mehr auseinanderhält.</small></span></li>
-        <li><span class="yr">2015</span><span class="tt"><a href="https://en.wikipedia.org/wiki/Genexus" rel="noopener">Genexus</a><small>Was bleibt vom Menschen, wenn Maschinen ihn nachbauen können?</small></span></li>
-      </ol>
-    </div>
   </section>
 
   <section id="wie" aria-labelledby="h-wie">
@@ -206,7 +105,7 @@
 
 <footer class="tmux">
   <div class="wrap">
-    <div class="l"><span class="sess">[0liver4eld]</span><a href="./">0:index*</a><a href="impressum.html">1:impressum</a><a href="datenschutz.html">2:datenschutz</a></div>
+    <div class="l"><span class="sess">[0liver4eld]</span><a href="./" aria-current="page">0:index*</a><a href="ueber-mich.html">1:über-mich</a><a href="docs.html">2:docs</a><a href="projekte.html">3:projekte</a><a href="musik.html">4:musik</a><a href="impressum.html">5:impressum</a><a href="datenschutz.html">6:datenschutz</a></div>
     <div class="r"><span>cookies:<b>0</b></span><span>tracker:<b>0</b></span><span>3rd-party:<b>0</b></span><span class="ai">ki:<b>~88%</b></span></div>
   </div>
 </footer>
