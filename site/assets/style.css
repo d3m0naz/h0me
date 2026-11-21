@@ -232,3 +232,4 @@ h2 .arg { color: var(--cyan); }
 .go-retro a { color: var(--ink); text-decoration: none; padding: 3px 10px; border: 1px solid var(--line-2); border-radius: 6px; }
 .go-retro a:hover { color: var(--green); border-color: var(--green); }
 .hdrs .ps { color: var(--green); }
+.hdrs .dim { color: var(--dim); }
