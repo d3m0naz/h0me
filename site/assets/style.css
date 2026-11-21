@@ -233,3 +233,30 @@ h2 .arg { color: var(--cyan); }
 .go-retro a:hover { color: var(--green); border-color: var(--green); }
 .hdrs .ps { color: var(--green); }
 .hdrs .dim { color: var(--dim); }
+
+/* musik */
+#musik .intro a { color: var(--ink); }
+#musik { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 0 22px; align-items: start; }
+#musik > .sh, #musik > .intro { grid-column: 1 / -1; }
+.np { background: var(--surface); border: 1px solid var(--line-2); border-radius: 12px; padding: 18px 20px; }
+.np-head { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: .72rem; color: var(--violet); text-transform: uppercase; letter-spacing: .08em; }
+.np-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--violet); box-shadow: 0 0 10px var(--violet); animation: blink 1.6s steps(1) infinite; }
+.np h3 { margin: 10px 0 2px; font-size: 1.15rem; }
+.np h3 a { color: var(--ink-hi); text-decoration: none; } .np h3 a:hover { color: var(--green); }
+.np-by { margin: 0 0 12px; font-family: var(--mono); font-size: .75rem; color: var(--dim); }
+.np p { color: var(--muted); font-size: .94rem; }
+.np i { font-style: normal; color: var(--violet); }
+.np-bar { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: .7rem; color: var(--dim); margin: 14px 0 4px; }
+.np-bar i { flex: 1; height: 4px; border-radius: 2px; background: var(--line-2); overflow: hidden; }
+.np-bar b { display: block; width: 37%; height: 100%; background: linear-gradient(90deg, var(--violet), var(--cyan)); }
+.pl ol { list-style: none; margin: 0; padding: 8px 0; counter-reset: t; font-family: var(--mono); font-size: .8rem; }
+.pl li { counter-increment: t; display: grid; grid-template-columns: 2.4em 3.6em minmax(0, 1fr); gap: 10px; padding: 9px 18px; border-bottom: 1px dashed var(--line); }
+.pl li:last-child { border-bottom: 0; }
+.pl li::before { content: counter(t, decimal-leading-zero); color: var(--dim); }
+.pl .yr { color: var(--amber); }
+.pl .tt a { color: var(--ink-hi); text-decoration: none; } .pl .tt a:hover { color: var(--green); }
+.pl .tt small { display: block; margin-top: 3px; font-family: var(--sans, inherit); font-size: .78rem; color: var(--muted); line-height: 1.45; }
+@media (max-width: 760px) { #musik { grid-template-columns: minmax(0, 1fr); gap: 18px 0; } }
+@media (prefers-reduced-motion: reduce) { .np-dot { animation: none; } }
+.np .np-by { font-size: .75rem; color: var(--dim); }
+.np .go-retro { font-size: .78rem; color: var(--dim); margin-top: 14px; }

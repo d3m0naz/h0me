@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Übersicht · KI-Stack</title>
+<style>
+:root {
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --sidebar: #f3f1ed;
+  --text: #1f1d1a;
+  --muted: #6b665e;
+  --border: #e2ddd5;
+  --accent: #b4532a;
+  --accent-soft: #f6e7df;
+  --code-bg: #f1eee9;
+  --pre-bg: #1e1c1a;
+  --pre-text: #ece8e1;
+  --note-bg: #fdf6e8;
+  --note-border: #d9a441;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171614;
+    --surface: #1e1d1a;
+    --sidebar: #1b1a17;
+    --text: #e9e5de;
+    --muted: #a19b91;
+    --border: #34312c;
+    --accent: #e58a5c;
+    --accent-soft: #3a2a21;
+    --code-bg: #2a2824;
+    --pre-bg: #121110;
+    --pre-text: #e9e5de;
+    --note-bg: #2a2418;
+    --note-border: #b98a2e;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171614;
+  --surface: #1e1d1a;
+  --sidebar: #1b1a17;
+  --text: #e9e5de;
+  --muted: #a19b91;
+  --border: #34312c;
+  --accent: #e58a5c;
+  --accent-soft: #3a2a21;
+  --code-bg: #2a2824;
+  --pre-bg: #121110;
+  --pre-text: #e9e5de;
+  --note-bg: #2a2418;
+  --note-border: #b98a2e;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); min-height: 100vh; }
+
+nav.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--sidebar); border-right: 1px solid var(--border);
+  padding: 28px 20px 40px;
+}
+.brand { font-weight: 650; font-size: 15px; line-height: 1.35; margin: 0 0 4px; }
+.brand-sub { color: var(--muted); font-size: 13px; margin: 0 0 22px; }
+nav.sidebar ol { list-style: none; margin: 0; padding: 0; counter-reset: none; }
+nav.sidebar > ol > li { margin: 2px 0; }
+nav.sidebar a {
+  display: block; color: var(--text); text-decoration: none;
+  font-size: 14px; padding: 5px 10px; border-radius: 6px;
+}
+nav.sidebar a:hover { background: var(--accent-soft); }
+nav.sidebar a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+nav.sidebar ol ol { margin: 2px 0 6px 10px; border-left: 1px solid var(--border); }
+nav.sidebar ol ol a { font-size: 13px; color: var(--muted); padding: 3px 10px; }
+
+main { padding: 48px 56px 96px; max-width: 980px; width: 100%; }
+header.top { margin-bottom: 36px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+header.top h1 { font-size: 32px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.01em; }
+header.top p { margin: 0; color: var(--muted); font-size: 14px; }
+
+.theme {
+  float: right; margin-left: 12px;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 10px; font: inherit; font-size: 13px; cursor: pointer;
+}
+
+h2, h3, h4 { position: relative; line-height: 1.3; }
+h2 { font-size: 24px; margin: 56px 0 16px; padding-top: 8px; letter-spacing: -0.01em; }
+h3 { font-size: 19px; margin: 36px 0 12px; }
+h4 { font-size: 16px; margin: 28px 0 10px; }
+.anchor {
+  position: absolute; left: -22px; color: var(--muted); text-decoration: none;
+  opacity: 0; font-weight: 400;
+}
+h2:hover .anchor, h3:hover .anchor, h4:hover .anchor { opacity: 1; }
+
+p, ul, ol { margin: 0 0 14px; }
+main ul, main ol { padding-left: 24px; }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+strong { font-weight: 650; }
+
+code {
+  font: 0.88em/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: var(--code-bg); padding: 1px 5px; border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+
+.code { position: relative; margin: 0 0 18px; }
+.code pre {
+  margin: 0; background: var(--pre-bg); color: var(--pre-text);
+  padding: 16px 18px; border-radius: 8px; overflow-x: auto;
+}
+.code pre code { background: none; padding: 0; font-size: 13.5px; overflow-wrap: normal; color: inherit; }
+.code .lang {
+  position: absolute; top: 8px; right: 92px;
+  font: 11px/1 ui-monospace, monospace; color: #8f897f; text-transform: uppercase;
+  padding-top: 5px;
+}
+.copy {
+  position: absolute; top: 8px; right: 8px;
+  background: #34312c; color: #ece8e1; border: 1px solid #4a463f; border-radius: 5px;
+  font: 12px/1 system-ui, sans-serif; padding: 5px 9px; cursor: pointer;
+}
+.copy:hover { background: #46423b; }
+
+.table { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+th { background: var(--sidebar); font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+
+aside.note {
+  background: var(--note-bg); border-left: 3px solid var(--note-border);
+  padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 0 0 18px;
+}
+aside.note p { margin: 0; }
+
+footer { margin-top: 64px; padding-top: 18px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+
+.pages { display: flex; gap: 4px; padding: 3px; margin: 0 0 22px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; }
+.pages a {
+  flex: 1; text-align: center; font-size: 13px; padding: 6px 8px; border-radius: 6px;
+  color: var(--muted); text-decoration: none;
+}
+.pages a:hover { color: var(--text); }
+.pages a.current { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
+
+li.task { list-style: none; margin-left: -22px; }
+li.task input { margin: 0 6px 0 0; accent-color: var(--accent); }
+
+.menu-toggle { display: none; }
+
+@media (max-width: 900px) {
+  .layout { display: block; }
+  nav.sidebar {
+    position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+  .brand-sub { margin-bottom: 12px; }
+  .pages { margin-bottom: 0; }
+  .menu-toggle {
+    display: inline-block; margin-top: 10px;
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 12px; font: inherit; font-size: 14px; cursor: pointer;
+  }
+  nav.sidebar > ol { display: none; margin-top: 12px; }
+  nav.sidebar.open > ol { display: block; }
+  main { padding: 28px 16px 64px; }
+  header.top h1 { font-size: 26px; }
+  .anchor { display: none; }
+}
+
+@media print {
+  nav.sidebar, .copy, .theme { display: none; }
+  .layout { display: block; }
+  main { padding: 0; max-width: none; }
+  .code pre { white-space: pre-wrap; background: #f4f2ee; color: #1f1d1a; border: 1px solid #ddd; }
+  h2 { break-after: avoid; }
+  .table, .code { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <p class="brand">KI-Stack Doku</p>
+    <p class="brand-sub">Ollama · OpenCode · Hermes</p>
+    <div class="pages"><a href="index.html" class="current" aria-current="page">Übersicht</a><a href="modell-optimieren.html">Modell optimieren</a></div>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar">Inhalt</button>
+    <ol><li><a href="#1-ordnerstruktur">1. Ordnerstruktur</a></li><li><a href="#2-modellwahl-warum-moe">2. Modellwahl: warum MoE</a><ol><li><a href="#eingesetztes-modell">Eingesetztes Modell</a></li><li><a href="#alternativen">Alternativen</a></li></ol></li><li><a href="#3-dateien">3. Dateien</a><ol><li><a href="#composeyaml"><code>compose.yaml</code></a></li><li><a href="#opencodedockerfile"><code>opencode.Dockerfile</code></a></li><li><a href="#opencodejson"><code>opencode.json</code></a></li><li><a href="#hermes-dataconfigyaml-relevante-abschnitte"><code>hermes-data/config.yaml</code> (relevante Abschnitte)</a></li></ol></li><li><a href="#4-ersteinrichtung">4. Ersteinrichtung</a><ol><li><a href="#41-ollama-starten-und-modell-laden">4.1 Ollama starten und Modell laden</a></li><li><a href="#42-erster-test">4.2 Erster Test</a></li><li><a href="#43-arbeitsordner-anlegen">4.3 Arbeitsordner anlegen</a></li><li><a href="#44-opencode">4.4 OpenCode</a></li><li><a href="#45-hermes-agent">4.5 Hermes Agent</a></li></ol></li><li><a href="#5-täglicher-betrieb">5. Täglicher Betrieb</a></li><li><a href="#6-sessions-verwalten">6. Sessions verwalten</a><ol><li><a href="#opencode">OpenCode</a></li><li><a href="#hermes">Hermes</a></li></ol></li><li><a href="#7-modelle-verwalten">7. Modelle verwalten</a></li><li><a href="#8-performance">8. Performance</a><ol><li><a href="#gemessene-werte-qwen3-coder-30b-a3b-q4_k_m-5700g">Gemessene Werte (Qwen3-Coder-30B-A3B Q4_K_M, 5700G)</a></li><li><a href="#ollama--hardware">Ollama / Hardware</a></li><li><a href="#hermes">Hermes</a></li></ol></li><li><a href="#9-arbeiten-mit-hermes-prompt-tipps">9. Arbeiten mit Hermes: Prompt-Tipps</a></li><li><a href="#10-fehlerbehebung">10. Fehlerbehebung</a><ol><li><a href="#allgemein">Allgemein</a></li><li><a href="#hermes-spezifisch">Hermes-spezifisch</a></li></ol></li><li><a href="#11-fallstudien">11. Fallstudien</a><ol><li><a href="#111-tool-calls-zum-laufen-bringen">11.1 Tool-Calls zum Laufen bringen</a></li><li><a href="#112-hermes-prompt-verkleinern">11.2 Hermes-Prompt verkleinern</a></li><li><a href="#113-leerer-workspace">11.3 Leerer Workspace</a></li></ol></li><li><a href="#12-quellen">12. Quellen</a></li></ol>
+  </nav>
+  <main>
+    <header class="top">
+      <button class="theme" type="button" id="theme">Hell/Dunkel</button>
+      <h1>Lokaler KI-Stack: Ollama + OpenCode + Hermes Agent</h1>
+      <p>Erzeugt aus README.md am 21.11.2026</p>
+    </header>
+    <p>Ein vollständig lokaler KI-Stack in Docker Compose. Alle Modelle laufen auf der eigenen Hardware, ohne Cloud-API und ohne dass Daten das Netzwerk verlassen.</p>
+<div class="table"><table><thead><tr><th>Komponente</th><th>Aufgabe</th></tr></thead><tbody><tr><td><strong>Ollama</strong></td><td>LLM-Server, stellt eine OpenAI-kompatible API bereit (<code>http://ollama:11434/v1</code>)</td></tr><tr><td><strong>OpenCode</strong></td><td>Coding-Agent im Terminal (TUI), arbeitet in <code>/workspace</code></td></tr><tr><td><strong>Hermes Agent</strong></td><td>Autonomer Agent von Nous Research mit persistentem Gedächtnis, Skills und Messaging-Gateway, arbeitet ebenfalls in <code>/workspace</code></td></tr></tbody></table></div>
+<p><strong>Hardware:</strong> AMD Ryzen 7 5700G (8 Kerne, Zen 3, AVX2), 2×32 GB DDR4-3200 Dual-Channel, kein Swap, keine GPU. Reine CPU-Inferenz.</p>
+<p>Referenz-Setup, Werte auf der genannten Hardware gemessen.</p>
+<h2 id="1-ordnerstruktur"><a class="anchor" href="#1-ordnerstruktur">#</a>1. Ordnerstruktur</h2>
+<div class="code"><button class="copy" type="button">Kopieren</button><pre><code>ai-stack/
+├── compose.yaml
+├── opencode.Dockerfile
+├── opencode.json          # OpenCode-Konfiguration (Provider + Modelle)
+├── README.md
+├── workspace/             # Projektcode, geteilt von OpenCode und Hermes (Besitzer UID 1000)
+├── hermes-data/           # Hermes: config.yaml, .env, Sessions, Skills, Memories
+└── docs/                  # HTML-Doku, erzeugt aus README.md und docs/addme.md
+    ├── addme.md           # Anleitung: Stock-Modell → Hermes-optimiertes Modell
+    ├── build.py           # erzeugt die HTML-Seiten (nur Python-Standardbibliothek)
+    ├── template.html      # Layout der HTML-Seiten
+    ├── index.html         # erzeugt aus README.md
+    └── modell-optimieren.html  # erzeugt aus docs/addme.md</code></pre></div>
+<p>Die HTML-Seiten nicht von Hand bearbeiten. Nach jeder Änderung an <code>README.md</code> oder <code>docs/addme.md</code> neu erzeugen:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>python3 docs/build.py</code></pre></div>
+<p>Dazu kommen zwei benannte Docker-Volumes: <code>ollama</code> (Modelle) und <code>opencode-data</code> (OpenCode-Sessions).</p>
+<p>Pfade in den Containern:</p>
+<div class="table"><table><thead><tr><th>Host</th><th>OpenCode</th><th>Hermes</th></tr></thead><tbody><tr><td><code>./workspace</code></td><td><code>/workspace</code></td><td><code>/workspace</code></td></tr><tr><td><code>./hermes-data</code></td><td>–</td><td><code>/opt/data</code></td></tr><tr><td><code>./opencode.json</code></td><td><code>/home/node/.config/opencode/opencode.json</code> (nur lesend)</td><td>–</td></tr></tbody></table></div>
+<h2 id="2-modellwahl-warum-moe"><a class="anchor" href="#2-modellwahl-warum-moe">#</a>2. Modellwahl: warum MoE</h2>
+<p>Auf der CPU begrenzt die <strong>Speicherbandbreite</strong> die Textgenerierung. Pro erzeugtem Token müssen alle <em>aktiven</em> Gewichte einmal aus dem RAM gelesen werden. DDR4-3200 Dual-Channel schafft real etwa 35–40 GB/s.</p>
+<div class="table"><table><thead><tr><th>Modelltyp</th><th>Beispiel</th><th>Generierung</th><th>Prompt-Verarbeitung</th></tr></thead><tbody><tr><td>Dense 27B (Q4, ~16 GB)</td><td>Qwen 27B</td><td>~1,5–2,5 Token/s</td><td>~10–25 Token/s</td></tr><tr><td><strong>MoE 30B, 3B aktiv</strong> (Q4_K_M, ~19 GB)</td><td>Qwen3-Coder-30B-A3B</td><td><strong>~20 Token/s</strong> (kleiner Kontext)</td><td>~40–110 Token/s</td></tr></tbody></table></div>
+<p>Ein dichtes 27B-Modell ist für agentisches Arbeiten zu langsam. Agenten schicken große System-Prompts mit Tool-Definitionen mit, und deren Verarbeitung dauert dann viele Minuten. <strong>Mixture-of-Experts</strong>-Modelle aktivieren pro Token nur einen kleinen Teil ihrer Parameter und sind auf der CPU um ein Vielfaches schneller.</p>
+<h3 id="eingesetztes-modell"><a class="anchor" href="#eingesetztes-modell">#</a>Eingesetztes Modell</h3>
+<div class="table"><table><thead><tr><th>Verwendung</th><th>Modell</th><th>Hinweis</th></tr></thead><tbody><tr><td>Basis</td><td><code>qwen3-coder:30b</code></td><td>Offizielles Ollama-Paket mit eigenem Renderer und Parser für Tool-Calls</td></tr><tr><td>Hermes (und OpenCode)</td><td><code>coder-64k</code></td><td>Abgeleitete Variante mit <code>num_ctx 65536</code> und <code>num_thread 8</code></td></tr><tr><td>OpenCode <code>small_model</code></td><td><code>qwen2.5-coder:1.5b</code></td><td>Für Nebenaufgaben wie Titelgenerierung</td></tr></tbody></table></div>
+<aside class="note"><p><strong>Wichtig:</strong> Verwende das offizielle Ollama-Paket, nicht das GGUF von Hugging Face (<code>hf.co/...</code>). Nur das offizielle Paket bringt <code>RENDERER qwen3-coder</code> und <code>PARSER qwen3-coder</code> mit. Mit dem generischen Template aus dem HF-GGUF werden Tool-Calls bei langem Kontext nicht zuverlässig erkannt (siehe <a href="#111-tool-calls-zum-laufen-bringen">Fallstudie 11.1</a>).</p></aside>
+<h3 id="alternativen"><a class="anchor" href="#alternativen">#</a>Alternativen</h3>
+<div class="table"><table><thead><tr><th>Modell</th><th>Gesamt / aktiv</th><th>RAM (Q4)</th><th>Hinweis</th></tr></thead><tbody><tr><td>Qwen3.5-35B-A3B (auch abliteriert: <code>huihui_ai/qwen3.5-abliterated:35b</code>)</td><td>35B / 3B</td><td>~21 GB</td><td>Neuere Generation mit Thinking. Tool-Parser vor dem Einsatz prüfen</td></tr><tr><td>Gemma 4 26B-A4B abliterated</td><td>26B / 4B</td><td>~15 GB</td><td>Etwas langsamer, neigt im Thinking-Modus zu Endlosschleifen</td></tr></tbody></table></div>
+<aside class="note"><p><strong>Abliterierte (unzensierte) Modelle:</strong> Abliteration entfernt die Ablehnungsrichtung aus den Gewichten. Das kann die Qualität und die Zuverlässigkeit von Tool-Aufrufen leicht verschlechtern. Vor dem Einsatz mit Hermes immer <code>ollama show &lt;modell&gt; --modelfile</code> auf <code>RENDERER</code>/<code>PARSER</code> prüfen und den <a href="#42-erster-test">Tool-Call-Test</a> durchführen. Fehlen die Zeilen, kann man sie per eigenem Modelfile ergänzen (<code>FROM &lt;gguf&gt;</code> + <code>RENDERER qwen3-coder</code> + <code>PARSER qwen3-coder</code>) und dann in Hermes praktisch testen.</p></aside>
+<h2 id="3-dateien"><a class="anchor" href="#3-dateien">#</a>3. Dateien</h2>
+<h3 id="composeyaml"><a class="anchor" href="#composeyaml">#</a><code>compose.yaml</code></h3>
+<div class="code"><span class="lang">yaml</span><button class="copy" type="button">Kopieren</button><pre><code>services:
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - 11434:11434                  # offen im LAN; sicherer: 127.0.0.1:11434:11434
+    volumes:
+      - ollama:/root/.ollama
+    environment:
+      OLLAMA_CONTEXT_LENGTH: &quot;32768&quot; # Standard für Modelle ohne eigenes num_ctx
+      OLLAMA_KEEP_ALIVE: &quot;24h&quot;       # Modell nicht nach 5 Min. entladen
+      OLLAMA_NUM_PARALLEL: &quot;2&quot;       # 2. Slot, damit Nebenanfragen den Prompt-Cache nicht verdrängen
+      OLLAMA_MAX_LOADED_MODELS: &quot;2&quot;  # höchstens zwei Modelle gleichzeitig im RAM
+
+  opencode:
+    build:
+      context: .
+      dockerfile: opencode.Dockerfile
+    profiles: [&quot;cli&quot;]                # startet nicht bei &quot;up&quot;, nur per &quot;run&quot;
+    depends_on: [ollama]
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./workspace:/workspace
+      - ./opencode.json:/home/node/.config/opencode/opencode.json:ro
+      - opencode-data:/home/node/.local/share/opencode
+
+  hermes:
+    image: nousresearch/hermes-agent:latest
+    container_name: hermes
+    command: gateway run
+    depends_on: [ollama]
+    restart: unless-stopped
+    shm_size: 1g                     # für Browser-Tools
+    environment:
+      - HERMES_UID=${HERMES_UID:-1000}
+      - HERMES_GID=${HERMES_GID:-1000}
+      - HERMES_API_TIMEOUT=1800      # CPU-Inferenz ist langsam
+    volumes:
+      - ./hermes-data:/opt/data
+      - ./workspace:/workspace       # gleicher Projektordner wie OpenCode
+
+volumes:
+  ollama:
+  opencode-data:</code></pre></div>
+<p>Hinweise:</p>
+<ul><li><strong>Kein <code>network_mode: host</code>.</strong> Hermes und OpenCode erreichen Ollama über den Service-Namen <code>ollama</code> im Bridge-Netz. Im Host-Netz gibt es diesen Namen nicht, dann brechen Chat und Tool-Calls ab. Für SSH zu anderen Rechnern ist das Host-Netz ebenfalls nicht nötig.</li><li><strong>Keine Mounts nach <code>/root</code>.</strong> Hermes läuft als UID 1000, seine Daten liegen in <code>/opt/data</code>. OpenCode läuft als User <code>node</code> (ebenfalls UID 1000).</li><li>Der Container <code>ollama</code> heißt ohne <code>container_name</code> automatisch <code>ai-stack-ollama-1</code>.</li></ul>
+<h3 id="opencodedockerfile"><a class="anchor" href="#opencodedockerfile">#</a><code>opencode.Dockerfile</code></h3>
+<div class="code"><span class="lang">dockerfile</span><button class="copy" type="button">Kopieren</button><pre><code>FROM node:22-slim
+RUN apt-get update \
+ &amp;&amp; apt-get install -y --no-install-recommends git ripgrep ca-certificates curl \
+    python3 python3-pip python3-venv python-is-python3 shellcheck \
+ &amp;&amp; rm -rf /var/lib/apt/lists/* \
+ &amp;&amp; npm i -g opencode-ai
+USER node
+RUN mkdir -p /home/node/.config/opencode /home/node/.local/share/opencode
+CMD [&quot;opencode&quot;]</code></pre></div>
+<ul><li><code>USER node</code> hat die UID 1000, wie Hermes und der Host-User. Alle drei können deshalb in <code>workspace/</code> schreiben.</li><li>Das <code>mkdir</code> als <code>node</code> sorgt dafür, dass das Volume <code>opencode-data</code> beim ersten Start mit dem richtigen Besitzer angelegt wird.</li><li><code>npm i -g opencode-ai</code> hat keine feste Version. Jeder <code>build</code> holt die neueste.</li><li><strong><code>CMD</code>, nicht <code>ENTRYPOINT</code>:</strong> Argumente bei <code>docker compose run</code> ersetzen den ganzen Befehl. Deshalb muss <code>opencode</code> immer mitgeschrieben werden, z. B. <code>docker compose run --rm opencode opencode -c</code>. Eine Shell bekommst du mit <code>docker compose run --rm opencode bash</code>.</li></ul>
+<h3 id="opencodejson"><a class="anchor" href="#opencodejson">#</a><code>opencode.json</code></h3>
+<p>Aktuelle Fassung:</p>
+<div class="code"><span class="lang">json</span><button class="copy" type="button">Kopieren</button><pre><code>{
+  &quot;$schema&quot;: &quot;https://opencode.ai/config.json&quot;,
+  &quot;provider&quot;: {
+    &quot;ollama&quot;: {
+      &quot;npm&quot;: &quot;@ai-sdk/openai-compatible&quot;,
+      &quot;name&quot;: &quot;Ollama (lokal)&quot;,
+      &quot;options&quot;: { &quot;baseURL&quot;: &quot;http://ollama:11434/v1&quot; },
+      &quot;models&quot;: {
+        &quot;coder-64k&quot;: { &quot;name&quot;: &quot;coder-64k&quot; },
+        &quot;qwen3-coder:30b&quot;: { &quot;name&quot;: &quot;Qwen3 Coder 30B&quot; },
+        &quot;hf.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:Q4_K_M&quot;: { &quot;name&quot;: &quot;Qwen3 30B Coder Instruct Q4&quot;},
+        &quot;qwen2.5-coder:1.5b&quot;: { &quot;name&quot;: &quot;Qwen2.5 Coder 1.5B&quot; }
+      }
+    }
+  },
+  &quot;model&quot;: &quot;ollama/qwen3-coder:30b&quot;,
+  &quot;small_model&quot;: &quot;ollama/qwen2.5-coder:1.5b&quot;
+}</code></pre></div>
+<p>Tipp: Für lange Agenten-Turns <code>timeout</code>/<code>headerTimeout</code> erhöhen (Standard 300000 ms) und pro Modell <code>options.temperature</code>/<code>top_p</code> sowie <code>limit.context</code>/<code>limit.output</code> setzen.</p>
+<h3 id="hermes-dataconfigyaml-relevante-abschnitte"><a class="anchor" href="#hermes-dataconfigyaml-relevante-abschnitte">#</a><code>hermes-data/config.yaml</code> (relevante Abschnitte)</h3>
+<p>Der Setup-Wizard erzeugt die Datei. Anschließend werden diese Blöcke ergänzt bzw. angepasst:</p>
+<div class="code"><span class="lang">yaml</span><button class="copy" type="button">Kopieren</button><pre><code># Benannter Provider: nur so lassen sich Temperatur und top_p mitschicken
+providers:
+  ollama-local:
+    api: http://ollama:11434/v1
+    extra_body:
+      temperature: 0.7
+      top_p: 0.8
+
+model:
+  default: coder-64k
+  provider: custom:ollama-local
+
+# Ungenutzte Toolsets abschalten: Prompt von ~15–17k auf ~6k Token
+agent:
+  disabled_toolsets:
+    - skills
+    - delegation
+    - connections
+    - browser-use
+    - memory
+    - web
+    - tts
+    - vision
+
+# Alle Hilfsaufgaben auf das lokale Hauptmodell (sonst: Nous Portal)
+auxiliary:
+  vision:
+    provider: main
+  compression:
+    provider: main
+    timeout: 1800
+    no_progress_timeout: 600
+  skills_hub:
+    provider: main
+  approval:
+    provider: main
+    timeout: 300
+  review:
+    provider: main
+  mcp:
+    provider: main
+  title_generation:
+    enabled: false
+    provider: main
+  memory_query_rewrite:
+    provider: main
+    timeout: 120
+  tts_audio_tags:
+    provider: main
+  voice_chat:
+    provider: main
+  triage_specifier:
+    provider: main
+  kanban_decomposer:
+    provider: main
+  profile_describer:
+    provider: main
+  goal_judge:
+    provider: main
+  curator:
+    provider: main
+    timeout: 1800
+  monitor:
+    provider: main
+  background_review:
+    enabled: false
+    provider: main
+  moa_reference:
+    provider: main
+  moa_aggregator:
+    provider: main</code></pre></div>
+<p>Zusätzlich ist Reasoning per <code>/reasoning none --global</code> abgeschaltet (Qwen3-Coder kann kein Thinking).</p>
+<aside class="note"><p>Innerhalb von Containern immer den Service-Namen <code>ollama</code> verwenden, <strong>nicht</strong> <code>localhost</code>. <code>localhost</code> zeigt auf den jeweiligen Container selbst.</p></aside>
+<aside class="note"><p>YAML überschreibt doppelte Schlüssel stillschweigend. Prüfe vor dem Anhängen eines Blocks mit <code>grep -n &quot;^agent:\|^auxiliary:\|^providers:\|^model:&quot; hermes-data/config.yaml</code>, ob er schon existiert.</p></aside>
+<aside class="note"><p><code>hermes config set</code> hatte zeitweise keine Wirkung auf die Datei. Ändere <code>config.yaml</code> deshalb direkt und prüfe mit <code>hermes config get &lt;key&gt;</code>.</p></aside>
+<h2 id="4-ersteinrichtung"><a class="anchor" href="#4-ersteinrichtung">#</a>4. Ersteinrichtung</h2>
+<h3 id="41-ollama-starten-und-modell-laden"><a class="anchor" href="#41-ollama-starten-und-modell-laden">#</a>4.1 Ollama starten und Modell laden</h3>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose up -d ollama
+docker compose exec ollama ollama pull qwen3-coder:30b</code></pre></div>
+<p>Prüfen, dass Tool-Support <strong>und</strong> der eigene Parser vorhanden sind:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec ollama ollama show qwen3-coder:30b                 # Capabilities: tools
+docker compose exec ollama ollama show qwen3-coder:30b --modelfile \
+  | grep -E &quot;^(RENDERER|PARSER)&quot;                                        # beide Zeilen müssen erscheinen</code></pre></div>
+<p>64k-Variante anlegen:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec ollama sh -c &#x27;
+  printf &quot;FROM qwen3-coder:30b\nPARAMETER num_ctx 65536\nPARAMETER num_thread 8\n&quot; &gt; /tmp/Modelfile &amp;&amp;
+  ollama create coder-64k -f /tmp/Modelfile&#x27;</code></pre></div>
+<p>Warum genau diese Parameter, wie man prüft, dass Renderer und Parser geerbt wurden, und wie das mit anderen Modellen geht, steht Schritt für Schritt in der <a href="modell-optimieren.html">Anleitung zum Modell-Optimieren</a>.</p>
+<p>Kleines Modell für OpenCode-Nebenaufgaben:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec ollama ollama pull qwen2.5-coder:1.5b</code></pre></div>
+<h3 id="42-erster-test"><a class="anchor" href="#42-erster-test">#</a>4.2 Erster Test</h3>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec -it ollama ollama run coder-64k --verbose</code></pre></div>
+<p>Nach jeder Antwort zeigt <code>--verbose</code> die <strong>prompt eval rate</strong> (Einlesen) und die <strong>eval rate</strong> (Generierung). <code>/bye</code> beendet.</p>
+<p>Tool-Calling über die OpenAI-kompatible API testen (diesen Endpunkt nutzen auch OpenCode und Hermes):</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>curl -s http://localhost:11434/v1/chat/completions -H &quot;Content-Type: application/json&quot; -d &#x27;{
+  &quot;model&quot;: &quot;coder-64k&quot;,
+  &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;What is the weather in Berlin?&quot;}],
+  &quot;tools&quot;: [{&quot;type&quot;: &quot;function&quot;, &quot;function&quot;: {&quot;name&quot;: &quot;get_weather&quot;,
+    &quot;description&quot;: &quot;Get current weather for a city&quot;,
+    &quot;parameters&quot;: {&quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: {&quot;city&quot;: {&quot;type&quot;: &quot;string&quot;}},
+    &quot;required&quot;: [&quot;city&quot;]}}}]
+}&#x27; | jq &#x27;.choices[0].message&#x27;</code></pre></div>
+<p>Erwartet: <code>&quot;content&quot;: &quot;&quot;</code> und ein gefülltes <code>tool_calls</code>-Array mit <code>&quot;name&quot;: &quot;get_weather&quot;</code>.</p>
+<aside class="note"><p>Dieser Test ist notwendig, aber nicht hinreichend, denn er nutzt einen Mini-Prompt. Ob Tool-Calls auch unter einem langen Agenten-Prompt erkannt werden, zeigt erst der Praxistest in Hermes (4.5).</p></aside>
+<h3 id="43-arbeitsordner-anlegen"><a class="anchor" href="#43-arbeitsordner-anlegen">#</a>4.3 Arbeitsordner anlegen</h3>
+<p>Den Ordner <strong>vor</strong> dem ersten Start selbst anlegen. Fehlt er, legt Docker ihn als <code>root</code> an, und weder Hermes noch OpenCode (beide UID 1000) können darin schreiben.</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>mkdir -p workspace hermes-data
+sudo chown -R 1000:1000 workspace     # nur nötig, falls Docker ihn schon als root angelegt hat</code></pre></div>
+<h3 id="44-opencode"><a class="anchor" href="#44-opencode">#</a>4.4 OpenCode</h3>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose build opencode
+docker compose run --rm opencode</code></pre></div>
+<p>Erste Aufgabe zum Testen: <em>„List the files in this project and summarize what it does.“</em></p>
+<h3 id="45-hermes-agent"><a class="anchor" href="#45-hermes-agent">#</a>4.5 Hermes Agent</h3>
+<p><strong>Setup-Wizard ausführen:</strong></p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>export HERMES_UID=$(id -u) HERMES_GID=$(id -g)
+docker compose run --rm hermes setup</code></pre></div>
+<p>Im Wizard:</p>
+<ol><li><strong>Full setup</strong> wählen. Quick Setup würde Nous Portal, also Cloud-Modelle, einrichten. Für maximale Geschwindigkeit ist <strong>Blank Slate</strong> die schlankere Alternative.</li><li>Provider: <strong>Custom Endpoint</strong></li><li>Base URL: <code>http://ollama:11434/v1</code></li><li>API Key: leer oder <code>no-key</code></li><li>Model: <code>coder-64k</code></li><li>Nicht benötigte Tools (Web-Suche, Bildgenerierung, TTS, Messaging) überspringen.</li></ol>
+<p><strong>Config nachbearbeiten:</strong> Den <code>model:</code>-Block in <code>hermes-data/config.yaml</code> durch die Blöcke <code>providers:</code>, <code>model:</code>, <code>agent:</code> und <code>auxiliary:</code> aus <a href="#hermes-dataconfigyaml-relevante-abschnitte">Abschnitt 3</a> ersetzen bzw. ergänzen. Kontrolle:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec hermes hermes config get auxiliary | grep provider   # überall &quot;main&quot;</code></pre></div>
+<p><strong>Gateway starten:</strong></p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose up -d hermes
+docker compose exec hermes curl -s http://ollama:11434/v1/models
+docker compose exec hermes ls -la /workspace                            # Projektdateien sichtbar?</code></pre></div>
+<p><strong>Reasoning abschalten.</strong> Im Hermes-Chat einmalig:</p>
+<div class="code"><button class="copy" type="button">Kopieren</button><pre><code>/reasoning none --global</code></pre></div>
+<p><strong>Prompt-Größe messen:</strong></p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec hermes hermes prompt-size --json</code></pre></div>
+<p>Ziel ist etwa 6.000 Token (siehe <a href="#112-hermes-prompt-verkleinern">Fallstudie 11.2</a>).</p>
+<p><strong>Praxistest:</strong> Im Chat <code>/new</code> eingeben, dann <em>„Liste alle Dateien in /workspace auf.“</em> Der erste Turn dauert auf der CPU etwa 1,5 Minuten (Prefill). Erfolg: Hermes führt den Befehl aus und antwortet mit der Dateiliste, nicht mit einem JSON-Text.</p>
+<p>Kontrolle in den Ollama-Logs, dass die Sampling-Werte ankommen:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose logs ollama --since 2m | grep -E &quot;temp =|top_p&quot;
+# erwartet: top_p = 0.800 ... temp = 0.700</code></pre></div>
+<h2 id="5-täglicher-betrieb"><a class="anchor" href="#5-täglicher-betrieb">#</a>5. Täglicher Betrieb</h2>
+<div class="table"><table><thead><tr><th>Aufgabe</th><th>Befehl</th></tr></thead><tbody><tr><td>Stack starten (Ollama + Hermes)</td><td><code>docker compose up -d</code></td></tr><tr><td>Nur Hermes neu starten</td><td><code>docker compose up -d hermes</code> bzw. <code>docker compose restart hermes</code></td></tr><tr><td>OpenCode (neue Session)</td><td><code>docker compose run --rm opencode</code></td></tr><tr><td>OpenCode (letzte Session fortsetzen)</td><td><code>docker compose run --rm opencode opencode -c</code></td></tr><tr><td>Hermes-Chat</td><td><code>docker compose exec -it hermes hermes</code></td></tr><tr><td>Hermes-Logs (Warnungen)</td><td><code>docker compose exec hermes hermes logs --level WARNING</code></td></tr><tr><td>Ollama-Logs live</td><td><code>docker compose logs -f ollama</code></td></tr><tr><td>Geladene Modelle anzeigen</td><td><code>docker compose exec ollama ollama ps</code></td></tr><tr><td>Stack stoppen</td><td><code>docker compose down</code></td></tr></tbody></table></div>
+<p><code>opencode</code> gehört zum Profil <code>cli</code> und startet bei <code>docker compose up</code> nicht mit. <code>docker exec</code> als root wird im Hermes-Image automatisch auf den <code>hermes</code>-User umgeleitet, ein <code>--user</code> ist nicht nötig.</p>
+<aside class="note"><p><strong>Ollama nur neu starten, wenn nötig.</strong> Ein Neustart entlädt das Modell und leert den Prompt-Cache. Der nächste Hermes-Turn kostet dann wieder etwa 1,5 Minuten. <code>docker compose up -d --force-recreate</code> ohne Service-Namen erstellt auch Ollama neu, deshalb immer gezielt den Service angeben.</p></aside>
+<p><strong>Nützliche Hermes-Befehle im Chat:</strong></p>
+<div class="table"><table><thead><tr><th>Befehl</th><th>Wirkung</th></tr></thead><tbody><tr><td><code>/new</code></td><td>Neue Session (nach Modell- oder Config-Wechsel immer nötig)</td></tr><tr><td><code>/reasoning none --global</code></td><td>Thinking dauerhaft aus</td></tr><tr><td><code>/model custom:ollama-local:&lt;modell&gt;</code></td><td>Modell wechseln, <strong>ohne</strong> die Temperatur-Einstellung zu verlieren</td></tr><tr><td><code>/approvals manual</code></td><td>Shell-Befehle manuell bestätigen statt per Hilfsmodell prüfen</td></tr><tr><td><code>/context</code></td><td>Zeigt, wie viel Kontext System-Prompt, Tools usw. belegen</td></tr><tr><td><code>/refine</code></td><td>Selbstverbesserung manuell anstoßen (automatisch ist sie abgeschaltet)</td></tr></tbody></table></div>
+<h2 id="6-sessions-verwalten"><a class="anchor" href="#6-sessions-verwalten">#</a>6. Sessions verwalten</h2>
+<h3 id="opencode"><a class="anchor" href="#opencode">#</a>OpenCode</h3>
+<p>Sessions liegen im Volume <code>opencode-data</code> und überleben neue Container.</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code># Sessions auflisten
+docker compose run --rm opencode opencode session list
+
+# Bestimmte Session fortsetzen
+docker compose run --rm opencode opencode -s &lt;session-id&gt;</code></pre></div>
+<p><strong>An einen laufenden OpenCode-Container anhängen</strong>, z. B. von einem zweiten Terminal:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker ps --filter name=opencode
+docker attach &lt;container-name&gt;</code></pre></div>
+<p>Lösen ohne Beenden mit <strong><code>Ctrl+P</code>, dann <code>Ctrl+Q</code></strong> (nicht <code>Ctrl+C</code>). Wird der Bildschirm danach falsch angezeigt, das Terminalfenster einmal in der Größe ändern.</p>
+<h3 id="hermes"><a class="anchor" href="#hermes">#</a>Hermes</h3>
+<p>Sessions, Memories und Skills liegen in <code>hermes-data/</code>. <strong>Niemals zwei Hermes-Gateways auf dasselbe Datenverzeichnis</strong> laufen lassen, das beschädigt Sessions und Memories. Für Chats daher immer <code>docker compose exec</code> in den laufenden Container verwenden, nie parallel <code>docker compose run</code>.</p>
+<h2 id="7-modelle-verwalten"><a class="anchor" href="#7-modelle-verwalten">#</a>7. Modelle verwalten</h2>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code># Modell aus der Ollama-Bibliothek laden (bevorzugt, bringt Parser mit)
+docker compose exec ollama ollama pull &lt;modell&gt;
+
+# Modell aus Hugging Face laden (Parser fehlt oft!)
+docker compose exec ollama ollama pull hf.co/&lt;user&gt;/&lt;repo&gt;:&lt;quant&gt;
+
+# Renderer/Parser prüfen
+docker compose exec ollama ollama show &lt;modell&gt; --modelfile | grep -E &quot;^(FROM|RENDERER|PARSER|TEMPLATE)&quot;
+
+# Kurzen Alias vergeben
+docker compose exec ollama ollama cp &lt;quelle&gt; &lt;alias&gt;
+
+# Alle Modelle anzeigen / entfernen
+docker compose exec ollama ollama list
+docker compose exec ollama ollama rm &lt;modellname&gt;</code></pre></div>
+<p>Ollama teilt Daten-Blobs zwischen Namen. Speicherplatz wird erst frei, wenn <strong>alle</strong> Namen (Original und Aliase) eines Modells entfernt sind.</p>
+<p><strong>Gleichzeitig geladene Modelle:</strong> <code>OLLAMA_MAX_LOADED_MODELS=2</code> erlaubt zwei Modelle im RAM. Für Ollama sind <code>qwen3-coder:30b</code> und <code>coder-64k</code> zwei verschiedene Modelle, auch wenn sie dieselben Gewichte nutzen. Nutzen Hermes und OpenCode unterschiedliche Modelle und kommt das <code>small_model</code> dazu, entlädt Ollama eines davon. Am besten nutzen beide Clients <code>coder-64k</code>.</p>
+<p>Nach einem Modellwechsel <code>opencode.json</code> bzw. <code>hermes-data/config.yaml</code> anpassen und in Hermes eine neue Session starten (<code>/new</code>). Modelle mit anderen empfohlenen Sampling-Werten bekommen in Hermes einen eigenen benannten Provider mit passendem <code>extra_body</code>. Den kompletten Ablauf für ein neues Modell beschreibt die <a href="modell-optimieren.html">Anleitung zum Modell-Optimieren</a>.</p>
+<h2 id="8-performance"><a class="anchor" href="#8-performance">#</a>8. Performance</h2>
+<h3 id="gemessene-werte-qwen3-coder-30b-a3b-q4_k_m-5700g"><a class="anchor" href="#gemessene-werte-qwen3-coder-30b-a3b-q4_k_m-5700g">#</a>Gemessene Werte (Qwen3-Coder-30B-A3B Q4_K_M, 5700G)</h3>
+<div class="table"><table><thead><tr><th>Situation</th><th>Prompt-Verarbeitung</th><th>Generierung</th><th>Antwortzeit</th></tr></thead><tbody><tr><td>Kleiner Prompt (~250 Token)</td><td>~55–110 Token/s</td><td>~20 Token/s</td><td>&lt; 3 s</td></tr><tr><td>Erster Hermes-Turn, <strong>volle Toolsets</strong> (~15–17k Token, kalter Cache)</td><td>~39 Token/s</td><td>2,4–4,7 Token/s</td><td>~5 Minuten</td></tr><tr><td>Erster Hermes-Turn, <strong>reduzierte Toolsets</strong> (6.011 Token, kalter Cache)</td><td>~62 Token/s</td><td>8,96 Token/s (Stichprobe von 10 Token)</td><td><strong>97 s</strong></td></tr><tr><td>Folge-Turn mit Cache-Treffer (6.020 Token aus dem Cache)</td><td>–</td><td>–</td><td><strong>0,7 s</strong> bis zur Generierung</td></tr></tbody></table></div>
+<p>Die Generierung bricht mit großem Kontext deutlich ein. Weniger fester Prompt bedeutet daher nicht nur kürzeren Prefill, sondern auch schnellere Tokens. Lange Antworten wie ganze Code-Dateien dauern trotzdem. Das ist die CPU-Grenze, kein Fehler.</p>
+<h3 id="ollama--hardware"><a class="anchor" href="#ollama--hardware">#</a>Ollama / Hardware</h3>
+<ul><li><code>num_thread 8</code> setzen: physische Kerne, nicht die 16 Threads.</li><li><code>OLLAMA_NUM_PARALLEL=2</code>: Ohne zweiten Slot verdrängt jede kleine Nebenanfrage den großen Agenten-Prompt aus dem Cache, und der nächste Turn dauert wieder lange. In den Logs ist das an <code>saving prompt with length …</code> zu erkennen. Folge-Turns einer Hermes-Session landen im selben Slot, der Cache greift also.</li><li><code>OLLAMA_KEEP_ALIVE=24h</code> verhindert das Entladen zwischen Anfragen.</li><li>Einen NVIDIA-<code>deploy</code>-Block weglassen, solange keine GPU vorhanden ist. Die integrierte Vega-8-GPU bringt praktisch nichts: Ollama unterstützt sie nicht offiziell, und sie hängt am selben RAM.</li><li>RAM im BIOS auf das XMP-/DOCP-Profil stellen. Mehr MT/s ergeben direkt mehr Token/s.</li><li>Bei knappem Speicher halbieren <code>OLLAMA_FLASH_ATTENTION=1</code> und <code>OLLAMA_KV_CACHE_TYPE=q8_0</code> ungefähr den KV-Cache.</li></ul>
+<h3 id="hermes"><a class="anchor" href="#hermes">#</a>Hermes</h3>
+<p>Hermes schickt bei jedem Aufruf einen festen System-Prompt plus die Schemas aller aktiven Tools. Das ist der größte Hebel für die Geschwindigkeit:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec hermes hermes prompt-size --json     # Größe messen
+docker compose exec -it hermes hermes tools              # Toolsets verwalten</code></pre></div>
+<p>Dauerhaft geht das über <code>agent.disabled_toolsets</code> in <code>config.yaml</code> (Abschnitt 3). <code>title_generation</code> und <code>background_review</code> sind abgeschaltet, weil sie nach jedem Turn zusätzliche Anfragen auslösen.</p>
+<h2 id="9-arbeiten-mit-hermes-prompt-tipps"><a class="anchor" href="#9-arbeiten-mit-hermes-prompt-tipps">#</a>9. Arbeiten mit Hermes: Prompt-Tipps</h2>
+<p>Gewonnen beim Bau eines Beispiel-Scripts in zwei Schritten, PLAN und BUILD.</p>
+<ul><li><strong>Arbeitsverzeichnis festlegen:</strong> Im Prompt den Zielordner nennen (z. B. <code>/workspace/&lt;projekt&gt;</code>), absolute Pfade verlangen und zuerst <code>pwd</code> ausführen lassen.</li><li><strong>Englisch prompten:</strong> Qwen3-Coder folgt englischen Prompts zuverlässiger als deutschen.</li><li><strong>Plan prüfen, nicht neu planen:</strong> Der erste Plan war brauchbar, ließ aber Lücken, die ein kleines Modell beim Build falsch auslegt. Lücken als „Additional constraints (they override the plan where it differs)“ in den BUILD-Prompt schreiben. Eine weitere Planungsrunde kostet auf der CPU viel Zeit.</li><li><strong>Konkret statt vage:</strong> Formulierungen wie „based on severity“ oder „per Shell-Funktion mocken“ durch exakte Regeln ersetzen (welcher Fall FAIL, welcher WARN, welche Variable, welches Format).</li><li><strong>Selbstprüfung verlangen:</strong> <code>bash -n</code>, <code>shellcheck</code>, ein Testlauf mit einem erreichbaren und einem unerreichbaren Host (<code>192.0.2.1</code>), Exit-Code und <code>ls -la</code> am Ende anzeigen lassen. <code>shellcheck</code> ist im OpenCode-Image installiert.</li><li><strong>Temperatur:</strong> Für Build-Aufgaben gelten 0.2–0.4 als günstiger. Im Stack ist 0.7 eingestellt und für Tool-Calls getestet. Wer niedriger gehen will, legt einen zweiten benannten Provider an und testet die Tool-Calls erneut. Temperatur 1.0 bricht die Tool-Calls (Fallstudie 11.1).</li><li><strong>SSH aus Hermes:</strong> Hermes läuft als UID 1000, nicht als root. SSH-Keys gehören ins Home dieses Users (<code>docker compose exec hermes sh -c &#x27;echo $HOME&#x27;</code>). Ein Test gegen <code>localhost</code> klappt nur, wenn der Key aus dem Container in <code>authorized_keys</code> auf dem Host steht. Sonst ist FAIL dort das erwartete Ergebnis.</li><li><strong>Nach jeder Korrektur <code>/new</code>:</strong> Alte Sessions mit fehlerhaften Aufrufen werden vom Modell nachgeahmt.</li></ul>
+<h2 id="10-fehlerbehebung"><a class="anchor" href="#10-fehlerbehebung">#</a>10. Fehlerbehebung</h2>
+<h3 id="allgemein"><a class="anchor" href="#allgemein">#</a>Allgemein</h3>
+<div class="table"><table><thead><tr><th>Problem</th><th>Lösung</th></tr></thead><tbody><tr><td>Hermes sieht <code>/workspace</code> leer</td><td>Mount prüfen: OpenCode und Hermes müssen beide <code>./workspace:/workspace</code> haben. <code>docker compose exec hermes ls -la /workspace</code></td></tr><tr><td><code>Permission denied</code> in <code>workspace/</code></td><td>Ordner gehört root: <code>sudo chown -R 1000:1000 workspace</code></td></tr><tr><td>OpenCode: „does not support tools“</td><td><code>ollama show &lt;modell&gt;</code> prüfen. Fehlt <code>tools</code>, das offizielle Ollama-Paket statt des HF-GGUF verwenden</td></tr><tr><td><code>docker compose run --rm opencode -c</code> → <code>executable file not found</code></td><td>Das Dockerfile nutzt <code>CMD</code>: <code>docker compose run --rm opencode opencode -c</code></td></tr><tr><td>Tool-Aufrufe erscheinen als JSON-Text</td><td>Siehe <a href="#111-tool-calls-zum-laufen-bringen">Fallstudie 11.1</a>: Parser, Temperatur, frische Session</td></tr><tr><td>Prompt wird abgeschnitten (Tools fehlen)</td><td><code>docker compose logs ollama | grep -i truncat</code>, dann Kontext erhöhen. In den Ollama-Logs muss <code>truncated = 0</code> stehen</td></tr><tr><td>Antwort kommt nach &gt; 5 Min. nicht an</td><td>Client-Timeout zu kurz: OpenCode <code>timeout</code>/<code>headerTimeout</code> (Standard 300000 ms), Hermes <code>HERMES_API_TIMEOUT=1800</code></td></tr><tr><td>Jeder Turn dauert lange</td><td>Cache wird verdrängt → <code>OLLAMA_NUM_PARALLEL=2</code>. In den Logs muss <code>cached n_tokens = …</code> fast so groß sein wie <code>task.n_tokens</code>. Prüfen, ob ein drittes Modell ein anderes verdrängt (<code>ollama ps</code>)</td></tr><tr><td>Modell läuft in Endlosschleifen</td><td>Bekannt bei Gemma 4 26B im Thinking-Modus: Thinking abschalten oder anderes Modell</td></tr><tr><td>Uhrzeit im Container 1–2 h falsch</td><td>Container laufen in UTC, <code>TZ</code> setzen und <code>/etc/localtime</code> sowie <code>/usr/share/zoneinfo</code> schreibgeschützt mounten</td></tr></tbody></table></div>
+<h3 id="hermes-spezifisch"><a class="anchor" href="#hermes-spezifisch">#</a>Hermes-spezifisch</h3>
+<div class="table"><table><thead><tr><th>Symptom in <code>hermes logs --level WARNING</code></th><th>Ursache</th><th>Lösung</th></tr></thead><tbody><tr><td><code>Auxiliary Nous client unavailable … nous_auth_missing</code></td><td>Hilfsaufgaben stehen auf <code>auto</code> und landen bei Nous Portal</td><td>Alle <code>auxiliary.*.provider</code> auf <code>main</code> (Abschnitt 3)</td></tr><tr><td><code>400 … does not support thinking</code> + <code>dropping reasoning config</code></td><td>Hermes schickt Reasoning an ein Modell ohne Thinking</td><td><code>/reasoning none --global</code></td></tr><tr><td>Kontextfehler beim Start</td><td>Modell hat &lt; 64k Kontext</td><td>Modell mit <code>num_ctx 65536</code> verwenden (<code>coder-64k</code>)</td></tr><tr><td><code>Connection refused</code></td><td>Falsche Base URL oder <code>network_mode: host</code></td><td><code>http://ollama:11434/v1</code> im Bridge-Netz, nicht <code>localhost</code></td></tr><tr><td><code>Permission denied</code> in <code>hermes-data/</code></td><td>UID-Mismatch</td><td><code>HERMES_UID</code>/<code>HERMES_GID</code> auf eigene <code>id -u</code>/<code>id -g</code></td></tr></tbody></table></div>
+<p>Die Herkunft einer Anfrage in den Ollama-Logs lässt sich über die IP zuordnen:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker inspect -f &#x27;{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}&#x27; $(docker ps -q)</code></pre></div>
+<aside class="note"><p>Das Hermes-Dashboard bzw. die API nicht ungeschützt veröffentlichen. Seit Juni 2026 verlangt das Dashboard bei Bindung an <code>0.0.0.0</code> eine Authentifizierung, ungeschützte Instanzen wurden aktiv angegriffen. Im Stack sind bewusst keine Hermes-Ports veröffentlicht.</p></aside>
+<h2 id="11-fallstudien"><a class="anchor" href="#11-fallstudien">#</a>11. Fallstudien</h2>
+<h3 id="111-tool-calls-zum-laufen-bringen"><a class="anchor" href="#111-tool-calls-zum-laufen-bringen">#</a>11.1 Tool-Calls zum Laufen bringen</h3>
+<p>Das Symptom: Auf <em>„Liste alle Dateien in /workspace auf“</em> antwortete Hermes mit einem Text wie</p>
+<div class="code"><button class="copy" type="button">Kopieren</button><pre><code>{&quot;name&quot;: &quot;terminal&quot;, &quot;arguments&quot;: {&quot;command&quot;: &quot;find . -type f ... | sort&quot;}}</code></pre></div>
+<p>statt den Befehl auszuführen. Das Modell wollte das Tool aufrufen, aber Ollama erkannte die Ausgabe nicht als Tool-Call und reichte sie als normalen Antworttext weiter. Die Lösung bestand aus mehreren Bausteinen, die <strong>alle</strong> nötig waren.</p>
+<p><strong>Diagnoseweg:</strong></p>
+<ol><li><strong>Modell und API isoliert testen</strong> (Curl-Test aus 4.2): Sowohl <code>/api/chat</code> als auch <code>/v1/chat/completions</code> lieferten saubere <code>tool_calls</code>.</li><li><strong>Truncation ausschließen:</strong> Ollama-Logs zeigten <code>n_ctx_slot = 65536</code>, <code>task.n_tokens = 12144</code>, <code>truncated = 0</code>.</li><li><strong>Anfrager identifizieren:</strong> Über <code>docker inspect</code> die IP des Hermes-Containers zugeordnet.</li><li><strong>Hermes-Logs lesen:</strong> Sie zeigten die Nous- und Reasoning-Fehler.</li><li><strong>Modelfile prüfen:</strong> Das HF-GGUF hatte nur ein generisches Template (<code>template source go_template</code>), keinen eigenen Parser.</li><li><strong>Sampling-Parameter in den Ollama-Logs prüfen:</strong> <code>temp = 1.000, top_p = 1.000</code>, obwohl das Modell 0.7 / 0.8 vorsieht.</li></ol>
+<div class="table"><table><thead><tr><th>#</th><th>Ursache</th><th>Lösung</th></tr></thead><tbody><tr><td>1</td><td>19 Hilfsaufgaben (u. a. <code>approval</code>, der Shell-Befehle vor der Ausführung prüft) fragten Nous Portal an</td><td><code>auxiliary.*.provider: main</code></td></tr><tr><td>2</td><td>Reasoning-Anfrage an ein Modell ohne Thinking (400-Fehler)</td><td><code>/reasoning none --global</code></td></tr><tr><td>3</td><td>HF-GGUF ohne passenden Tool-Parser</td><td>Offizielles <code>qwen3-coder:30b</code> mit <code>RENDERER</code>/<code>PARSER qwen3-coder</code></td></tr><tr><td>4</td><td>Ollamas OpenAI-API setzt Temperatur und top_p auf 1.0, wenn der Client keine Werte mitschickt. Die Modelfile-Werte gelten dort nicht. Bei 1.0 und langem Prompt wich das Modell vom trainierten XML-Format auf nacktes JSON aus</td><td>Benannter Provider mit <code>extra_body: {temperature: 0.7, top_p: 0.8}</code></td></tr><tr><td>5</td><td>Die alte Session enthielt die fehlerhaften JSON-Aufrufe, die das Modell nachahmte</td><td>Nach jeder Korrektur <code>/new</code></td></tr></tbody></table></div>
+<p>Der <strong>entscheidende letzte Baustein war die Temperatur</strong>: Mit neuem Parser, aber Temperatur 1.0 kam weiterhin JSON-Text.</p>
+<p><strong>Merksätze:</strong></p>
+<ul><li>Ein erfolgreicher Curl-Test mit Mini-Prompt beweist nicht, dass Tool-Calls unter einem langen Agenten-Prompt funktionieren.</li><li>Modelfile-Parameter (<code>temperature</code>, <code>top_p</code>) gelten <strong>nicht</strong> automatisch für die OpenAI-kompatible API. In den Ollama-Logs unter <code>sampler params</code> nachsehen, was wirklich ankommt.</li><li>Bei einem Modellwechsel in Hermes immer <code>/model custom:ollama-local:&lt;modell&gt;</code> verwenden, sonst greift <code>extra_body</code> nicht.</li></ul>
+<h3 id="112-hermes-prompt-verkleinern"><a class="anchor" href="#112-hermes-prompt-verkleinern">#</a>11.2 Hermes-Prompt verkleinern</h3>
+<p>Die Generierung stieg von 2,37 auf 8,96 Token/s und der kalte Prefill sank von ~5 Minuten auf 97 s, nachdem acht ungenutzte Toolsets abgeschaltet waren. Vorher hatte Hermes mit jeder Anfrage ~58 KB System-Prompt und Tool-Definitionen geschickt. Hardware, Modell und Threads waren nicht die Ursache.</p>
+<div class="table"><table><thead><tr><th>Messwert</th><th>vorher</th><th>nachher</th></tr></thead><tbody><tr><td>System-Prompt</td><td>17,0 KB</td><td>8,9 KB</td></tr><tr><td>Tool-Schemas</td><td>41,1 KB (21 Tools)</td><td>15,5 KB (10 Tools)</td></tr><tr><td>Prompt zu Beginn</td><td>~15–17k Token</td><td>6.011 Token</td></tr><tr><td>Kalter Prefill</td><td>~5 Min.</td><td>97 s (62 Token/s)</td></tr><tr><td>Generierung</td><td>2,37 Token/s</td><td>8,96 Token/s (Stichprobe von 10 Token)</td></tr><tr><td>Folge-Turn mit Cache</td><td>–</td><td>0,7 s (6.020 Token aus dem Cache)</td></tr></tbody></table></div>
+<p>Gemessen mit <code>hermes prompt-size --json</code> und in den Ollama-Logs. Abgeschaltet über <code>agent.disabled_toolsets</code> (Abschnitt 3), danach <code>docker compose restart hermes</code>.</p>
+<p>Behalten sind <code>file</code>, <code>terminal</code>, <code>code_execution</code>, <code>clarify</code> und drei weitere Tools. Mit <code>skills</code> verschwindet auch der Skill-Index (5,3 KB).</p>
+<h3 id="113-leerer-workspace"><a class="anchor" href="#113-leerer-workspace">#</a>11.3 Leerer Workspace</h3>
+<p>Hermes meldete <code>/workspace</code> als leer. Die Ursache: OpenCode mountete <code>./work:/work</code>, Hermes <code>./workspace:/workspace</code>. Die Projektdateien lagen in <code>./work</code>. Docker hatte <code>workspace/</code> beim ersten Start als <code>root</code> angelegt, Hermes hätte dort also nicht einmal schreiben können.</p>
+<p>Lösung: Hermes gestoppt, den leeren Ordner entfernt, <code>work</code> in <code>workspace</code> umbenannt, Besitzer auf UID 1000 gesetzt und OpenCode auf <code>./workspace:/workspace</code> umgestellt. Ergebnis: <code>pwd</code> in Hermes zeigt <code>/workspace</code>, die Projektdateien sind sichtbar.</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose stop hermes
+sudo rmdir workspace
+mv work workspace
+sudo chown -R 1000:1000 workspace
+docker compose up -d hermes</code></pre></div>
+<p>Ein früher Vorschlag mit <code>network_mode: host</code> und Mounts nach <code>/root</code> wurde verworfen. Mit dem Host-Netz bricht die Verbindung zu Ollama ab, und Hermes läuft nicht als root.</p>
+<h2 id="12-quellen"><a class="anchor" href="#12-quellen">#</a>12. Quellen</h2>
+<ul><li><a href="https://opencode.ai/docs/config/" target="_blank" rel="noopener">OpenCode: Config (small_model, timeout)</a></li><li><a href="https://opencode.ai/docs/models/" target="_blank" rel="noopener">OpenCode: Models (Modell-Optionen)</a></li><li><a href="https://opencode.ai/docs/agents/" target="_blank" rel="noopener">OpenCode: Agents (temperature, top_p)</a></li><li><a href="https://opencode.ai/docs/providers/" target="_blank" rel="noopener">OpenCode: Providers</a></li><li><a href="https://opencode.ai/docs/cli/" target="_blank" rel="noopener">OpenCode CLI-Dokumentation</a></li><li><a href="https://hermes-agent.nousresearch.com/docs/user-guide/docker" target="_blank" rel="noopener">Hermes Agent: Docker Setup</a></li><li><a href="https://hermes-agent.nousresearch.com/docs/guides/local-ollama-setup" target="_blank" rel="noopener">Hermes Agent: Lokal mit Ollama</a></li><li><a href="https://hermes-agent.nousresearch.com/docs/user-guide/configuration" target="_blank" rel="noopener">Hermes Agent: Configuration</a></li><li><a href="https://hermes-agent.nousresearch.com/docs/reference/environment-variables" target="_blank" rel="noopener">Hermes Agent: Environment Variables (HERMES_TIMEZONE)</a></li><li><a href="https://hermes-agent.nousresearch.com/docs/integrations/providers" target="_blank" rel="noopener">Hermes Agent: LLM and Model Providers</a></li><li><a href="https://hermes-agent.nousresearch.com/docs/reference/slash-commands" target="_blank" rel="noopener">Hermes Agent: Slash Commands</a></li><li><a href="https://huggingface.co/huihui-ai/collections" target="_blank" rel="noopener">huihui-ai Modell-Collections (Hugging Face)</a></li></ul>
+    <footer>Lokaler KI-Stack · Ollama + OpenCode + Hermes Agent</footer>
+  </main>
+</div>
+<script>
+document.querySelectorAll(".copy").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    var text = btn.parentElement.querySelector("code").innerText;
+    var done = function () { btn.textContent = "Kopiert"; setTimeout(function () { btn.textContent = "Kopieren"; }, 1500); };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done);
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) {}
+      ta.remove();
+    }
+  });
+});
+
+var nav = document.getElementById("sidebar");
+var toggle = nav.querySelector(".menu-toggle");
+toggle.addEventListener("click", function () {
+  var open = nav.classList.toggle("open");
+  toggle.setAttribute("aria-expanded", open);
+});
+nav.querySelectorAll("a").forEach(function (a) {
+  a.addEventListener("click", function () { nav.classList.remove("open"); toggle.setAttribute("aria-expanded", false); });
+});
+
+var root = document.documentElement;
+try { var saved = localStorage.getItem("theme"); if (saved) root.dataset.theme = saved; } catch (e) {}
+document.getElementById("theme").addEventListener("click", function () {
+  var dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+  try { localStorage.setItem("theme", root.dataset.theme); } catch (e) {}
+});
+
+var links = {};
+nav.querySelectorAll(":scope > ol > li > a").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
+var observer = new IntersectionObserver(function (entries) {
+  entries.forEach(function (e) {
+    if (e.isIntersecting && links[e.target.id]) {
+      Object.values(links).forEach(function (a) { a.classList.remove("active"); });
+      links[e.target.id].classList.add("active");
+    }
+  });
+}, { rootMargin: "0px 0px -75% 0px" });
+document.querySelectorAll("main h2[id]").forEach(function (h) { observer.observe(h); });
+</script>
+</body>
+</html>
