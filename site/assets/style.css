@@ -223,3 +223,12 @@ h2 .arg { color: var(--cyan); }
 .tmux .r .ai b { color: var(--violet); }
 
 @media (max-width: 520px) { .log { font-size: .68rem; padding: 14px; } .diff { font-size: .74rem; } .diff span { padding: 0 12px; } }
+
+/* damals */
+#damals .retro { max-width: 760px; }
+.hdrs { margin: 0; padding: 16px 18px; font-family: var(--mono); font-size: .8rem; line-height: 1.7; color: var(--ink); overflow-x: auto; white-space: pre; }
+.hdrs .st { color: var(--amber); } .hdrs .ok { color: var(--green); } .hdrs .k { color: var(--cyan); }
+.go-retro { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 16px 0 0; font-family: var(--mono); font-size: .78rem; color: var(--dim); }
+.go-retro a { color: var(--ink); text-decoration: none; padding: 3px 10px; border: 1px solid var(--line-2); border-radius: 6px; }
+.go-retro a:hover { color: var(--green); border-color: var(--green); }
+.hdrs .ps { color: var(--green); }
