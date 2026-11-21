@@ -25,7 +25,7 @@ STYLE = """<style>
 HEAD = ('<header class="vlb"><div><a href="{R}" style="text-decoration:none"><b>ai</b><s>@</s><span style="color:#79c0ff">oliverheld.com</span><s>$</s></a>'
         '<a href="{R}docs.html">← docs</a><span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>')
 
-FOOT = ('<footer class="vlb vlb-foot"><div><span><span class="sess">[hum4n]</span>'
+FOOT = ('<footer class="vlb vlb-foot"><div><span><span class="sess">[oliverheld.com]</span>'
         '<a href="{R}">0:index</a> &nbsp;<a href="{R}ueber-mich.html">1:über-mich</a> &nbsp;<a href="{R}docs.html">2:docs</a> &nbsp;<a href="{R}projekte.html">3:projekte</a> &nbsp;<a href="{R}musik.html">4:musik</a> &nbsp;'
         '<a href="{R}impressum.html">5:impressum</a> &nbsp;<a href="{R}datenschutz.html">6:datenschutz</a></span>'
         '<span>cookies:<b>0</b> tracker:<b>0</b></span></div></footer>')
