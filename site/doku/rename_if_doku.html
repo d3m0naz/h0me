@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rename_if.sh – Interface-Namen in der OPNsense-Konfiguration umbenennen</title>
+<style>
+  :root {
+    --fg: #1d1f23; --muted: #5b616b; --bg: #ffffff; --soft: #f4f5f7;
+    --line: #dfe2e6; --accent: #2b5fab; --warn-bg: #fff6e0; --warn-line: #e3b341;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fg: #e6e7e9; --muted: #a0a6ae; --bg: #16181c; --soft: #20242a;
+      --line: #343a42; --accent: #7aa7e6; --warn-bg: #2d2614; --warn-line: #a8862c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1 { font-size: 1.8rem; line-height: 1.25; margin: 0 0 8px; }
+  .lead { color: var(--muted); margin: 0 0 32px; }
+  h2 { font-size: 1.25rem; margin: 40px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+  h3 { font-size: 1.05rem; margin: 24px 0 8px; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.88em; }
+  :not(pre) > code { background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+  pre {
+    background: var(--soft); border: 1px solid var(--line); border-radius: 6px;
+    padding: 14px 16px; overflow-x: auto; line-height: 1.45;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 16px; font-size: 0.95em; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .note {
+    background: var(--warn-bg); border-left: 4px solid var(--warn-line);
+    padding: 12px 16px; border-radius: 4px; margin: 16px 0;
+  }
+  .note p { margin: 0; }
+  nav ol { padding-left: 20px; margin: 0; }
+  nav a, a { color: var(--accent); }
+  details summary { cursor: pointer; color: var(--accent); margin: 8px 0; }
+  footer { margin-top: 56px; color: var(--muted); font-size: 0.85em; }
+</style>
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+.vlb{font:12.5px/1.5 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;background:#13161a;color:#7d8791;border-bottom:1px solid #262c33}
+.vlb div{max-width:880px;margin:0 auto;padding:9px 24px;display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:space-between;align-items:center}
+.vlb a{color:#d4d9d0;text-decoration:none}.vlb a:hover{color:#7ee787}
+.vlb b{color:#7ee787;font-weight:400}.vlb s{color:#535c66;text-decoration:none}.vlb i{font-style:normal;color:#c49bff}
+.vlb-foot{border-top:1px solid #262c33;border-bottom:0;margin-top:32px}
+.vlb-foot .sess{background:#7ee787;color:#0d0f11;padding:2px 8px;font-weight:600;margin-right:8px}
+@media print{.vlb{display:none}}
+</style>
+</head>
+<body>
+<header class="vlb"><div><span><b>root</b><s>@</s><span style="color:#79c0ff">h0me</span><s>#</s></span><span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>
+<main>
+
+<h1>rename_if.sh</h1>
+<p class="lead">Shell-Script, das in einer OPNsense-Konfigurationsdatei (<code>config.xml</code>) die Interface-Namen von <code>emX</code> nach <code>igbX</code> umbenennt – z.&nbsp;B. nach einem Wechsel von virtuellen bzw. älteren Intel-NICs (Treiber <code>em</code>) auf Intel-Gigabit-NICs (Treiber <code>igb</code>).</p>
+
+<nav>
+<ol>
+  <li><a href="#zweck">Zweck</a></li>
+  <li><a href="#voraussetzungen">Voraussetzungen</a></li>
+  <li><a href="#aufruf">Aufruf und Optionen</a></li>
+  <li><a href="#ablauf">Ablauf</a></li>
+  <li><a href="#ersetzung">Was ersetzt wird – und was nicht</a></li>
+  <li><a href="#beispiel">Beispiel</a></li>
+  <li><a href="#produktiv">Vorgehen auf der Firewall</a></li>
+  <li><a href="#rollback">Zurücksetzen</a></li>
+  <li><a href="#fehler">Fehlermeldungen</a></li>
+  <li><a href="#grenzen">Grenzen und Hinweise</a></li>
+  <li><a href="#quelltext">Quelltext</a></li>
+</ol>
+</nav>
+
+<h2 id="zweck">1. Zweck</h2>
+<p>OPNsense ordnet logische Interfaces (WAN, LAN, OPT1 …) über den physischen Gerätenamen zu, etwa <code>&lt;if&gt;em0&lt;/if&gt;</code>. Ändert sich der Netzwerktreiber, heißen die Geräte anders und die Zuordnung greift nicht mehr. Das Script passt alle Vorkommen in der Konfiguration an, sodass sie nach einem Neustart wieder zu den Geräten passt. Die Nummer bleibt dabei erhalten: <code>em0</code> → <code>igb0</code>, <code>em1</code> → <code>igb1</code> usw.</p>
+
+<h2 id="voraussetzungen">2. Voraussetzungen</h2>
+<ul>
+  <li>POSIX-Shell (<code>/bin/sh</code>). Bash wird <em>nicht</em> benötigt – auf OPNsense ist sie standardmäßig nicht installiert.</li>
+  <li>Standardwerkzeuge <code>sed</code>, <code>cmp</code>, <code>diff</code>, <code>cp</code> (auf OPNsense/FreeBSD vorhanden).</li>
+  <li>Optional <code>xmllint</code>: Ist es vorhanden, wird das Ergebnis vor dem Schreiben auf gültiges XML geprüft.</li>
+  <li>Schreibrechte auf die Zieldatei (für <code>/conf/config.xml</code>: root).</li>
+</ul>
+
+<h2 id="aufruf">3. Aufruf und Optionen</h2>
+<pre>sh rename_if.sh [-f DATEI] [ALT] [NEU]</pre>
+<table>
+  <tr><th>Parameter</th><th>Bedeutung</th><th>Standard</th></tr>
+  <tr><td><code>-f DATEI</code></td><td>Zu bearbeitende Konfigurationsdatei</td><td><code>./config.xml</code> (aktuelles Verzeichnis)</td></tr>
+  <tr><td><code>ALT</code></td><td>Bisheriges Treiber-Präfix</td><td><code>em</code></td></tr>
+  <tr><td><code>NEU</code></td><td>Neues Treiber-Präfix</td><td><code>igb</code></td></tr>
+  <tr><td><code>-h</code></td><td>Kurzhilfe anzeigen</td><td>–</td></tr>
+</table>
+<p><code>ALT</code> und <code>NEU</code> dürfen nur Kleinbuchstaben enthalten.</p>
+
+<h3>Beispiele</h3>
+<pre># config.xml im aktuellen Verzeichnis, em -&gt; igb
+sh rename_if.sh
+
+# Live-Konfiguration der Firewall
+sh rename_if.sh -f /conf/config.xml
+
+# Exportierte Sicherung, anderes Präfixpaar
+sh rename_if.sh -f config-export.xml em ix
+
+# Hilfe
+sh rename_if.sh -h</pre>
+
+<h2 id="ablauf">4. Ablauf</h2>
+<ol>
+  <li>Prüft, ob die Datei existiert und beschreibbar ist.</li>
+  <li>Erzeugt eine geänderte Kopie in einer temporären Datei; das Original bleibt bis zur Bestätigung unverändert.</li>
+  <li>Bricht ohne Änderung ab, wenn keine passenden Interface-Namen gefunden wurden.</li>
+  <li>Prüft das Ergebnis mit <code>xmllint</code> (falls vorhanden).</li>
+  <li>Zeigt alle Änderungen als <code>diff</code> und fragt nach Bestätigung (<code>j</code>/<code>y</code>). Jede andere Eingabe bricht ab.</li>
+  <li>Legt ein Backup <code>DATEI.bak-JJJJMMTT-HHMMSS</code> neben der Originaldatei an.</li>
+  <li>Schreibt das Ergebnis in die Originaldatei (Dateirechte und Besitzer bleiben erhalten) und gibt den Befehl zum Zurücksetzen aus.</li>
+</ol>
+
+<h2 id="ersetzung">5. Was ersetzt wird – und was nicht</h2>
+<p>Ersetzt wird ein Name nur, wenn er als eigenständiger Wert steht:</p>
+<table>
+  <tr><th></th><th>Erlaubte Zeichen</th></tr>
+  <tr><td>davor</td><td><code>&gt;</code> &nbsp; <code>,</code> &nbsp; Leerzeichen &nbsp; Zeilenanfang</td></tr>
+  <tr><td>danach</td><td><code>&lt;</code> &nbsp; <code>,</code> &nbsp; <code>_</code> &nbsp; <code>.</code> &nbsp; Leerzeichen &nbsp; Zeilenende</td></tr>
+</table>
+<table>
+  <tr><th>Vorher</th><th>Nachher</th><th>Fall</th></tr>
+  <tr><td><code>&lt;if&gt;em0&lt;/if&gt;</code></td><td><code>&lt;if&gt;igb0&lt;/if&gt;</code></td><td>Interface-Zuordnung</td></tr>
+  <tr><td><code>em0_vlan10</code></td><td><code>igb0_vlan10</code></td><td>VLAN-Gerät</td></tr>
+  <tr><td><code>em2,em3,em4</code></td><td><code>igb2,igb3,igb4</code></td><td>LAGG-/Bridge-Mitglieder</td></tr>
+  <tr><td><code>em10.20 em11</code></td><td><code>igb10.20 igb11</code></td><td>mehrstellige Nummern, Punkt-Notation, Listen</td></tr>
+  <tr><td><code>AAA/em5Bem1+em7x</code></td><td><em>unverändert</em></td><td>Base64 (Zertifikate, Schlüssel)</td></tr>
+  <tr><td><code>system1</code>, <code>item2</code></td><td><em>unverändert</em></td><td>Wörter, die auf „em“ + Ziffer enden</td></tr>
+</table>
+
+<h2 id="beispiel">6. Beispiel</h2>
+<p>Eingabe <code>config.xml</code> (gekürzt):</p>
+<pre>&lt;opnsense&gt;
+  &lt;interfaces&gt;
+    &lt;wan&gt;&lt;if&gt;em0&lt;/if&gt;&lt;/wan&gt;
+    &lt;lan&gt;&lt;if&gt;em1&lt;/if&gt;&lt;/lan&gt;
+  &lt;/interfaces&gt;
+  &lt;vlans&gt;
+    &lt;vlan&gt;&lt;if&gt;em1&lt;/if&gt;&lt;tag&gt;10&lt;/tag&gt;&lt;vlanif&gt;em1_vlan10&lt;/vlanif&gt;&lt;/vlan&gt;
+  &lt;/vlans&gt;
+&lt;/opnsense&gt;</pre>
+<p>Ausgabe des Scripts:</p>
+<pre>$ sh rename_if.sh
+Folgende Aenderungen werden vorgenommen:
+----------------------------------------
+3,4c3,4
+&lt;     &lt;wan&gt;&lt;if&gt;em0&lt;/if&gt;&lt;/wan&gt;
+&lt;     &lt;lan&gt;&lt;if&gt;em1&lt;/if&gt;&lt;/lan&gt;
+---
+&gt;     &lt;wan&gt;&lt;if&gt;igb0&lt;/if&gt;&lt;/wan&gt;
+&gt;     &lt;lan&gt;&lt;if&gt;igb1&lt;/if&gt;&lt;/lan&gt;
+7c7
+&lt;     &lt;vlan&gt;&lt;if&gt;em1&lt;/if&gt;&lt;tag&gt;10&lt;/tag&gt;&lt;vlanif&gt;em1_vlan10&lt;/vlanif&gt;&lt;/vlan&gt;
+---
+&gt;     &lt;vlan&gt;&lt;if&gt;igb1&lt;/if&gt;&lt;tag&gt;10&lt;/tag&gt;&lt;vlanif&gt;igb1_vlan10&lt;/vlanif&gt;&lt;/vlan&gt;
+----------------------------------------
+Aenderungen uebernehmen? [j/N] j
+Fertig. Backup: ./config.xml.bak-20260101-120000
+Zuruecksetzen: cp ./config.xml.bak-20260101-120000 ./config.xml
+Hinweis: Liegt die Datei unter /conf, werden die neuen Namen erst nach einem reboot aktiv.</pre>
+
+<h2 id="produktiv">7. Vorgehen auf der Firewall</h2>
+<ol>
+  <li>Vorab eine Sicherung über die Weboberfläche ziehen: <em>System → Konfiguration → Sicherungen → Herunterladen</em>.</li>
+  <li>Script per SCP auf die Firewall kopieren, z.&nbsp;B. nach <code>/root/</code>.</li>
+  <li>Per SSH oder Konsole als root anmelden (Menüpunkt <em>8) Shell</em>).</li>
+  <li>Script ausführen:
+    <pre>sh /root/rename_if.sh -f /conf/config.xml</pre></li>
+  <li>Diff prüfen und mit <code>j</code> bestätigen.</li>
+  <li>Neu starten: <code>reboot</code></li>
+  <li>Nach dem Start Zuordnung unter <em>Schnittstellen → Zuweisungen</em> kontrollieren.</li>
+</ol>
+<div class="note"><p><strong>Konsolenzugang bereithalten.</strong> Stimmt die neue Zuordnung nicht, ist die Firewall unter Umständen nicht mehr über das Netzwerk erreichbar.</p></div>
+
+<p>Alternativ lässt sich eine exportierte <code>config.xml</code> auf einem anderen Rechner umschreiben und anschließend über <em>Sicherungen → Wiederherstellen</em> einspielen.</p>
+
+<h2 id="rollback">8. Zurücksetzen</h2>
+<p>Das Script gibt den passenden Befehl am Ende aus. Allgemein:</p>
+<pre>cp /conf/config.xml.bak-JJJJMMTT-HHMMSS /conf/config.xml
+reboot</pre>
+<p>Zusätzlich kann jederzeit die vorab heruntergeladene Sicherung über die Weboberfläche oder die Konsole (Menüpunkt <em>13) Restore a backup</em>) eingespielt werden.</p>
+
+<h2 id="fehler">9. Fehlermeldungen</h2>
+<table>
+  <tr><th>Meldung</th><th>Ursache / Abhilfe</th></tr>
+  <tr><td><code>Konfiguration nicht gefunden</code></td><td>Pfad bei <code>-f</code> prüfen bzw. ins richtige Verzeichnis wechseln.</td></tr>
+  <tr><td><code>Keine Schreibrechte</code></td><td>Als root ausführen oder Dateirechte prüfen.</td></tr>
+  <tr><td><code>ALT/NEU duerfen nur Kleinbuchstaben enthalten</code></td><td>Präfixe ohne Ziffern oder Sonderzeichen angeben, z.&nbsp;B. <code>em igb</code>.</td></tr>
+  <tr><td><code>Ergebnis ist kein gueltiges XML</code></td><td>Die Datei wurde nicht verändert. Ausgangsdatei auf Fehler prüfen.</td></tr>
+  <tr><td><code>Keine emX-Interfaces … gefunden</code></td><td>Kein Fehler – es gibt nichts umzubenennen.</td></tr>
+  <tr><td><code>Illegal option</code></td><td>Unbekannte Option; erlaubt sind nur <code>-f</code> und <code>-h</code>.</td></tr>
+</table>
+
+<h2 id="grenzen">10. Grenzen und Hinweise</h2>
+<ul>
+  <li><strong>Reihenfolge der Ports:</strong> Das Script übernimmt die Nummer 1:1. Ob <code>igb0</code> physisch derselbe Port ist wie vorher <code>em0</code>, hängt von der Hardware ab. Vor dem Umbau mit <code>ifconfig</code> bzw. anhand der MAC-Adressen prüfen.</li>
+  <li><strong>Anzahl der Ports:</strong> Hat die neue Hardware weniger Ports, verweisen überzählige Einträge auf nicht vorhandene Geräte und müssen manuell angepasst werden.</li>
+  <li><strong>Ungewöhnliche Schreibweisen:</strong> Namen in anderer Umgebung als oben beschrieben (z.&nbsp;B. <code>em0:</code> oder innerhalb von Anführungszeichen) werden nicht erfasst. Der Diff zeigt, was tatsächlich geändert wird.</li>
+  <li><strong>Interaktiv:</strong> Das Script erwartet eine Bestätigung über die Tastatur. Für unbeaufsichtigte Läufe <code>echo j | sh rename_if.sh …</code> verwenden.</li>
+  <li><strong>Neustart nötig:</strong> Änderungen an <code>/conf/config.xml</code> werden erst nach einem Neustart wirksam.</li>
+</ul>
+
+<h2 id="quelltext">11. Quelltext</h2>
+<details open>
+<summary>rename_if.sh</summary>
+<pre>#!/bin/sh
+# Benennt Interface-Namen in der OPNsense-Konfiguration um (Standard: emX -&gt; igbX).
+# Die Nummer bleibt erhalten: em0 -&gt; igb0, em1 -&gt; igb1, em0_vlan10 -&gt; igb0_vlan10 ...
+#
+# Arbeitet standardmaessig auf config.xml im aktuellen Verzeichnis.
+#
+# Aufruf:   sh rename_if.sh [-f DATEI] [ALT] [NEU]
+# Beispiel: sh rename_if.sh -f /conf/config.xml
+#           sh rename_if.sh -f backup.xml em igb
+
+usage() {
+    echo "Aufruf: sh $0 [-f DATEI] [ALT] [NEU]"
+    echo "  -f DATEI  Konfigurationsdatei (Standard: ./config.xml)"
+    echo "  ALT NEU   Interface-Praefixe (Standard: em igb)"
+}
+
+CONF="./config.xml"
+while getopts "f:h" OPT; do
+    case "$OPT" in
+        f) CONF="$OPTARG" ;;
+        h) usage; exit 0 ;;
+        *) usage &gt;&amp;2; exit 1 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+OLD="${1:-em}"
+NEW="${2:-igb}"
+
+STAMP=$(date +%Y%m%d-%H%M%S)
+BACKUP="${CONF}.bak-${STAMP}"
+TMP="${CONF}.tmp-$$"
+
+die() { echo "FEHLER: $*" &gt;&amp;2; rm -f "$TMP"; exit 1; }
+
+[ -f "$CONF" ] || die "Konfiguration nicht gefunden: $CONF"
+[ -w "$CONF" ] || die "Keine Schreibrechte auf $CONF (als root ausfuehren)"
+echo "$OLD$NEW" | grep -Eq '^[a-z]+$' || die "ALT/NEU duerfen nur Kleinbuchstaben enthalten"
+
+# Nur ersetzen, wenn der Name als eigenstaendiger Wert steht:
+#   davor:  &gt;  ,  Leerzeichen  oder Zeilenanfang
+#   danach: &lt;  ,  _  .  Leerzeichen  oder Zeilenende
+# Damit bleiben Zertifikate (Base64), Beschreibungen wie "system1" usw. unberuehrt.
+# Die Schleife (ta) faengt Listen wie "em0,em1,em2" ab.
+sed -E \
+    -e ':a' \
+    -e "s/(^|[&gt;, ])${OLD}([0-9]+)([&lt;,_. ]|\$)/\\1${NEW}\\2\\3/" \
+    -e 'ta' \
+    "$CONF" &gt; "$TMP" || die "sed fehlgeschlagen"
+
+[ -s "$TMP" ] || die "Ergebnisdatei ist leer"
+
+if cmp -s "$CONF" "$TMP"; then
+    echo "Keine ${OLD}X-Interfaces in $CONF gefunden - nichts zu tun."
+    rm -f "$TMP"
+    exit 0
+fi
+
+# XML pruefen, falls xmllint vorhanden ist
+if command -v xmllint &gt;/dev/null 2&gt;&amp;1; then
+    xmllint --noout "$TMP" || die "Ergebnis ist kein gueltiges XML - Abbruch"
+fi
+
+echo "Folgende Aenderungen werden vorgenommen:"
+echo "----------------------------------------"
+diff "$CONF" "$TMP"
+echo "----------------------------------------"
+printf "Aenderungen uebernehmen? [j/N] "
+read ANSWER
+case "$ANSWER" in
+    j|J|y|Y) ;;
+    *) echo "Abgebrochen, nichts geaendert."; rm -f "$TMP"; exit 0 ;;
+esac
+
+cp -p "$CONF" "$BACKUP" || die "Backup konnte nicht erstellt werden"
+cat "$TMP" &gt; "$CONF"    || die "Schreiben fehlgeschlagen - Backup liegt unter $BACKUP"
+rm -f "$TMP"
+
+echo "Fertig. Backup: $BACKUP"
+echo "Zuruecksetzen: cp $BACKUP $CONF"
+echo "Hinweis: Liegt die Datei unter /conf, werden die neuen Namen erst nach einem reboot aktiv."
+</pre>
+</details>
+
+<footer>Dokumentation zu rename_if.sh · getestet unter POSIX-<code>sh</code> mit einer Beispielkonfiguration</footer>
+
+</main>
+<footer class="vlb vlb-foot"><div><span><span class="sess">[h0me]</span><a href="../">0:index</a> &nbsp;<a href="../impressum.html">1:impressum</a> &nbsp;<a href="../datenschutz.html">2:datenschutz</a></span><span>cookies:<b>0</b> tracker:<b>0</b></span></div></footer>
+</body>
+</html>

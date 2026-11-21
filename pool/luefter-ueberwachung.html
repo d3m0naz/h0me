@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gehäuselüfter-Überwachung</title>
+<style>
+  :root { --fg:#1d2327; --muted:#5b6670; --bg:#ffffff; --code:#f4f6f8; --line:#dde2e6; --accent:#1f6feb; --warn:#9a6700; --warnbg:#fff8e5; }
+  * { box-sizing:border-box; }
+  body { font: 15px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--fg); background:var(--bg); margin:0; }
+  main { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  h2 { font-size: 20px; margin: 40px 0 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+  h3 { font-size: 16px; margin: 22px 0 6px; }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; font-size: 13px; line-height: 1.45; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  p code, li code, td code { background: var(--code); padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 16px; }
+  th, td { text-align: left; border-bottom: 1px solid var(--line); padding: 7px 10px; vertical-align: top; }
+  th { background: var(--code); font-weight: 600; }
+  .note { background: var(--warnbg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 4px; margin: 14px 0; }
+  nav ol { padding-left: 20px; margin: 0; }
+  nav { background: var(--code); border: 1px solid var(--line); border-radius: 6px; padding: 12px 18px; }
+  a { color: var(--accent); }
+  @media print { main { padding: 0; } pre { white-space: pre-wrap; } h2 { break-after: avoid; } nav { display:none; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Gehäuselüfter-Überwachung</h1>
+<p class="sub">openmediavault 8 · Stand: 21.11.2026</p>
+
+<nav><ol>
+  <li><a href="#ueberblick">Überblick</a></li>
+  <li><a href="#system">System</a></li>
+  <li><a href="#treiber">Sensortreiber</a></li>
+  <li><a href="#skript">Überwachungsskript</a></li>
+  <li><a href="#systemd">Zeitsteuerung (systemd)</a></li>
+  <li><a href="#mail">Mail-Benachrichtigung</a></li>
+  <li><a href="#test">Funktion prüfen und testen</a></li>
+  <li><a href="#fehler">Fehlerbehebung</a></li>
+  <li><a href="#dateien">Dateiübersicht</a></li>
+</ol></nav>
+
+<h2 id="ueberblick">1. Überblick</h2>
+<p>Ein Shell-Skript liest jede Minute die Drehzahl des Gehäuselüfters über den Linux-hwmon-Sensor aus. Liegt die Drehzahl <strong>drei Messungen in Folge</strong> unter dem Grenzwert, wird einmalig eine Warnung ins Systemlog geschrieben und per Mail verschickt. Sobald der Lüfter wieder läuft, folgt eine Entwarnung. Weitere Mails gibt es währenddessen nicht.</p>
+
+<h2 id="system">2. System</h2>
+<table>
+  <tr><th>Komponente</th><th>Wert</th></tr>
+  <tr><td>Mainboard</td><td>ASRock J5005-ITX (Intel Pentium Silver J5005)</td></tr>
+  <tr><td>Betriebssystem</td><td>openmediavault 8.x (Debian 13), Kernel <code>7.3.4+deb13-amd64</code></td></tr>
+  <tr><td>Sensor-Chip</td><td>Nuvoton, hwmon-Name <code>nct6796</code> (z. B. <code>/sys/class/hwmon/hwmon3</code>)</td></tr>
+  <tr><td>Kernelmodul</td><td><code>nct6775</code> (deckt alle Nuvoton-NCT67xx-Chips ab)</td></tr>
+</table>
+
+<h2 id="treiber">3. Sensortreiber</h2>
+<h3>Installation und Laden</h3>
+<pre><code>apt install lm-sensors
+sensors-detect --auto
+modprobe nct6775
+echo nct6775 &gt; /etc/modules-load.d/nct6775.conf   # beim Booten automatisch laden
+sensors</code></pre>
+<div class="note"><strong>Modulname ≠ Chipname:</strong> Das Kernelmodul heißt immer <code>nct6775</code>. Unter <code>/sys/class/hwmon/hwmon*/name</code> steht dagegen der tatsächliche Chip, hier <code>nct6796</code>. Ein Modul <code>nct6796</code> gibt es nicht. <code>modprobe nct6796</code> schlägt daher fehl, und <code>lsmod | grep nct6796</code> findet nichts. Richtig ist <code>lsmod | grep nct</code>.</div>
+
+<h3>Chip und Lüfter ermitteln</h3>
+<pre><code>grep . /sys/class/hwmon/hwmon*/name
+# acpitz, acpi_fan, coretemp, nct6796
+
+grep . /sys/class/hwmon/hwmon*/fan*_input
+watch -n1 sensors      # Gehäuselüfter kurz anhalten: der Wert, der auf 0 fällt, ist der richtige</code></pre>
+<p>Nicht belegte Lüfteranschlüsse zeigen dauerhaft 0 RPM und werden ignoriert.</p>
+
+<h3>Falls der Chip nicht erkannt wird</h3>
+<p>Zeigt <code>dmesg | grep -i nct</code> einen „resource conflict“, reserviert das BIOS die Sensoradressen per ACPI. Abhilfe in <code>/etc/default/grub</code>:</p>
+<pre><code>GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet acpi_enforce_resources=lax&quot;</code></pre>
+<pre><code>update-grub &amp;&amp; reboot</code></pre>
+
+<h2 id="skript">4. Überwachungsskript</h2>
+<p>Pfad: <code>/usr/local/sbin/fan-monitor.sh</code> (Rechte <code>755</code>, Besitzer root)</p>
+<h3>Konfiguration</h3>
+<table>
+  <tr><th>Variable</th><th>Wert</th><th>Bedeutung</th></tr>
+  <tr><td><code>CHIP</code></td><td><code>nct6796</code></td><td>hwmon-Name des Sensor-Chips. Das Skript sucht das passende <code>hwmonX</code>-Verzeichnis selbst, weil sich die Nummer nach einem Neustart ändern kann.</td></tr>
+  <tr><td><code>FAN</code></td><td><code>fan1</code> / <code>fan2</code> …</td><td>Anschluss des Gehäuselüfters (siehe Abschnitt 3)</td></tr>
+  <tr><td><code>MIN_RPM</code></td><td><code>300</code></td><td>Unterhalb dieses Werts gilt der Lüfter als ausgefallen. Empfehlung: etwa ein Drittel der normalen Drehzahl.</td></tr>
+  <tr><td><code>FAIL_COUNT</code></td><td><code>3</code></td><td>So viele Fehlmessungen in Folge lösen den Alarm aus (verhindert Fehlalarme)</td></tr>
+  <tr><td><code>STATE_DIR</code></td><td><code>/var/lib/fan-monitor</code></td><td>Zähler- und Alarmdateien</td></tr>
+  <tr><td><code>MAIL_TO</code></td><td>leer</td><td>Leer bedeutet: Empfänger aus der OMV-Benachrichtigung, ersatzweise <code>root</code></td></tr>
+</table>
+<p>Aktuelle Werte anzeigen:</p>
+<pre><code>grep -E &#x27;^(CHIP|FAN|MIN_RPM|FAIL_COUNT)=&#x27; /usr/local/sbin/fan-monitor.sh</code></pre>
+
+<h3>Ablauf</h3>
+<ol>
+  <li>Sensorverzeichnis anhand von <code>CHIP</code> suchen und <code>FAN_input</code> lesen. Ist der Sensor nicht lesbar, gilt der Wert als −1 und wird wie ein Ausfall behandelt.</li>
+  <li>Drehzahl unter <code>MIN_RPM</code>: Zähler erhöhen. Erreicht er <code>FAIL_COUNT</code> und besteht noch kein Alarm, werden Logeintrag und Mail mit der kompletten <code>sensors</code>-Ausgabe erzeugt und die Alarmdatei angelegt.</li>
+  <li>Drehzahl in Ordnung: Zähler auf 0 setzen. Bestand ein Alarm, werden Entwarnung ins Log und per Mail geschickt und die Alarmdatei gelöscht.</li>
+</ol>
+
+<h3>Quelltext</h3>
+<pre><code>#!/bin/bash
+# fan-monitor.sh – Überwacht einen Gehäuselüfter (lm-sensors / hwmon)
+# und meldet Ausfall/Wiederherstellung per Mail (OMV-Benachrichtigung) und syslog.
+#
+# Installation: /usr/local/sbin/fan-monitor.sh  (chmod 755)
+# Aufruf alle 60 s per systemd-Timer.
+
+# ===== Konfiguration =====================================================
+CHIP=&quot;nct6796&quot;     # hwmon-Name des Chips (ASRock J5005-ITX: nct6796)
+FAN=&quot;fan2&quot;            # welcher Lüfter, siehe: sensors (fan1, fan2, ...)
+MIN_RPM=300           # darunter gilt der Lüfter als ausgefallen
+FAIL_COUNT=3          # so viele Messungen in Folge unter MIN_RPM =&gt; Alarm
+STATE_DIR=&quot;/var/lib/fan-monitor&quot;
+MAIL_TO=&quot;&quot;            # leer = Empfänger aus OMV-Benachrichtigung, sonst &quot;root&quot;
+# =========================================================================
+
+HOST=$(hostname -f 2&gt;/dev/null || hostname)
+mkdir -p &quot;$STATE_DIR&quot;
+CNT_FILE=&quot;$STATE_DIR/${FAN}.count&quot;
+ALARM_FILE=&quot;$STATE_DIR/${FAN}.alarm&quot;
+
+log() { logger -t fan-monitor &quot;$*&quot;; }
+
+send_mail() {
+    local subject=&quot;$1&quot; body=&quot;$2&quot; to=&quot;$MAIL_TO&quot;
+    if [ -z &quot;$to&quot; ] &amp;&amp; command -v omv-confdbadm &gt;/dev/null &amp;&amp; command -v jq &gt;/dev/null; then
+        to=$(omv-confdbadm read conf.system.notification.email 2&gt;/dev/null | jq -r &#x27;.primaryemail // empty&#x27;)
+    fi
+    [ -z &quot;$to&quot; ] &amp;&amp; to=&quot;root&quot;
+    printf &#x27;To: %s\nSubject: [%s] %s\nContent-Type: text/plain; charset=UTF-8\n\n%s\n&#x27; \
+        &quot;$to&quot; &quot;$HOST&quot; &quot;$subject&quot; &quot;$body&quot; | /usr/sbin/sendmail -t
+}
+
+# hwmon-Verzeichnis des Chips suchen (Nummer hwmonX kann sich nach Reboot ändern)
+HWMON=&quot;&quot;
+for d in /sys/class/hwmon/hwmon*; do
+    if [ &quot;$(cat &quot;$d/name&quot; 2&gt;/dev/null)&quot; = &quot;$CHIP&quot; ]; then HWMON=&quot;$d&quot;; break; fi
+done
+
+if [ -z &quot;$HWMON&quot; ] || [ ! -r &quot;$HWMON/${FAN}_input&quot; ]; then
+    RPM=-1   # Sensor nicht lesbar -&gt; wie Ausfall behandeln
+else
+    RPM=$(cat &quot;$HWMON/${FAN}_input&quot; 2&gt;/dev/null || echo -1)
+fi
+
+count=$(cat &quot;$CNT_FILE&quot; 2&gt;/dev/null || echo 0)
+
+if [ &quot;$RPM&quot; -lt &quot;$MIN_RPM&quot; ]; then
+    count=$((count + 1))
+    echo &quot;$count&quot; &gt; &quot;$CNT_FILE&quot;
+    if [ &quot;$count&quot; -ge &quot;$FAIL_COUNT&quot; ] &amp;&amp; [ ! -f &quot;$ALARM_FILE&quot; ]; then
+        if [ &quot;$RPM&quot; -lt 0 ]; then
+            msg=&quot;Lüftersensor $CHIP/$FAN ist nicht lesbar (Treiber geladen?).&quot;
+        else
+            msg=&quot;Gehäuselüfter $FAN dreht nur noch mit $RPM U/min (Minimum: $MIN_RPM) – seit $count Messungen.&quot;
+        fi
+        log &quot;ALARM: $msg&quot;
+        send_mail &quot;WARNUNG: Gehäuselüfter ausgefallen&quot; &quot;$msg
+
+Zeitpunkt: $(date &#x27;+%d.%m.%Y %H:%M:%S&#x27;)
+
+$(sensors 2&gt;/dev/null)&quot;
+        date &gt; &quot;$ALARM_FILE&quot;
+    fi
+else
+    echo 0 &gt; &quot;$CNT_FILE&quot;
+    if [ -f &quot;$ALARM_FILE&quot; ]; then
+        msg=&quot;Gehäuselüfter $FAN läuft wieder mit $RPM U/min.&quot;
+        log &quot;OK: $msg&quot;
+        send_mail &quot;OK: Gehäuselüfter läuft wieder&quot; &quot;$msg
+
+Zeitpunkt: $(date &#x27;+%d.%m.%Y %H:%M:%S&#x27;)&quot;
+        rm -f &quot;$ALARM_FILE&quot;
+    fi
+fi</code></pre>
+
+<h2 id="systemd">5. Zeitsteuerung (systemd)</h2>
+<h3><code>/etc/systemd/system/fan-monitor.service</code></h3>
+<pre><code>[Unit]
+Description=Gehäuselüfter prüfen
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/fan-monitor.sh</code></pre>
+<h3><code>/etc/systemd/system/fan-monitor.timer</code></h3>
+<pre><code>[Unit]
+Description=Gehäuselüfter jede Minute prüfen
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=60s
+[Install]
+WantedBy=timers.target</code></pre>
+<h3>Aktivieren</h3>
+<pre><code>systemctl daemon-reload
+systemctl enable --now fan-monitor.timer</code></pre>
+<p>Der Timer startet das Skript 2 Minuten nach dem Booten und danach jede Minute. Änderungen am Skript gelten ab dem nächsten Aufruf, ein Neustart des Timers ist nicht nötig.</p>
+
+<h2 id="mail">6. Mail-Benachrichtigung</h2>
+<p>Der Versand läuft über den in OMV konfigurierten Mailversand (<code>/usr/sbin/sendmail</code>). Voraussetzung: <em>System → Benachrichtigung → Einstellungen</em> ist aktiviert und eine Hauptempfänger-Adresse ist eingetragen. Der Betreff beginnt mit dem Hostnamen in eckigen Klammern.</p>
+<table>
+  <tr><th>Ereignis</th><th>Betreff</th></tr>
+  <tr><td>Ausfall</td><td><code>WARNUNG: Gehäuselüfter ausgefallen</code></td></tr>
+  <tr><td>Wiederherstellung</td><td><code>OK: Gehäuselüfter läuft wieder</code></td></tr>
+</table>
+
+<h2 id="test">7. Funktion prüfen und testen</h2>
+<h3>Laufenden Betrieb prüfen</h3>
+<pre><code>systemctl list-timers fan-monitor.timer   # nächste/letzte Ausführung
+systemctl status fan-monitor.service      # Ergebnis der letzten Prüfung
+cat /var/lib/fan-monitor/*.count          # Fehlmessungen in Folge (normal: 0)
+journalctl -t fan-monitor --since today   # nur Einträge von heute</code></pre>
+<div class="note"><strong>Hinweis zum Journal:</strong> <code>journalctl</code> zeigt den gesamten Verlauf. Alte Einträge bleiben stehen, auch wenn das Problem behoben ist. Das Skript schreibt nur bei Alarm oder Entwarnung. Kommen keine neuen Einträge dazu, ist alles in Ordnung.</div>
+
+<h3>Alarm testweise auslösen</h3>
+<pre><code>sed -i &#x27;s/^MIN_RPM=.*/MIN_RPM=99999/&#x27; /usr/local/sbin/fan-monitor.sh
+# ca. 3 Minuten warten
+journalctl -t fan-monitor -n 5            # ALARM-Eintrag + Mail prüfen
+
+sed -i &#x27;s/^MIN_RPM=.*/MIN_RPM=300/&#x27; /usr/local/sbin/fan-monitor.sh
+# innerhalb einer Minute: OK-Eintrag + Entwarnungs-Mail</code></pre>
+
+<h3>Zustand zurücksetzen</h3>
+<pre><code>rm -f /var/lib/fan-monitor/*</code></pre>
+
+<h2 id="fehler">8. Fehlerbehebung</h2>
+<table>
+  <tr><th>Symptom</th><th>Ursache / Lösung</th></tr>
+  <tr><td>„Lüftersensor … ist nicht lesbar (Treiber geladen?)“</td><td><code>CHIP</code> stimmt nicht mit <code>/sys/class/hwmon/hwmon*/name</code> überein (hier: <code>nct6796</code>, nicht <code>nct6775</code>). Oder das Modul ist nicht geladen: <code>modprobe nct6775</code>.</td></tr>
+  <tr><td><code>modprobe nct6796</code>: Module not found</td><td>Normal, das Modul heißt <code>nct6775</code>.</td></tr>
+  <tr><td>Keine Lüfter in <code>sensors</code></td><td><code>dmesg | grep -i nct</code> prüfen, gegebenenfalls <code>acpi_enforce_resources=lax</code> setzen (Abschnitt 3).</td></tr>
+  <tr><td>Lüfter zeigt immer 0 RPM</td><td>Falscher Anschluss in <code>FAN</code>, oder 2-Pin-Lüfter ohne Drehzahlsignal (3- oder 4-Pin-Lüfter nötig).</td></tr>
+  <tr><td>Keine Mail trotz Alarm</td><td>OMV-Benachrichtigung prüfen (Testmail in der Weboberfläche), <code>journalctl -u postfix</code> ansehen.</td></tr>
+  <tr><td>Änderung im Skript wirkt nicht</td><td>Datei wirklich gespeichert? (vim: <code>:wq</code>) Mit <code>grep '^CHIP' /usr/local/sbin/fan-monitor.sh</code> prüfen.</td></tr>
+</table>
+
+<h2 id="dateien">9. Dateiübersicht</h2>
+<table>
+  <tr><th>Datei</th><th>Zweck</th></tr>
+  <tr><td><code>/usr/local/sbin/fan-monitor.sh</code></td><td>Überwachungsskript</td></tr>
+  <tr><td><code>/etc/systemd/system/fan-monitor.service</code></td><td>systemd-Dienst (einmalige Ausführung)</td></tr>
+  <tr><td><code>/etc/systemd/system/fan-monitor.timer</code></td><td>Timer, minütlich</td></tr>
+  <tr><td><code>/etc/modules-load.d/nct6775.conf</code></td><td>Lädt den Sensortreiber beim Booten</td></tr>
+  <tr><td><code>/var/lib/fan-monitor/&lt;fan&gt;.count</code></td><td>Zähler der Fehlmessungen</td></tr>
+  <tr><td><code>/var/lib/fan-monitor/&lt;fan&gt;.alarm</code></td><td>Vorhanden, solange ein Alarm aktiv ist</td></tr>
+</table>
+</main>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fallbericht: Überhitzte NAS-Festplatte &amp; I/O-Fehler</title>
+<style>
+  :root{
+    --bg:#f7f6f3; --card:#ffffff; --ink:#1f2328; --muted:#5b616b; --line:#e3e1dc;
+    --accent:#2f6f8f; --ok:#2e7d4f; --warn:#b7791f; --bad:#b42318; --code:#f1efea;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#16181b; --card:#1e2125; --ink:#e7e9ec; --muted:#a0a6ae; --line:#2e3238;
+      --accent:#6fb3d2; --ok:#5cc28a; --warn:#e0a84a; --bad:#f07466; --code:#262a2f; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  main{max-width:860px;margin:0 auto;padding:32px 20px 64px}
+  h1{font-size:1.75rem;line-height:1.25;margin:0 0 6px}
+  h2{font-size:1.2rem;margin:36px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  h3{font-size:1rem;margin:20px 0 8px}
+  p{margin:8px 0}
+  .sub{color:var(--muted);margin:0 0 24px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:14px 0}
+  .tldr{border-left:4px solid var(--accent)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 0}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .kpi .v{font-size:1.6rem;font-weight:650;font-variant-numeric:tabular-nums}
+  .kpi .l{color:var(--muted);font-size:.85rem}
+  .bad{color:var(--bad)} .ok{color:var(--ok)} .warn{color:var(--warn)}
+  table{width:100%;border-collapse:collapse;font-size:.93rem}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86rem}
+  code{background:var(--code);padding:1px 5px;border-radius:4px}
+  pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto;margin:8px 0;line-height:1.45}
+  ol,ul{padding-left:22px} li{margin:4px 0}
+  .tag{display:inline-block;font-size:.75rem;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid currentColor}
+  .timeline{list-style:none;padding:0;margin:0;border-left:2px solid var(--line)}
+  .timeline li{position:relative;padding:0 0 14px 18px}
+  .timeline li::before{content:"";position:absolute;left:-7px;top:7px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+  .timeline .t{font-weight:600;font-variant-numeric:tabular-nums}
+  svg text{fill:var(--muted);font-size:11px;font-family:system-ui,sans-serif}
+  .foot{color:var(--muted);font-size:.85rem;margin-top:40px}
+</style>
+</head>
+<body>
+<main>
+
+<h1>Fallbericht: Überhitzte NAS-Festplatte und SATA-I/O-Fehler</h1>
+<p class="sub">Anonymisierte Zusammenfassung · Linux-NAS (Debian) mit Seagate IronWolf 12 TB · November 2026 · Stand: 21.11.2026</p>
+
+<div class="card tldr">
+  <strong>Kurzfassung:</strong> Eine Festplatte im NAS lief rund 44 Stunden lang bei 62–68 °C. Ursache war ein
+  <strong>defekter Gehäuselüfter</strong>. Ein am Folgetag gemeldeter I/O-Fehler stellte sich als <strong>kurzer
+  SATA-Verbindungsabbruch</strong> heraus, nicht als Medienschaden. Die Platte selbst ist laut SMART gesund. Nach
+  Neuanordnung der Laufwerke und dem Einbau eines neuen Gehäuselüfters läuft sie unter Last stabil bei etwa 40 °C.
+  <span class="tag ok">Kühlung behoben</span>
+</div>
+
+<div class="grid">
+  <div class="kpi"><div class="v bad">68 °C</div><div class="l">Höchstwert (Limit Seagate: 65 °C gemeldet, ≤ 60 °C empfohlen)</div></div>
+  <div class="kpi"><div class="v ok">≈ 40 °C</div><div class="l">mit neuem Lüfter, unter Last</div></div>
+  <div class="kpi"><div class="v ok">0</div><div class="l">reallokierte / schwebende / unkorrigierbare Sektoren</div></div>
+  <div class="kpi"><div class="v">≈ 47.000 h</div><div class="l">Betriebsstunden (≈ 5,4 Jahre)</div></div>
+</div>
+
+<h2>1. Ausgangslage</h2>
+<p>Bei einer Routinekontrolle fiel auf, dass eine Seagate-Festplatte im NAS bei <strong>65 °C</strong> lief.
+Auf dem Host lief eine einzelne virtuelle Maschine (QEMU/libvirt) mit moderater CPU-Last. Die Prozessliste
+erklärte die Temperatur nicht.</p>
+
+<h2>2. Temperaturverlauf</h2>
+<p>Die SCT-Temperaturhistorie der Platte (ein Messwert pro ca. 59 Minuten) zeigt das Bild eindeutig:</p>
+<div class="card">
+  <svg id="chart" viewBox="0 0 800 300" width="100%" role="img" aria-label="Temperaturverlauf der Festplatte vom 14. bis 19. November"></svg>
+</div>
+<ul>
+  <li><strong>14.–16.11.:</strong> stabil bei 42–51 °C, also normal warm.</li>
+  <li><strong>17.11., ca. 01:30:</strong> Sprung binnen einer Stunde auf 62 °C und mehr, danach ein Plateau bei 64–68 °C.
+    Ein so abrupter und dauerhafter Anstieg spricht für einen Kühlungsausfall, nicht für Last.</li>
+  <li><strong>18.11., ca. 21:45:</strong> Ein Raumventilator wird aufgestellt. Innerhalb einer Stunde fällt die Temperatur auf 37 °C.</li>
+  <li><strong>19.11.:</strong> stabil bei 36–37 °C.</li>
+</ul>
+
+<h2>3. Diagnose der Überhitzung</h2>
+<h3>Grenzwerte (Seagate IronWolf)</h3>
+<p>Aktuelle Datenblätter nennen als Maximum 65 °C (vom Laufwerk gemeldet). Ältere nennen 70 °C Gehäusetemperatur.
+Seagate rät generell von dauerhaften Temperaturen über 60 °C ab. Als Richtwert für die Praxis gilt:
+30–45 °C ideal, bis etwa 55 °C akzeptabel, ab 60 °C Handlungsbedarf.</p>
+
+<h3>SMART-Befund</h3>
+<table>
+  <tr><th>Attribut</th><th>Wert</th><th>Bewertung</th></tr>
+  <tr><td>190 Airflow_Temperature_Cel</td><td class="num">64 °C, <code>FAILING_NOW</code> → später <code>Past</code></td>
+      <td>Schwelle überschritten. „Past“ bleibt dauerhaft als Vermerk stehen, ist aber kein Defekt.</td></tr>
+  <tr><td>SCT Over-Temperature-Zähler</td><td class="num">2.356</td><td>häufige Überschreitungen der Warnschwelle</td></tr>
+  <tr><td>Time in Over-Temperature</td><td class="num">0</td><td class="ok">Die Spezifikation von 70 °C wurde nie überschritten.</td></tr>
+  <tr><td>5 / 197 / 198 / 187</td><td class="num">0 / 0 / 0 / 0</td><td class="ok">keine Sektorfehler</td></tr>
+  <tr><td>199 UDMA_CRC_Error_Count</td><td class="num">0</td><td class="ok">keine Übertragungsfehler am Kabel</td></tr>
+  <tr><td>Gesamtstatus</td><td class="num"><code>PASSED</code></td><td class="ok">gesund</td></tr>
+</table>
+
+<h3>Vergleich mit den anderen Laufwerken</h3>
+<table>
+  <tr><th>Laufwerk</th><th>vorher</th><th>mit Ventilator</th></tr>
+  <tr><td>Platte A (betroffen)</td><td class="num bad">64 °C</td><td class="num">52 °C → 49 °C → 37 °C</td></tr>
+  <tr><td>Platte B (Nachbarschacht)</td><td class="num warn">52 °C</td><td class="num">43 °C</td></tr>
+  <tr><td>Platte C</td><td class="num ok">35 °C</td><td class="num">32 °C</td></tr>
+</table>
+<p>Die betroffene Platte war rund 30 °C wärmer als die kühlste. Das deutete von Anfang an auf ein lokales Luftstromproblem hin.</p>
+
+<h2>4. Der I/O-Fehler</h2>
+<p>Am Morgen des 19.11. meldete das Syslog per E-Mail einen I/O-Fehler auf der betroffenen Platte, und zwar bei
+36 °C, also unabhängig von der Hitze.</p>
+<pre>I/O error, dev sdX, sector 6784138424 op 0x0:(READ) flags 0x80700 ...</pre>
+
+<h3>Kernel-Log zum Zeitpunkt des Fehlers</h3>
+<pre>ataN.00: exception Emask 0x0 SAct 0x4000 SErr 0x50000 action 0x6 frozen
+ataN: SError: { PHYRdyChg CommWake }
+ataN.00: failed command: READ FPDMA QUEUED
+         res 40/00:01:06:4f:c2/... Emask 0x4 (timeout)
+ataN: hard resetting link
+ataN: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[sdX] FAILED Result: hostbyte=DID_OK driverbyte=DRIVER_OK cmd_age=31s
+[sdX] Sense Key : Aborted Command [current]</pre>
+
+<h3>Interpretation</h3>
+<ul>
+  <li><code>timeout</code> nach 31 s und <code>PHYRdyChg CommWake</code>: Die <strong>SATA-Verbindung ist kurz abgerissen</strong>
+    und wurde neu aufgebaut.</li>
+  <li><code>Aborted Command</code> statt <code>Medium Error</code>/<code>UNC</code>: Der Sektor selbst war nicht das Problem.</li>
+  <li>Flags <code>0x80700</code>: ein Readahead-Lesezugriff mit Fail-Fast. Er bricht sofort ab, statt es erneut zu versuchen.</li>
+  <li>Im SMART-Fehlerprotokoll der Platte ist danach <strong>nichts</strong> vermerkt, und es gibt keine schwebenden Sektoren.</li>
+  <li>Die Häufung von Hardware-Resets (741) in der Gerätestatistik passt zu wiederholten Verbindungsproblemen.</li>
+  <li>Seit dem letzten Start gab es nur einen Link-Reset, und nur an diesem Port. Netzteil und Controller sind damit unwahrscheinlich.
+    Verdächtig sind Kabel, Port oder Stromanschluss dieser Platte.</li>
+</ul>
+
+<h2>5. Chronologie</h2>
+<ul class="timeline">
+  <li><span class="t">17.11. ~01:30</span> Der Gehäuselüfter fällt aus, und die Platte springt auf über 62 °C.</li>
+  <li><span class="t">18.11. tagsüber</span> Die Überhitzung fällt auf (65 °C), SMART meldet <code>FAILING_NOW</code> bei Attribut 190.</li>
+  <li><span class="t">18.11. ~21:45</span> Notkühlung mit einem Raumventilator: 58 → 53 → 49 °C.</li>
+  <li><span class="t">19.11. 06:13</span> Ein I/O-Fehler wird gemeldet. Die Analyse zeigt einen SATA-Link-Reset, keinen Medienschaden.</li>
+  <li><span class="t">19.11. abends</span> Laufwerke neu angeordnet, defekter Lüfter bestätigt, Ersatz bestellt.
+    Ein rsync-Job unter Volllast läuft bei 38 °C.</li>
+  <li><span class="t">21.11.</span> Neuer Gehäuselüfter eingebaut. Die Platte läuft unter Last stabil bei etwa 40 °C.</li>
+</ul>
+
+<h2>6. Maßnahmen</h2>
+<h3>Erledigt</h3>
+<ul>
+  <li>Notkühlung durch einen Raumventilator, Tür des Abstellraums offen (bis zum Lüftertausch).</li>
+  <li>Laufwerke neu angeordnet, mit mehr Abstand und besserem Luftstrom.</li>
+  <li>Defekten Gehäuselüfter identifiziert und durch einen neuen ersetzt (21.11.). Ergebnis: ca. 40 °C unter Last.</li>
+</ul>
+<h3>Offen</h3>
+<ul>
+  <li>SATA-Datenkabel der betroffenen Platte tauschen, Stromanschluss ohne Splitter oder Adapter.</li>
+  <li>Langen SMART-Selbsttest wiederholen (der letzte wurde durch einen Reset abgebrochen, Dauer ca. 20 h).</li>
+  <li>Kernel-Log weiter auf neue Link-Resets an diesem Port beobachten.</li>
+  <li>Temperaturüberwachung mit E-Mail-Benachrichtigung über <code>smartd</code> einrichten.</li>
+</ul>
+
+<h2>7. Nützliche Befehle</h2>
+<pre># Temperatur aller Platten
+for d in /dev/sd?; do echo -n "$d: "; smartctl -A $d | awk '/194 Temp/{print $10}'; done
+
+# Sektor- und Verbindungsrelevante SMART-Werte
+smartctl -A /dev/sdX | egrep "^( *5|187|197|198|199) "
+
+# Vollständiger Bericht inkl. Temperaturhistorie
+smartctl -x /dev/sdX
+
+# Kernel-Log rund um einen Fehlerzeitpunkt
+journalctl -k --since "JJJJ-MM-TT HH:MM" --until "JJJJ-MM-TT HH:MM" | grep -iE "ata|sdX|error|reset|timeout"
+
+# Link-Resets pro Port (über alle gespeicherten Boots)
+journalctl _TRANSPORT=kernel | grep -oE "ata[0-9]+: hard resetting link" | sort | uniq -c
+
+# Live mitlesen während Last
+journalctl -kf | grep -iE "ata|sdX"
+
+# Langer Selbsttest
+smartctl -t long /dev/sdX
+
+# smartd: Warnung bei 50 °C, kritisch bei 58 °C, Mail an Admin (/etc/smartd.conf)
+DEVICESCAN -W 4,50,58 -m admin@example.org</pre>
+
+<h2>8. Erkenntnisse</h2>
+<ul>
+  <li><strong>Lüfterausfälle bleiben oft unbemerkt.</strong> Eine Temperaturwarnung per Mail hätte das Problem fast zwei Tage früher gemeldet.</li>
+  <li><strong>Die SCT-Temperaturhistorie</strong> (<code>smartctl -x</code>) eignet sich hervorragend, um den Zeitpunkt eines Kühlungsausfalls zu finden.</li>
+  <li><strong>„I/O error“ heißt nicht automatisch „Platte defekt“.</strong> Das Kernel-Log zeigt, ob es an der Verbindung liegt
+    (<code>timeout</code>, <code>hard resetting link</code>, <code>Aborted Command</code>) oder am Medium (<code>UNC</code>, <code>Medium Error</code>).</li>
+  <li><strong>„Past“ bei einem SMART-Attribut</strong> ist ein dauerhafter Vermerk über eine frühere Überschreitung und kein Ausfall.</li>
+</ul>
+
+<p class="foot">Hostname, Seriennummer, WWN, E-Mail-Adressen und Gerätebezeichnungen wurden entfernt oder verallgemeinert.</p>
+</main>
+
+<script>
+(function(){
+  // SCT-Temperaturhistorie (Auszug, ≈ stündlich), Startzeit 14.11. 02:45
+  const temps = [44,45,43,46,48,46,44,43,42,43,43,43,43,43,43,43,45,48,46,44,47,47,46,49,50,49,46,43,45,50,51,46,44,45,43,46,45,43,46,46,45,48,50,46,45,44,44,44,44,44,44,45,44,45,49,45,44,44,44,43,43,43,44,43,44,44,48,45,43,44,45,43,44,47,52,62,65,65,67,67,68,68,68,66,65,65,66,66,65,65,67,68,67,68,66,65,65,64,65,64,65,64,66,67,67,65,65,65,65,65,64,66,64,65,66,65,65,64,64,58,37,39,36,36,36,37,36,36,36,36];
+  const svg = document.getElementById('chart');
+  const W=800,H=300,L=40,R=12,T=14,B=34, ymin=30, ymax=72;
+  const x = i => L + i*(W-L-R)/(temps.length-1);
+  const y = v => T + (ymax-v)*(H-T-B)/(ymax-ymin);
+  const ns='http://www.w3.org/2000/svg';
+  const el=(n,a)=>{const e=document.createElementNS(ns,n);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e;};
+  // Zonen
+  el('rect',{x:L,y:y(72),width:W-L-R,height:y(60)-y(72),fill:'#b42318',opacity:.10});
+  el('rect',{x:L,y:y(60),width:W-L-R,height:y(45)-y(60),fill:'#b7791f',opacity:.08});
+  // Gitter
+  [30,40,50,60,70].forEach(v=>{
+    el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:'currentColor',opacity:.15});
+    const t=el('text',{x:L-6,y:y(v)+4,'text-anchor':'end'}); t.textContent=v+'°';
+  });
+  // Tageslabels (Start 02:45 → Mitternacht bei Index ≈ 21.3 + 24k)
+  ['15.11.','16.11.','17.11.','18.11.','19.11.'].forEach((d,k)=>{
+    const i=21.3+24*k; if(i>temps.length-1) return;
+    el('line',{x1:x(i),x2:x(i),y1:T,y2:H-B,stroke:'currentColor',opacity:.12});
+    const t=el('text',{x:x(i),y:H-B+16,'text-anchor':'middle'}); t.textContent=d;
+  });
+  // Linie
+  el('polyline',{points:temps.map((v,i)=>x(i)+','+y(v)).join(' '),fill:'none',stroke:'#2f6f8f','stroke-width':2.2,'stroke-linejoin':'round'});
+  // Annotationen
+  const a1=el('text',{x:x(76)+6,y:y(68)-4}); a1.textContent='Lüfterausfall';
+  const a2=el('text',{x:x(121)-6,y:y(40)-6,'text-anchor':'end'}); a2.textContent='Ventilator';
+  const lim=el('text',{x:W-R-4,y:y(60)-4,'text-anchor':'end'}); lim.textContent='60 °C Empfehlung';
+})();
+</script>
+</body>
+</html>
