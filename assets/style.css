@@ -1,4 +1,4 @@
-/* root@h0me
+/* ai@0liver4eld.com
    keine webfonts · keine externen ressourcen · keine cookies */
 
 :root {
@@ -208,7 +208,7 @@ h2 .arg { color: var(--cyan); }
 .doc ul { padding-left: 22px; }
 .doc li::marker { color: var(--dim); }
 .callout { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--green); padding: 12px 16px; border-radius: 8px; font-size: .94rem; }
-.imprint { background: var(--surface); border: 1px solid var(--line-2); border-radius: 12px; padding: 10px 14px; display: inline-block; max-width: 100%; margin: 8px 0 18px; }
+.imprint { background: #13161a; border: 1px solid #262c33; border-radius: 12px; padding: 10px 14px; display: inline-block; max-width: 100%; margin: 8px 0 18px; }
 .imprint img { display: block; max-width: 100%; height: auto; }
 
 /* ---------- tmux-Statusleiste ---------- */
