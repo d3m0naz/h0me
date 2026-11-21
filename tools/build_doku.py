@@ -49,36 +49,44 @@ def build(f, out, R):
 
 
 # Vollbild-Demos: eigene Seite ohne Doku-Kopf, nur Rücklink + Pflichtlinks in der Leiste.
-DEMOS = {"NEON RASTER – Amiga-Style Demo.html": "demo/neon-raster.html"}
+# Datei → (Ziel, Regex, nach dessen Treffer die Leiste eingefügt wird)
+DEMOS = {
+    "NEON RASTER – Amiga-Style Demo.html": ("demo/neon-raster.html", r'<div id="bar">.*?(?=\n</div>)'),
+    "c116-rosette.html": ("demo/c116-rosette.html", r'<header>.*?(?=\n</header>)'),
+    "Amiga 2000 · NComm · Nowosibirsk BBS.html": ("demo/a2000-ncomm.html", r'<div class="foot">[^<]*'),
+}
+FONTS = re.compile(r'<link[^>]*fonts\.(googleapis|gstatic)\.com[^>]*>\n?')
 DEMO_BAR = ('<span class="sitebar"><a href="../ueber-mich.html#werdegang">← über mich</a>'
             '<i>ki-generiert</i><a href="../impressum.html">impressum</a>'
             '<a href="../datenschutz.html">datenschutz</a></span>')
 DEMO_STYLE = """<style>
-.sitebar{display:inline-flex;gap:10px;margin-left:10px;font-size:11px}
+.sitebar{display:inline-flex;flex-wrap:wrap;gap:4px 10px;margin-left:10px;font-size:11px;white-space:nowrap}
 .sitebar a{color:#7d8791;text-decoration:none}.sitebar a:hover{color:#7ee787}
 .sitebar i{font-style:normal;color:#c49bff}
 #bar{height:auto!important;min-height:44px;padding:4px 8px}
+header .sitebar{margin-left:auto;font-size:12px}
 </style>"""
 
 
-def build_demo(f, out):
+def build_demo(f, out, anchor):
     html = f.read_text(encoding="utf-8")
+    html = FONTS.sub("", html)  # keine externen Schriften, Fallback monospace
     html = html.replace("SONDERN DIREKT AUF DEINEM MAC !!!", "SONDERN DIREKT IN DEINEM BROWSER !!!")
     assert "localStorage" not in html and "sessionStorage" not in html, f
     assert not re.search(r'(src|href)="(https?:)?//', html), f
     html = html.replace("</head>", '<meta name="referrer" content="no-referrer">\n'
                         '<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">\n'
                         + DEMO_STYLE + "\n</head>", 1)
-    html = re.sub(r'(<div id="bar">.*?)(\n</div>)', lambda m: m.group(1) + "\n  " + DEMO_BAR + m.group(2),
-                  html, count=1, flags=re.S)
+    html, n = re.subn(anchor, lambda m: m.group(0) + "\n  " + DEMO_BAR, html, count=1, flags=re.S)
+    assert n == 1, f
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
     print(out.relative_to(DST.parent))
 
 
 def main():
-    for name, rel in DEMOS.items():
-        build_demo(SRC / name, DST.parent / rel)
+    for name, (rel, anchor) in DEMOS.items():
+        build_demo(SRC / name, DST.parent / rel, anchor)
     for f in sorted(SRC.glob("*.html")):
         if f.name in DEMOS:
             continue
