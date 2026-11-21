@@ -48,8 +48,40 @@ def build(f, out, R):
     print(out.relative_to(DST.parent))
 
 
+# Vollbild-Demos: eigene Seite ohne Doku-Kopf, nur Rücklink + Pflichtlinks in der Leiste.
+DEMOS = {"NEON RASTER – Amiga-Style Demo.html": "demo/neon-raster.html"}
+DEMO_BAR = ('<span class="sitebar"><a href="../ueber-mich.html#werdegang">← über mich</a>'
+            '<i>ki-generiert</i><a href="../impressum.html">impressum</a>'
+            '<a href="../datenschutz.html">datenschutz</a></span>')
+DEMO_STYLE = """<style>
+.sitebar{display:inline-flex;gap:10px;margin-left:10px;font-size:11px}
+.sitebar a{color:#7d8791;text-decoration:none}.sitebar a:hover{color:#7ee787}
+.sitebar i{font-style:normal;color:#c49bff}
+#bar{height:auto!important;min-height:44px;padding:4px 8px}
+</style>"""
+
+
+def build_demo(f, out):
+    html = f.read_text(encoding="utf-8")
+    html = html.replace("SONDERN DIREKT AUF DEINEM MAC !!!", "SONDERN DIREKT IN DEINEM BROWSER !!!")
+    assert "localStorage" not in html and "sessionStorage" not in html, f
+    assert not re.search(r'(src|href)="(https?:)?//', html), f
+    html = html.replace("</head>", '<meta name="referrer" content="no-referrer">\n'
+                        '<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">\n'
+                        + DEMO_STYLE + "\n</head>", 1)
+    html = re.sub(r'(<div id="bar">.*?)(\n</div>)', lambda m: m.group(1) + "\n  " + DEMO_BAR + m.group(2),
+                  html, count=1, flags=re.S)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(html, encoding="utf-8")
+    print(out.relative_to(DST.parent))
+
+
 def main():
+    for name, rel in DEMOS.items():
+        build_demo(SRC / name, DST.parent / rel)
     for f in sorted(SRC.glob("*.html")):
+        if f.name in DEMOS:
+            continue
         build(f, DST / f.name, "../")
     for f in sorted(SRC.glob("*/*.html")):
         build(f, DST / f.parent.name / f.name, "../../")
