@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Über mich · ai@0liver4eld.com</title>
+<meta name="description" content="Über 0liver4eld: vom Commodore C116 über Amiga, SuSE und QNX zu Debian und einem Arch-Derivat. Homelab, Werkzeuge, 3D-Druck und Industrial Metal.">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Zum Inhalt springen</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Startseite"><span class="u">ai</span><span class="c">@</span><span class="h">0liver4eld.com</span><span class="c">$</span></a>
+    <nav aria-label="Hauptnavigation">
+      <a href="ueber-mich.html" aria-current="page">über-mich</a>
+      <a href="docs.html">docs</a>
+      <a href="projekte.html">projekte</a>
+      <a href="musik.html">musik</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <section class="pagehead">
+    <p class="kicker">$ whoami</p>
+    <h1>Vom Brotkasten.<br><span class="syn">Zum Rolling Release.</span></h1>
+    <p class="lead">Angefangen hat es mit einem Commodore C116 und Gummitastatur. Danach kamen
+    C64, drei Amigas, Linux aus dem Karton, ein Ausflug zu QNX, viele Jahre Debian und heute ein
+    Arch-Derivat. Geblieben ist der Spaß daran, Dinge auseinanderzunehmen und wieder zum Laufen zu
+    bringen. Neu ist nur, dass inzwischen eine KI mitschreibt.</p>
+  </section>
+
+  <section id="plan" aria-labelledby="h-plan">
+    <div class="sh"><h2 id="h-plan"><span class="ps">$</span> finger <span class="arg">0liver4eld</span></h2><span class="count">~/.plan</span></div>
+    <div class="term retro">
+      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>finger · ~/.plan</span></div>
+<pre class="hdrs"><span class="k">Login:</span> 0liver4eld         <span class="k">Name:</span> <span class="dim">steht im impressum</span>
+<span class="k">Shell:</span> /bin/bash          <span class="k">Home:</span> /home/h0me
+<span class="k">GitHub:</span> d3m0naz          <span class="k">Mail:</span> <span class="dim">siehe impressum (als bild)</span>
+<span class="k">Plan:</span>
+  <span class="ok">*</span> homelab am laufen halten: nas mit debian + omv, firewall mit opnsense
+  <span class="ok">*</span> kaputtes reparieren, und das reparieren aufschreiben (lassen)
+  <span class="ok">*</span> werkzeuge bauen, wenn es keins gibt: <span class="k">scat</span>, <span class="k">rename_if.sh</span>, <span class="k">csv2pdf-gui</span>
+  <span class="ok">*</span> häuser in blender nachbauen und in plastik drucken: <span class="k">danzhouse</span>
+  <span class="ok">*</span> dabei fear factory hören, laut
+  <span class="st">*</span> der ki beim schreiben zuschauen und ihr widersprechen <span class="dim"># ...for now.</span>
+<span class="ps">$</span> <span class="cur" aria-hidden="true"></span></pre>
+    </div>
+  </section>
+
+  <section id="werdegang" aria-labelledby="h-werdegang">
+    <div class="sh"><h2 id="h-werdegang"><span class="ps">#</span> history <span class="arg">| grep -i boot</span></h2><span class="count">8 bit → btw</span></div>
+    <p class="intro">Angefangen mit Gummitastatur und Datasette, angekommen bei einem Rolling Release.
+    Dazwischen jede Menge Disketten und ein paar Kartons mit Handbüchern.</p>
+    <div class="term pl hist">
+      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>~/.werdegang · append only</span></div>
+      <ol>
+        <li><span class="yr">8 bit</span><span class="tt"><b>Commodore C116</b><small>Der kleine Bruder des Plus/4, mit Gummitastatur und 16&nbsp;KB RAM. Einschalten, BASIC&nbsp;3.5, blinkender Cursor: so fing alles an.</small></span></li>
+        <li><span class="yr">8 bit</span><span class="tt"><b>Commodore C64</b><small>Der Brotkasten mit 64&nbsp;KB und dem legendären SID-Chip. Wer <code>LOAD "*",8,1</code> noch auswendig kann, weiß Bescheid.</small></span></li>
+        <li><span class="yr">16/32</span><span class="tt"><b>Amiga 500</b><small>Kickstart im ROM, Workbench auf Diskette und Multitasking, als anderswo noch DOS lief. Diskettenwechsel war damals ein Ausdauersport.</small></span></li>
+        <li><span class="yr">32 bit</span><span class="tt"><b>Amiga 2000/030/FPU/MMU</b><small>Der große Amiga im Desktopgehäuse, aufgerüstet mit 68030, FPU und MMU. Die Zorro-Steckplätze waren der eigentliche Grund für das große Gehäuse.</small></span></li>
+        <li><span class="yr">32 bit</span><span class="tt"><b>Amiga 1200</b><small>AGA-Chipsatz mit 256 Farben aus 16,7 Millionen und ein 68020 an Bord. Dazu ein interner IDE-Anschluss, also endlich eine Festplatte ohne Bastelei.</small></span></li>
+        <li><span class="yr">linux</span><span class="tt"><b>SuSE Linux 5.4</b><small>Das erste Linux, aus dem Karton mit CDs und dickem Handbuch. Installiert mit YaST, konfiguriert in Textdateien.</small></span></li>
+        <li><span class="yr">rtos</span><span class="tt"><b>QNX</b><small>Ein Echtzeit-Betriebssystem mit Mikrokernel, klein, schnell und anders als alles davor. Unix-artig, aber mit ganz eigener Philosophie.</small></span></li>
+        <li><span class="yr">linux</span><span class="tt"><b>Debian</b><small>Stable, und das meint Debian ernst. Läuft bis heute auf dem NAS.</small></span></li>
+        <li class="now"><span class="yr">linux</span><span class="tt"><b>Arch-Derivat</b> <span class="btw">btw</span><small>Aktueller Stand: Rolling Release, immer auf dem neuesten Paketstand. Wie das echte Leben, nur mit besserem Wiki.</small></span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="damals" aria-labelledby="h-damals">
+    <div class="sh"><h2 id="h-damals"><span class="ps">#</span> git log <span class="arg">oliverheld.com</span></h2><span class="count">vor-ki, ca. 2008</span></div>
+    <p class="intro">Diese Domain hatte jahrelang keine eigene Seite. Sie leitete einfach auf ein
+    Stück Internetgeschichte weiter: <i>The Website Is Down</i>, die Videoserie über den Sales Guy
+    und den Web Dude. Damals haben Admins ihre Witze noch selbst geschrieben, und jeder kannte
+    mindestens einen Sales Guy persönlich. Jetzt steht hier diese Seite, aber die Erinnerung
+    bleibt verlinkt.</p>
+    <div class="term retro">
+      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>bash · aus der history</span></div>
+<pre class="hdrs"><span class="ps">$</span> curl -sIL https://oliverheld.com/ | grep -iE '^(http|location)'
+<span class="st">HTTP/2 301</span>
+<span class="k">location:</span> http://www.thewebsiteisdown.com/
+<span class="st">HTTP/1.1 301 Moved Permanently</span>
+<span class="k">Location:</span> https://www.thewebsiteisdown.com/
+<span class="ok">HTTP/2 200</span>
+<span class="ps">$</span> git commit -m "oliverheld.com: zeigt jetzt auf eigene Seite"
+<span class="dim">[main] 1 file changed, 1 redirect retired. respect.</span>
+<span class="ps">$</span> <span class="cur" aria-hidden="true"></span></pre>
+    </div>
+    <p class="go-retro"><a href="https://www.thewebsiteisdown.com/" rel="noopener">thewebsiteisdown.com ↗</a><span>externe Seite, lädt Inhalte Dritter</span></p>
+  </section>
+
+</main>
+
+<footer class="tmux">
+  <div class="wrap">
+    <div class="l"><span class="sess">[0liver4eld]</span><a href="./">0:index</a><a href="ueber-mich.html" aria-current="page">1:über-mich*</a><a href="docs.html">2:docs</a><a href="projekte.html">3:projekte</a><a href="musik.html">4:musik</a><a href="impressum.html">5:impressum</a><a href="datenschutz.html">6:datenschutz</a></div>
+    <div class="r"><span>cookies:<b>0</b></span><span>tracker:<b>0</b></span><span>3rd-party:<b>0</b></span><span class="ai">ki:<b>~88%</b></span></div>
+  </div>
+</footer>
+
+</body>
+</html>

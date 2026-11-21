@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docs · ai@0liver4eld.com</title>
+<meta name="description" content="Fallberichte und Anleitungen zu echten Problemen. Größtenteils KI-generiert, von einem Menschen geprüft.">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Zum Inhalt springen</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="Startseite"><span class="u">ai</span><span class="c">@</span><span class="h">0liver4eld.com</span><span class="c">$</span></a>
+    <nav aria-label="Hauptnavigation">
+      <a href="ueber-mich.html">über-mich</a>
+      <a href="docs.html" aria-current="page">docs</a>
+      <a href="projekte.html">projekte</a>
+      <a href="musik.html">musik</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <section class="pagehead">
+    <p class="kicker">$ cd ~/docs</p>
+    <h1>Echte Probleme.<br><span class="syn">Synthetische Doku.</span></h1>
+    <p class="lead">Was kaputtging, warum, und wie es wieder lief. Aufgeschrieben, damit es beim nächsten Mal schneller geht.</p>
+  </section>
+
+  <section id="doku" aria-labelledby="h-doku">
+    <div class="sh"><h2 id="h-doku"><span class="ps">#</span> ls -lt <span class="arg">doku/</span></h2><span class="count">4 einträge</span></div>
+
+    <ul class="incidents">
+      <li class="inc">
+        <span class="sev tool">STACK</span>
+        <div>
+          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>docker · ollama · ryzen 5700g, keine gpu</span><span class="ai">ki-generiert</span></p>
+          <h3><a href="doku/ollama-docker/index.html">Lokaler KI-Stack: Ollama + OpenCode + Hermes Agent</a></h3>
+          <p>Coding-Agent und autonomer Agent komplett auf eigener Hardware, ohne Cloud-API. Mit Modellwahl, warum MoE auf der CPU gewinnt, und einer <a href="doku/ollama-docker/modell-optimieren.html">Anleitung zum Modell-Optimieren</a>.</p>
+        </div>
+        <div class="stat" aria-label="Mixture of Experts: 30 Milliarden Parameter, 3 Milliarden aktiv">
+          <span class="v t-violet">30B/3B</span>
+          <span class="l">moe · cpu-only · lokal</span>
+        </div>
+      </li>
+
+      <li class="inc">
+        <span class="sev crit">CRIT</span>
+        <div>
+          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>nas · debian · ironwolf 12tb</span><span class="ai">ki-generiert</span></p>
+          <h3><a href="doku/nas-hdd-ueberhitzung-fallbericht.html">Überhitzte NAS-Festplatte und SATA-I/O-Fehler</a></h3>
+          <p>44 Stunden bei 62–68&nbsp;°C, weil der Gehäuselüfter stand. Der I/O-Fehler danach war kein Medienschaden, sondern ein kurzer Verbindungsabbruch.</p>
+        </div>
+        <div class="stat" aria-label="Höchstwert 68 Grad Celsius">
+          <span class="v t-red">68°C</span>
+          <svg viewBox="0 0 170 34" aria-hidden="true" preserveAspectRatio="none">
+            <line x1="0" x2="170" y1="8.9" y2="8.9" stroke="currentColor" class="t-amber" stroke-dasharray="2 3" opacity=".6"/>
+            <polyline class="t-red" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" points="0,23.3 4.9,21.5 9.7,22.4 14.6,19.7 19.4,17 24.3,20.6 29.1,22.4 34,23.3 38.9,21.5 43.7,18.8 48.6,17.9 53.4,20.6 58.3,22.4 63.1,21.5 68,19.7 72.9,7.2 77.7,3.6 82.6,2.7 87.4,1.8 92.3,3.6 97.1,4.5 102,2.7 106.9,1.8 111.7,3.6 116.6,5.4 121.4,2.7 126.3,3.6 131.1,4.5 136,19.7 140.9,28.6 145.7,29.5 150.6,29.5 155.4,30.4 160.3,29.5 165.1,30.4 170,29.5"/>
+          </svg>
+          <span class="l">temp · 14.–19.11.</span>
+        </div>
+      </li>
+
+      <li class="inc">
+        <span class="sev fix">FIX</span>
+        <div>
+          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>openmediavault 8 · systemd</span><span class="ai">ki-generiert</span></p>
+          <h3><a href="doku/luefter-ueberwachung.html">Gehäuselüfter-Überwachung mit hwmon, systemd und Mail</a></h3>
+          <p>Die Konsequenz aus dem CRIT darüber: Ein Skript prüft jede Minute die Drehzahl und meldet sich genau einmal, wenn der Lüfter steht, und einmal, wenn er wieder läuft.</p>
+        </div>
+        <div class="stat" aria-label="Alarm unter 300 Umdrehungen pro Minute">
+          <span class="v t-amber">&lt;300</span>
+          <svg viewBox="0 0 170 34" aria-hidden="true" preserveAspectRatio="none">
+            <polyline class="t-green" fill="none" stroke="currentColor" stroke-width="1.6" points="0,8 60,8 62,31 108,31 110,8 170,8"/>
+            <rect class="t-amber" x="62" y="27" width="46" height="7" fill="currentColor" opacity=".18"/>
+          </svg>
+          <span class="l">rpm · 3× drunter = alarm</span>
+        </div>
+      </li>
+
+      <li class="inc">
+        <span class="sev tool">TOOL</span>
+        <div>
+          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>opnsense · posix sh</span><span class="ai">ki-generiert</span></p>
+          <h3><a href="doku/rename_if_doku.html">rename_if.sh: Interface-Namen in der OPNsense-Konfiguration umbenennen</a></h3>
+          <p>Neue NICs, neuer Treiber, und <code>em0</code> passt nicht mehr. Das Skript biegt <code>config.xml</code> um, mit Diff, Rückfrage und Backup.</p>
+        </div>
+        <div class="stat" aria-label="em0 wird zu igb0">
+          <span class="v t-cyan">em0→igb0</span>
+          <span class="l">s/em([0-9]+)/igb\1/</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+</main>
+
+<footer class="tmux">
+  <div class="wrap">
+    <div class="l"><span class="sess">[0liver4eld]</span><a href="./">0:index</a><a href="ueber-mich.html">1:über-mich</a><a href="docs.html" aria-current="page">2:docs*</a><a href="projekte.html">3:projekte</a><a href="musik.html">4:musik</a><a href="impressum.html">5:impressum</a><a href="datenschutz.html">6:datenschutz</a></div>
+    <div class="r"><span>cookies:<b>0</b></span><span>tracker:<b>0</b></span><span>3rd-party:<b>0</b></span><span class="ai">ki:<b>~88%</b></span></div>
+  </div>
+</footer>
+
+</body>
+</html>

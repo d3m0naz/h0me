@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modell optimieren · KI-Stack</title>
+<style>
+:root {
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --sidebar: #f3f1ed;
+  --text: #1f1d1a;
+  --muted: #6b665e;
+  --border: #e2ddd5;
+  --accent: #b4532a;
+  --accent-soft: #f6e7df;
+  --code-bg: #f1eee9;
+  --pre-bg: #1e1c1a;
+  --pre-text: #ece8e1;
+  --note-bg: #fdf6e8;
+  --note-border: #d9a441;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171614;
+    --surface: #1e1d1a;
+    --sidebar: #1b1a17;
+    --text: #e9e5de;
+    --muted: #a19b91;
+    --border: #34312c;
+    --accent: #e58a5c;
+    --accent-soft: #3a2a21;
+    --code-bg: #2a2824;
+    --pre-bg: #121110;
+    --pre-text: #e9e5de;
+    --note-bg: #2a2418;
+    --note-border: #b98a2e;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171614;
+  --surface: #1e1d1a;
+  --sidebar: #1b1a17;
+  --text: #e9e5de;
+  --muted: #a19b91;
+  --border: #34312c;
+  --accent: #e58a5c;
+  --accent-soft: #3a2a21;
+  --code-bg: #2a2824;
+  --pre-bg: #121110;
+  --pre-text: #e9e5de;
+  --note-bg: #2a2418;
+  --note-border: #b98a2e;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); min-height: 100vh; }
+
+nav.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--sidebar); border-right: 1px solid var(--border);
+  padding: 28px 20px 40px;
+}
+.brand { font-weight: 650; font-size: 15px; line-height: 1.35; margin: 0 0 4px; }
+.brand-sub { color: var(--muted); font-size: 13px; margin: 0 0 22px; }
+nav.sidebar ol { list-style: none; margin: 0; padding: 0; counter-reset: none; }
+nav.sidebar > ol > li { margin: 2px 0; }
+nav.sidebar a {
+  display: block; color: var(--text); text-decoration: none;
+  font-size: 14px; padding: 5px 10px; border-radius: 6px;
+}
+nav.sidebar a:hover { background: var(--accent-soft); }
+nav.sidebar a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+nav.sidebar ol ol { margin: 2px 0 6px 10px; border-left: 1px solid var(--border); }
+nav.sidebar ol ol a { font-size: 13px; color: var(--muted); padding: 3px 10px; }
+
+main { padding: 48px 56px 96px; max-width: 980px; width: 100%; }
+header.top { margin-bottom: 36px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+header.top h1 { font-size: 32px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.01em; }
+header.top p { margin: 0; color: var(--muted); font-size: 14px; }
+
+.theme {
+  float: right; margin-left: 12px;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 10px; font: inherit; font-size: 13px; cursor: pointer;
+}
+
+h2, h3, h4 { position: relative; line-height: 1.3; }
+h2 { font-size: 24px; margin: 56px 0 16px; padding-top: 8px; letter-spacing: -0.01em; }
+h3 { font-size: 19px; margin: 36px 0 12px; }
+h4 { font-size: 16px; margin: 28px 0 10px; }
+.anchor {
+  position: absolute; left: -22px; color: var(--muted); text-decoration: none;
+  opacity: 0; font-weight: 400;
+}
+h2:hover .anchor, h3:hover .anchor, h4:hover .anchor { opacity: 1; }
+
+p, ul, ol { margin: 0 0 14px; }
+main ul, main ol { padding-left: 24px; }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+strong { font-weight: 650; }
+
+code {
+  font: 0.88em/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: var(--code-bg); padding: 1px 5px; border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+
+.code { position: relative; margin: 0 0 18px; }
+.code pre {
+  margin: 0; background: var(--pre-bg); color: var(--pre-text);
+  padding: 16px 18px; border-radius: 8px; overflow-x: auto;
+}
+.code pre code { background: none; padding: 0; font-size: 13.5px; overflow-wrap: normal; color: inherit; }
+.code .lang {
+  position: absolute; top: 8px; right: 92px;
+  font: 11px/1 ui-monospace, monospace; color: #8f897f; text-transform: uppercase;
+  padding-top: 5px;
+}
+.copy {
+  position: absolute; top: 8px; right: 8px;
+  background: #34312c; color: #ece8e1; border: 1px solid #4a463f; border-radius: 5px;
+  font: 12px/1 system-ui, sans-serif; padding: 5px 9px; cursor: pointer;
+}
+.copy:hover { background: #46423b; }
+
+.table { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+th { background: var(--sidebar); font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+
+aside.note {
+  background: var(--note-bg); border-left: 3px solid var(--note-border);
+  padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 0 0 18px;
+}
+aside.note p { margin: 0; }
+
+footer { margin-top: 64px; padding-top: 18px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+
+.pages { display: flex; gap: 4px; padding: 3px; margin: 0 0 22px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; }
+.pages a {
+  flex: 1; text-align: center; font-size: 13px; padding: 6px 8px; border-radius: 6px;
+  color: var(--muted); text-decoration: none;
+}
+.pages a:hover { color: var(--text); }
+.pages a.current { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
+
+li.task { list-style: none; margin-left: -22px; }
+li.task input { margin: 0 6px 0 0; accent-color: var(--accent); }
+
+.menu-toggle { display: none; }
+
+@media (max-width: 900px) {
+  .layout { display: block; }
+  nav.sidebar {
+    position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+  .brand-sub { margin-bottom: 12px; }
+  .pages { margin-bottom: 0; }
+  .menu-toggle {
+    display: inline-block; margin-top: 10px;
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 12px; font: inherit; font-size: 14px; cursor: pointer;
+  }
+  nav.sidebar > ol { display: none; margin-top: 12px; }
+  nav.sidebar.open > ol { display: block; }
+  main { padding: 28px 16px 64px; }
+  header.top h1 { font-size: 26px; }
+  .anchor { display: none; }
+}
+
+@media print {
+  nav.sidebar, .copy, .theme { display: none; }
+  .layout { display: block; }
+  main { padding: 0; max-width: none; }
+  .code pre { white-space: pre-wrap; background: #f4f2ee; color: #1f1d1a; border: 1px solid #ddd; }
+  h2 { break-after: avoid; }
+  .table, .code { break-inside: avoid; }
+}
+</style>
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.vlb{font:12.5px/1.5 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;background:#13161a;color:#7d8791;border-bottom:1px solid #262c33}
+.vlb div{max-width:880px;margin:0 auto;padding:9px 24px;display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:space-between;align-items:center}
+.vlb a{color:#d4d9d0;text-decoration:none}.vlb a:hover{color:#7ee787}
+.vlb b{color:#7ee787;font-weight:400}.vlb s{color:#535c66;text-decoration:none}.vlb i{font-style:normal;color:#c49bff}
+.vlb-foot{border-top:1px solid #262c33;border-bottom:0;margin-top:32px}
+.vlb-foot .sess{background:#7ee787;color:#0d0f11;padding:2px 8px;font-weight:600;margin-right:8px}
+@media print{.vlb{display:none}}
+</style>
+</head>
+<body>
+<header class="vlb"><div><a href="../../" style="text-decoration:none"><b>ai</b><s>@</s><span style="color:#79c0ff">0liver4eld.com</span><s>$</s></a><a href="../../docs.html">← docs</a><span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <p class="brand">KI-Stack Doku</p>
+    <p class="brand-sub">Ollama · OpenCode · Hermes</p>
+    <div class="pages"><a href="index.html">Übersicht</a><a href="modell-optimieren.html" class="current" aria-current="page">Modell optimieren</a></div>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar">Inhalt</button>
+    <ol><li><a href="#schritt-1-basis-modell-wählen-und-laden">Schritt 1: Basis-Modell wählen und laden</a></li><li><a href="#schritt-2-tool-support-und-parser-prüfen">Schritt 2: Tool-Support und Parser prüfen</a><ol><li><a href="#schritt-2a-rendererparser-nachrüsten-nur-bei-hf-ggufs">Schritt 2a: Renderer/Parser nachrüsten (nur bei HF-GGUFs)</a></li></ol></li><li><a href="#schritt-3-modelfile-schreiben-und-variante-erzeugen">Schritt 3: Modelfile schreiben und Variante erzeugen</a></li><li><a href="#schritt-4-variante-prüfen">Schritt 4: Variante prüfen</a></li><li><a href="#schritt-5-hermes-config-anpassen">Schritt 5: Hermes-Config anpassen</a></li><li><a href="#schritt-6-hermes-neu-starten-und-modell-aktivieren">Schritt 6: Hermes neu starten und Modell aktivieren</a></li><li><a href="#schritt-7-praxistest-in-hermes">Schritt 7: Praxistest in Hermes</a></li><li><a href="#schritt-8-optional-in-opencode-eintragen">Schritt 8 (optional): In OpenCode eintragen</a></li><li><a href="#kurzfassung-am-beispiel-coder-64k">Kurzfassung (am Beispiel <code>coder-64k</code>)</a></li><li><a href="#checkliste">Checkliste</a></li></ol>
+  </nav>
+  <main>
+    <header class="top">
+      <button class="theme" type="button" id="theme">Hell/Dunkel</button>
+      <h1>Stock-Modell → Hermes-optimiertes Modell</h1>
+      <p>Erzeugt aus addme.md am 21.11.2026</p>
+    </header>
+    <p>Anleitung, um aus einem Ollama-Modell eine Variante wie <code>coder-64k</code> zu bauen, die in Hermes zuverlässig Tool-Calls ausführt. Vorbild ist <code>coder-64k</code> = <code>qwen3-coder:30b</code> + 64k Kontext + 8 Threads, plus passende Sampling-Werte über einen benannten Provider in Hermes.</p>
+<p>Platzhalter:</p>
+<ul><li><code>&lt;basis&gt;</code>: das Stock-Modell, z. B. <code>qwen3-coder:30b</code></li><li><code>&lt;name&gt;</code>: die neue Variante, z. B. <code>coder-64k</code></li><li><code>&lt;provider&gt;</code>: der benannte Provider in Hermes, z. B. <code>ollama-local</code></li></ul>
+<p>Alle Befehle laufen in <code>~/docker/ai-stack</code>.</p>
+<h2 id="schritt-1-basis-modell-wählen-und-laden"><a class="anchor" href="#schritt-1-basis-modell-wählen-und-laden">#</a>Schritt 1: Basis-Modell wählen und laden</h2>
+<p>Auf der CPU kommt nur ein <strong>MoE-Modell</strong> in Frage (z. B. 30B gesamt, 3B aktiv). Dichte Modelle ab ~14B sind für Agenten zu langsam. Bevorzugt das <strong>offizielle Ollama-Paket</strong> nehmen, nicht <code>hf.co/...</code>.</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec ollama ollama pull &lt;basis&gt;</code></pre></div>
+<h2 id="schritt-2-tool-support-und-parser-prüfen"><a class="anchor" href="#schritt-2-tool-support-und-parser-prüfen">#</a>Schritt 2: Tool-Support und Parser prüfen</h2>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec ollama ollama show &lt;basis&gt;                    # unter Capabilities muss &quot;tools&quot; stehen
+docker compose exec ollama ollama show &lt;basis&gt; --modelfile \
+  | grep -E &quot;^(FROM|RENDERER|PARSER|TEMPLATE)&quot;</code></pre></div>
+<div class="table"><table><thead><tr><th>Ergebnis</th><th>Bedeutung</th><th>Weiter mit</th></tr></thead><tbody><tr><td><code>RENDERER …</code> und <code>PARSER …</code> vorhanden</td><td>Ollama erkennt das Tool-Call-Format des Modells</td><td>Schritt 3</td></tr><tr><td>Nur <code>TEMPLATE</code> bzw. <code>template source go_template</code>, kein Parser</td><td>Typisch für HF-GGUFs. Tool-Calls kommen unter langem Prompt oft als JSON-Text</td><td>Schritt 2a</td></tr><tr><td>Kein <code>tools</code> unter Capabilities</td><td>Modell ist für Hermes ungeeignet</td><td>anderes Modell</td></tr></tbody></table></div>
+<h3 id="schritt-2a-rendererparser-nachrüsten-nur-bei-hf-ggufs"><a class="anchor" href="#schritt-2a-rendererparser-nachrüsten-nur-bei-hf-ggufs">#</a>Schritt 2a: Renderer/Parser nachrüsten (nur bei HF-GGUFs)</h3>
+<p>Das geht nur, wenn das GGUF zur selben Modellfamilie gehört wie ein offizielles Paket mit Parser. Dann muss es dasselbe Tool-Call-Format gelernt haben. Welche Werte passen, zeigt das offizielle Paket der Familie:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec ollama ollama show qwen3-coder:30b --modelfile | grep -E &quot;^(RENDERER|PARSER)&quot;
+# RENDERER qwen3-coder
+# PARSER qwen3-coder</code></pre></div>
+<p>Diese beiden Zeilen kommen in Schritt 3 zusätzlich ins Modelfile. Ein Qwen3-Coder-Parser auf einem Modell einer anderen Familie (z. B. Qwen3.5/3.6, Gemma) ist geraten. Er funktioniert nur, wenn das Format zufällig übereinstimmt. Der Praxistest in Schritt 7 entscheidet.</p>
+<h2 id="schritt-3-modelfile-schreiben-und-variante-erzeugen"><a class="anchor" href="#schritt-3-modelfile-schreiben-und-variante-erzeugen">#</a>Schritt 3: Modelfile schreiben und Variante erzeugen</h2>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec ollama sh -c &#x27;
+  printf &quot;FROM &lt;basis&gt;\nPARAMETER num_ctx 65536\nPARAMETER num_thread 8\n&quot; &gt; /tmp/Modelfile &amp;&amp;
+  ollama create &lt;name&gt; -f /tmp/Modelfile&#x27;</code></pre></div>
+<div class="table"><table><thead><tr><th>Zeile</th><th>Warum</th></tr></thead><tbody><tr><td><code>FROM &lt;basis&gt;</code></td><td>Übernimmt Gewichte, Template, <code>RENDERER</code> und <code>PARSER</code> des Basis-Modells. Es wird nichts kopiert, die Blobs werden geteilt</td></tr><tr><td><code>PARAMETER num_ctx 65536</code></td><td>Hermes verlangt mindestens 64k Kontext, sonst gibt es einen Kontextfehler beim Start</td></tr><tr><td><code>PARAMETER num_thread 8</code></td><td>Physische Kerne des 5700G, nicht die 16 Threads</td></tr><tr><td>bei 2a zusätzlich: <code>RENDERER …</code> / <code>PARSER …</code></td><td>Tool-Call-Erkennung für HF-GGUFs</td></tr></tbody></table></div>
+<p><strong>Keine</strong> Sampling-Werte (<code>temperature</code>, <code>top_p</code>) ins Modelfile schreiben, um Hermes damit zu steuern. Ollamas OpenAI-Endpunkt <code>/v1</code> ignoriert sie und setzt 1.0, wenn der Client nichts mitschickt. Die Werte kommen in Schritt 5 in die Hermes-Config.</p>
+<h2 id="schritt-4-variante-prüfen"><a class="anchor" href="#schritt-4-variante-prüfen">#</a>Schritt 4: Variante prüfen</h2>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec ollama ollama show &lt;name&gt;                                  # tools, context length
+docker compose exec ollama ollama show &lt;name&gt; --modelfile | grep -E &quot;^(FROM|RENDERER|PARSER|PARAMETER)&quot;</code></pre></div>
+<p>Erwartet sind <code>RENDERER</code> und <code>PARSER</code> (geerbt oder ergänzt), dazu <code>num_ctx 65536</code> und <code>num_thread 8</code>.</p>
+<p>Schnelltest über die OpenAI-API:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>curl -s http://localhost:11434/v1/chat/completions -H &quot;Content-Type: application/json&quot; -d &#x27;{
+  &quot;model&quot;: &quot;&lt;name&gt;&quot;,
+  &quot;temperature&quot;: 0.7, &quot;top_p&quot;: 0.8,
+  &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;What is the weather in Berlin?&quot;}],
+  &quot;tools&quot;: [{&quot;type&quot;: &quot;function&quot;, &quot;function&quot;: {&quot;name&quot;: &quot;get_weather&quot;,
+    &quot;description&quot;: &quot;Get current weather for a city&quot;,
+    &quot;parameters&quot;: {&quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: {&quot;city&quot;: {&quot;type&quot;: &quot;string&quot;}},
+    &quot;required&quot;: [&quot;city&quot;]}}}]
+}&#x27; | jq &#x27;.choices[0].message&#x27;</code></pre></div>
+<p>Erwartet: <code>&quot;content&quot;: &quot;&quot;</code> und ein <code>tool_calls</code>-Array. Dieser Test ist <strong>notwendig, aber nicht hinreichend</strong>. Er nutzt einen Mini-Prompt, Hermes schickt ~6.000 Token.</p>
+<p><strong>RAM:</strong> Mit <code>OLLAMA_NUM_PARALLEL=2</code> bekommt jeder Slot den vollen <code>num_ctx</code>. Der KV-Cache reicht also für 2×64k. Bei Qwen3-Coder-30B-A3B sind das geschätzt ~12 GB zusätzlich zu ~19 GB Gewichten. Nach dem ersten Laden mit <code>docker compose exec ollama ollama ps</code> prüfen.</p>
+<h2 id="schritt-5-hermes-config-anpassen"><a class="anchor" href="#schritt-5-hermes-config-anpassen">#</a>Schritt 5: Hermes-Config anpassen</h2>
+<p>Zuerst prüfen, welche Blöcke es schon gibt. Doppelte Top-Level-Schlüssel überschreiben sich stillschweigend:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>grep -n &quot;^providers:\|^model:\|^agent:\|^auxiliary:&quot; hermes-data/config.yaml</code></pre></div>
+<p>Dann in <code>hermes-data/config.yaml</code> <strong>direkt in der Datei</strong> ändern (<code>hermes config set</code> hatte zeitweise keine Wirkung):</p>
+<div class="code"><span class="lang">yaml</span><button class="copy" type="button">Kopieren</button><pre><code>providers:
+  &lt;provider&gt;:
+    api: http://ollama:11434/v1        # Service-Name, nie localhost
+    extra_body:
+      temperature: 0.7                 # empfohlene Werte des Modells (Model Card)
+      top_p: 0.8
+
+model:
+  default: &lt;name&gt;
+  provider: custom:&lt;provider&gt;</code></pre></div>
+<ul><li><strong>Sampling-Werte</strong> aus der Model Card des Modells nehmen. Für Qwen3-Coder sind das 0.7 / 0.8. Bei Temperatur 1.0 kamen die Tool-Calls als JSON-Text.</li><li>Hat ein weiteres Modell <strong>andere</strong> Empfehlungen, bekommt es einen <strong>zweiten benannten Provider</strong> mit eigenem <code>extra_body</code>, statt den ersten zu ändern.</li><li><code>auxiliary.*.provider: main</code> und <code>agent.disabled_toolsets</code> gelten unabhängig vom Modell (siehe <a href="index.html#3-dateien">README, Abschnitt 3</a>). Bei einem neuen Stack einmalig setzen.</li></ul>
+<p>Kontrolle:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec hermes hermes config get model
+docker compose exec hermes hermes config get providers</code></pre></div>
+<h2 id="schritt-6-hermes-neu-starten-und-modell-aktivieren"><a class="anchor" href="#schritt-6-hermes-neu-starten-und-modell-aktivieren">#</a>Schritt 6: Hermes neu starten und Modell aktivieren</h2>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose up -d hermes                  # nur Hermes, Ollama behält das Modell im RAM
+docker compose exec -it hermes hermes</code></pre></div>
+<p>Im Chat:</p>
+<div class="code"><button class="copy" type="button">Kopieren</button><pre><code>/model custom:&lt;provider&gt;:&lt;name&gt;
+/reasoning none --global
+/new</code></pre></div>
+<ul><li><code>/model</code> <strong>immer mit <code>custom:&lt;provider&gt;:</code></strong> angeben. Sonst greift <code>extra_body</code> nicht, und es kommt Temperatur 1.0 an.</li><li><code>/reasoning none --global</code> nur bei Modellen ohne Thinking (Qwen3-Coder). Sonst gibt es einen 400-Fehler <code>does not support thinking</code>.</li><li><code>/new</code> ist Pflicht. Alte Sessions mit fehlerhaften Aufrufen werden vom Modell nachgeahmt.</li></ul>
+<h2 id="schritt-7-praxistest-in-hermes"><a class="anchor" href="#schritt-7-praxistest-in-hermes">#</a>Schritt 7: Praxistest in Hermes</h2>
+<p>Im Chat: <em>„Liste alle Dateien in /workspace auf.“</em></p>
+<p>Der erste Turn dauert mit kaltem Cache etwa 1,5 Minuten. <strong>Nicht abbrechen.</strong> Erfolg heißt: Hermes führt den Befehl aus und zeigt die Dateiliste, nicht einen Text wie <code>{&quot;name&quot;: &quot;terminal&quot;, …}</code>.</p>
+<p>Parallel in einem zweiten Terminal die Ollama-Logs prüfen:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose logs ollama --since 5m | grep -E &quot;temp =|top_p|truncated|n_ctx_slot|cached n_tokens|task.n_tokens&quot;</code></pre></div>
+<div class="table"><table><thead><tr><th>Logzeile</th><th>Erwartet</th><th>Wenn nicht</th></tr></thead><tbody><tr><td><code>temp =</code> / <code>top_p =</code></td><td><code>0.700</code> / <code>0.800</code></td><td><code>extra_body</code> greift nicht: <code>/model custom:&lt;provider&gt;:&lt;name&gt;</code> und <code>providers</code>-Block prüfen</td></tr><tr><td><code>n_ctx_slot</code></td><td><code>65536</code></td><td><code>num_ctx</code> fehlt im Modelfile</td></tr><tr><td><code>truncated</code></td><td><code>0</code></td><td>Kontext zu klein</td></tr><tr><td><code>cached n_tokens</code> beim Folge-Turn</td><td>fast so groß wie <code>task.n_tokens</code></td><td>Cache wird verdrängt: <code>OLLAMA_NUM_PARALLEL=2</code>, <code>ollama ps</code> auf ein drittes Modell prüfen</td></tr></tbody></table></div>
+<p>Zum Schluss auf Warnungen prüfen:</p>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec hermes hermes logs --level WARNING</code></pre></div>
+<p>Hier darf weder <code>nous_auth_missing</code> noch <code>does not support thinking</code> auftauchen.</p>
+<h2 id="schritt-8-optional-in-opencode-eintragen"><a class="anchor" href="#schritt-8-optional-in-opencode-eintragen">#</a>Schritt 8 (optional): In OpenCode eintragen</h2>
+<p>In <code>opencode.json</code> unter <code>provider.ollama.models</code>:</p>
+<div class="code"><span class="lang">json</span><button class="copy" type="button">Kopieren</button><pre><code>&quot;&lt;name&gt;&quot;: {
+  &quot;name&quot;: &quot;&lt;Anzeigename&gt;&quot;,
+  &quot;limit&quot;: { &quot;context&quot;: 65536, &quot;output&quot;: 16384 },
+  &quot;options&quot;: { &quot;temperature&quot;: 0.7, &quot;top_p&quot;: 0.8 }
+}</code></pre></div>
+<p>Beide Clients sollten dasselbe Modell nutzen. Sonst laufen zwei Runner mit doppelten Gewichten, und bei <code>OLLAMA_MAX_LOADED_MODELS=2</code> verdrängt das <code>small_model</code> eines davon.</p>
+<h2 id="kurzfassung-am-beispiel-coder-64k"><a class="anchor" href="#kurzfassung-am-beispiel-coder-64k">#</a>Kurzfassung (am Beispiel <code>coder-64k</code>)</h2>
+<div class="code"><span class="lang">bash</span><button class="copy" type="button">Kopieren</button><pre><code>docker compose exec ollama ollama pull qwen3-coder:30b
+docker compose exec ollama ollama show qwen3-coder:30b --modelfile | grep -E &quot;^(RENDERER|PARSER)&quot;
+docker compose exec ollama sh -c &#x27;
+  printf &quot;FROM qwen3-coder:30b\nPARAMETER num_ctx 65536\nPARAMETER num_thread 8\n&quot; &gt; /tmp/Modelfile &amp;&amp;
+  ollama create coder-64k -f /tmp/Modelfile&#x27;
+docker compose exec ollama ollama show coder-64k --modelfile | grep -E &quot;^(RENDERER|PARSER|PARAMETER)&quot;
+# config.yaml: providers.ollama-local.extra_body {temperature: 0.7, top_p: 0.8}, model.default coder-64k
+docker compose up -d hermes
+# Im Chat: /model custom:ollama-local:coder-64k → /reasoning none --global → /new → Praxistest
+docker compose logs ollama --since 5m | grep -E &quot;temp =|top_p|truncated&quot;</code></pre></div>
+<h2 id="checkliste"><a class="anchor" href="#checkliste">#</a>Checkliste</h2>
+<ul><li class="task"><label><input type="checkbox"> MoE-Modell, offizielles Ollama-Paket, <code>tools</code> unter Capabilities</label></li><li class="task"><label><input type="checkbox"> <code>RENDERER</code> und <code>PARSER</code> vorhanden (geerbt oder ergänzt)</label></li><li class="task"><label><input type="checkbox"> <code>num_ctx 65536</code>, <code>num_thread 8</code></label></li><li class="task"><label><input type="checkbox"> Benannter Provider mit <code>extra_body</code> (Werte aus der Model Card)</label></li><li class="task"><label><input type="checkbox"> <code>model.provider: custom:&lt;provider&gt;</code></label></li><li class="task"><label><input type="checkbox"> <code>/model custom:&lt;provider&gt;:&lt;name&gt;</code>, <code>/reasoning none --global</code>, <code>/new</code></label></li><li class="task"><label><input type="checkbox"> Praxistest: Dateiliste statt JSON-Text</label></li><li class="task"><label><input type="checkbox"> Logs: <code>temp = 0.700</code>, <code>truncated = 0</code>, Cache-Treffer im Folge-Turn</label></li></ul>
+    <footer>Lokaler KI-Stack · Ollama + OpenCode + Hermes Agent</footer>
+  </main>
+</div>
+<script>
+document.querySelectorAll(".copy").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    var text = btn.parentElement.querySelector("code").innerText;
+    var done = function () { btn.textContent = "Kopiert"; setTimeout(function () { btn.textContent = "Kopieren"; }, 1500); };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done);
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) {}
+      ta.remove();
+    }
+  });
+});
+
+var nav = document.getElementById("sidebar");
+var toggle = nav.querySelector(".menu-toggle");
+toggle.addEventListener("click", function () {
+  var open = nav.classList.toggle("open");
+  toggle.setAttribute("aria-expanded", open);
+});
+nav.querySelectorAll("a").forEach(function (a) {
+  a.addEventListener("click", function () { nav.classList.remove("open"); toggle.setAttribute("aria-expanded", false); });
+});
+
+var root = document.documentElement;
+
+document.getElementById("theme").addEventListener("click", function () {
+  var dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+  
+});
+
+var links = {};
+nav.querySelectorAll(":scope > ol > li > a").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
+var observer = new IntersectionObserver(function (entries) {
+  entries.forEach(function (e) {
+    if (e.isIntersecting && links[e.target.id]) {
+      Object.values(links).forEach(function (a) { a.classList.remove("active"); });
+      links[e.target.id].classList.add("active");
+    }
+  });
+}, { rootMargin: "0px 0px -75% 0px" });
+document.querySelectorAll("main h2[id]").forEach(function (h) { observer.observe(h); });
+</script>
+<footer class="vlb vlb-foot"><div><span><span class="sess">[0liver4eld]</span><a href="../../">0:index</a> &nbsp;<a href="../../ueber-mich.html">1:über-mich</a> &nbsp;<a href="../../docs.html">2:docs</a> &nbsp;<a href="../../projekte.html">3:projekte</a> &nbsp;<a href="../../musik.html">4:musik</a> &nbsp;<a href="../../impressum.html">5:impressum</a> &nbsp;<a href="../../datenschutz.html">6:datenschutz</a></span><span>cookies:<b>0</b> tracker:<b>0</b></span></div></footer>
+</body>
+</html>
