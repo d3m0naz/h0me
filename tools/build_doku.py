@@ -54,7 +54,15 @@ DEMOS = {
     "NEON RASTER – Amiga-Style Demo.html": ("demo/neon-raster.html", r'<div id="bar">.*?(?=\n</div>)'),
     "c116-rosette.html": ("demo/c116-rosette.html", r'<header>.*?(?=\n</header>)'),
     "Amiga 2000 · NComm · Nowosibirsk BBS.html": ("demo/a2000-ncomm.html", r'<div class="foot">[^<]*'),
+    "AUR-Warnung_ Angriffs-Demo.html": ("demo/aur-warnung.html", r'<div class="foot">[^<]*?(?=\s*</div>)'),
 }
+# Textkorrekturen beim Kopieren (Originale im pool bleiben unverändert)
+REPLACE = [
+    ("SONDERN DIREKT AUF DEINEM MAC !!!", "SONDERN DIREKT IN DEINEM BROWSER !!!"),
+    ("<b>Ein Zeile reicht:</b>", "<b>Eine Zeile reicht:</b>"),
+    ("AUR-Sicherheits-Demo · Simulation · Quellen zu den Vorfällen siehe Begleittext",
+     "AUR-Sicherheits-Demo · Simulation"),
+]
 FONTS = re.compile(r'<link[^>]*fonts\.(googleapis|gstatic)\.com[^>]*>\n?')
 DEMO_BAR = ('<span class="sitebar"><a href="../ueber-mich.html#werdegang">← über mich</a>'
             '<i>ki-generiert</i><a href="../impressum.html">impressum</a>'
@@ -71,7 +79,8 @@ header .sitebar{margin-left:auto;font-size:12px}
 def build_demo(f, out, anchor):
     html = f.read_text(encoding="utf-8")
     html = FONTS.sub("", html)  # keine externen Schriften, Fallback monospace
-    html = html.replace("SONDERN DIREKT AUF DEINEM MAC !!!", "SONDERN DIREKT IN DEINEM BROWSER !!!")
+    for old, new in REPLACE:
+        html = html.replace(old, new)
     assert "localStorage" not in html and "sessionStorage" not in html, f
     assert not re.search(r'(src|href)="(https?:)?//', html), f
     html = html.replace("</head>", '<meta name="referrer" content="no-referrer">\n'

