@@ -311,5 +311,5 @@ h2 .arg { color: var(--cyan); }
 @media (max-width: 760px) { .topics { grid-template-columns: minmax(0, 1fr); } }
 .top nav a { white-space: nowrap; }
 .inc p a { position: relative; z-index: 1; color: var(--cyan); }
-.hist a.demo { color: var(--amber); text-decoration: none; }
+.hist a.demo { color: var(--amber); text-decoration: none; white-space: nowrap; }
 .hist a.demo:hover, .hist a.demo:focus-visible { background: color-mix(in srgb, var(--amber) 12%, transparent); }
