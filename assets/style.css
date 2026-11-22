@@ -153,6 +153,8 @@ h2 .arg { color: var(--cyan); }
 .inc p { margin: 0; color: var(--muted); font-size: .93rem; }
 .inc .meta { font-family: var(--mono); font-size: .72rem; color: var(--dim); margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 2px 12px; }
 .inc .meta .ai { color: var(--violet); }
+.inc .meta .ok { color: var(--green); }
+.inc .meta .draft { color: var(--amber); }
 .stat { text-align: right; font-family: var(--mono); }
 .stat .v { display: block; font-size: 1.7rem; font-weight: 600; line-height: 1.1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .stat .l { display: block; font-size: .7rem; color: var(--dim); margin-top: 4px; }
