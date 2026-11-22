@@ -1,0 +1,676 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="referrer" content="no-referrer">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+.vlb{font:12.5px/1.5 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;background:#13161a;color:#7d8791;border-bottom:1px solid #262c33}
+.vlb div{max-width:880px;margin:0 auto;padding:9px 24px;display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:space-between;align-items:center}
+.vlb a{color:#d4d9d0;text-decoration:none}.vlb a:hover{color:#7ee787}
+.vlb b{color:#7ee787;font-weight:400}.vlb s{color:#535c66;text-decoration:none}.vlb i{font-style:normal;color:#c49bff}
+.vlb-foot{border-top:1px solid #262c33;border-bottom:0;margin-top:32px}
+.vlb-foot .sess{background:#7ee787;color:#0d0f11;padding:2px 8px;font-weight:600;margin-right:8px}
+@media print{.vlb{display:none}}
+</style>
+</head><body>
+<header class="vlb"><div><a href="../" style="text-decoration:none"><b>ai</b><s>@</s><span style="color:#79c0ff">oliverheld.com</span><s>$</s></a><a href="../docs.html">← docs</a><span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>
+<title>Matrix-Stack auf einem VPS mit Tailscale</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: Runbook – feste Inhaltsleiste links, eine Lesespalte rechts, Schritte als echte Reihenfolge */
+:root {
+  --bg: #f5f7f5;
+  --surface: #ffffff;
+  --fg: #16201b;
+  --muted: #56635c;
+  --line: #d6ddd8;
+  --accent: #0b6b4c;
+  --accent-soft: #e1efe8;
+  --code-bg: #eaeeeb;
+  --warn: #8a5a00;
+  --warn-soft: #fbf0d9;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111714; --surface: #18201c; --fg: #e2e9e5; --muted: #9aa8a0; --line: #2c3832;
+    --accent: #5ec89d; --accent-soft: #1b3229; --code-bg: #1d2622; --warn: #e8b04b; --warn-soft: #33290f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111714; --surface: #18201c; --fg: #e2e9e5; --muted: #9aa8a0; --line: #2c3832;
+  --accent: #5ec89d; --accent-soft: #1b3229; --code-bg: #1d2622; --warn: #e8b04b; --warn-soft: #33290f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 32px; }
+@media (min-width: 960px) { .wrap { grid-template-columns: 232px minmax(0, 1fr); gap: 56px; } }
+
+header.top { max-width: 1120px; margin: 0 auto; padding-block: 48px 32px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 750; font-stretch: 87%; font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.05; margin: 12px 0 16px; text-wrap: balance; letter-spacing: -.01em; }
+.lede { max-width: 62ch; color: var(--muted); font-size: 1.07rem; margin: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 20px; font: 13px/1.4 var(--font-mono); color: var(--muted); }
+
+nav.toc { font-size: 14px; }
+@media (min-width: 960px) { nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; } }
+nav.toc details { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+nav.toc summary { cursor: pointer; padding: 10px 14px; font-weight: 600; list-style: none; }
+nav.toc summary::-webkit-details-marker { display: none; }
+@media (min-width: 960px) { nav.toc details { border: 0; background: transparent; } nav.toc summary { padding: 0 0 10px; pointer-events: none; } }
+nav.toc ol { list-style: none; margin: 0; padding: 0 14px 12px; display: grid; gap: 2px; counter-reset: t; }
+@media (min-width: 960px) { nav.toc ol { padding: 0; } }
+nav.toc li a { display: grid; grid-template-columns: 2.2em 1fr; padding: 4px 0; color: var(--muted); text-decoration: none; }
+nav.toc li a:hover { color: var(--fg); }
+nav.toc li a .n { font: 12px/1.7 var(--font-mono); color: var(--accent); }
+nav.toc .grp { margin-top: 10px; font: 500 11px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 6px 0; }
+
+main { min-width: 0; max-width: 760px; }
+section { padding-block: 8px 28px; scroll-margin-top: 24px; }
+section + section { border-top: 1px solid var(--line); padding-top: 28px; }
+h2 { font-family: var(--font-display); font-weight: 600; font-stretch: 87%; font-size: 1.55rem; line-height: 1.2; margin: 0 0 12px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; text-wrap: balance; }
+h2 .n { font: 500 14px/1 var(--font-mono); color: var(--accent); }
+h3 { font-size: 1rem; font-weight: 600; margin: 22px 0 6px; }
+p, li { max-width: 68ch; }
+p { margin: 0 0 12px; }
+ul, ol { padding-left: 1.3em; margin: 0 0 12px; }
+li + li { margin-top: 4px; }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+
+.pill { font: 500 11px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.pill.req { color: var(--accent); border-color: var(--accent); }
+
+.code { position: relative; margin: 10px 0 16px; }
+.code .label { font: 12px/1 var(--font-mono); color: var(--muted); padding: 0 0 6px; display: block; overflow-wrap: anywhere; }
+.code pre { margin: 0; background: var(--code-bg); border-radius: 6px; padding: 14px 16px; overflow-x: auto; font: 13.5px/1.6 var(--font-mono); tab-size: 2; }
+.code pre code { background: none; padding: 0; font-size: inherit; overflow-wrap: normal; }
+.code .c { color: var(--muted); }
+.copy { position: absolute; right: 8px; bottom: calc(100% - 26px - 22px); font: 500 12px/1 var(--font-body); padding: 6px 9px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
+.code .label + .copy { bottom: auto; top: 26px; }
+.code > .copy:first-child { top: 6px; bottom: auto; }
+.copy:hover { color: var(--fg); }
+.code:has(.copy) pre { padding-right: 76px; }
+
+.note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0 16px; max-width: 68ch; }
+.note.warn { border-color: var(--warn); background: var(--warn-soft); }
+.note strong:first-child { display: block; font-size: .85rem; letter-spacing: .02em; margin-bottom: 2px; }
+.note.warn strong:first-child { color: var(--warn); }
+.note p:last-child { margin-bottom: 0; }
+
+.table { overflow-x: auto; margin: 10px 0 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 500 12px/1.3 var(--font-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+td code { white-space: nowrap; }
+
+.checks { list-style: none; padding: 0; display: grid; gap: 6px; }
+.checks li { position: relative; padding-left: 1.6em; margin-top: 0; }
+.checks li::before { content: "□"; position: absolute; left: 0; top: 0; color: var(--accent); font-family: var(--font-mono); }
+
+footer { max-width: 1120px; margin: 48px auto 0; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+.draft { color: var(--warn); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+</style>
+
+<header class="top">
+  <div class="eyebrow">Runbook · Docker Compose · Synapse + coturn + Tailscale</div>
+  <h1>Matrix-Stack auf einem VPS mit parallelem Tailscale</h1>
+  <p class="lede">Synapse, PostgreSQL, Caddy, Element Web und coturn (TURN) mit Docker Compose. Öffentlich nur das, was Matrix und Anrufe brauchen, Administration ausschließlich über das Tailnet.</p>
+  <div class="meta"><span class="draft">Entwurf · ungetestet</span><span>Zielsystem: Debian 12/13 oder Ubuntu 24.04 LTS</span><span>Stand: November 2026</span></div>
+  <div class="note warn"><strong>Entwurf, ungetestet</strong><p>Diese Anleitung ist noch nicht umgesetzt. Die Befehle sind auf keinem Server durchgespielt. Erst lesen, dann Schritt für Schritt prüfen.</p></div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Inhalt">
+    <details open id="toc-details">
+      <summary>Inhalt</summary>
+      <ol>
+        <li><a href="#ueberblick"><span class="n">01</span>Überblick</a></li>
+        <li><a href="#voraussetzungen"><span class="n">02</span>Voraussetzungen</a></li>
+        <li class="grp">Server vorbereiten</li>
+        <li><a href="#grundsystem"><span class="n">03</span>Grundsystem &amp; Tailscale</a></li>
+        <li><a href="#firewall"><span class="n">04</span>Firewall (ufw)</a></li>
+        <li><a href="#docker"><span class="n">05</span>Docker</a></li>
+        <li class="grp">Matrix</li>
+        <li><a href="#stack"><span class="n">06</span>Stack mit Compose</a></li>
+        <li><a href="#coturn"><span class="n">07</span>coturn (TURN)</a></li>
+        <li><a href="#admin"><span class="n">08</span>Admin über Tailscale</a></li>
+        <li><a href="#benutzer"><span class="n">09</span>Benutzer anlegen</a></li>
+        <li class="grp">Betrieb</li>
+        <li><a href="#tests"><span class="n">10</span>Tests</a></li>
+        <li><a href="#wartung"><span class="n">11</span>Updates &amp; Backup</a></li>
+        <li><a href="#debug"><span class="n">12</span>Fehlersuche</a></li>
+        <li><a href="#checkliste"><span class="n">13</span>Checkliste</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main>
+    <section id="ueberblick">
+      <h2><span class="n">01</span>Überblick und Architektur</h2>
+      <p>Auf dem VPS laufen zwei Welten nebeneinander: die <b>öffentliche Seite</b> (Matrix-Clients, Föderation mit anderen Servern, TURN für Anrufe) und das <b>Tailnet</b> (SSH, Synapse-Admin-API, Wartung). Öffentlich erreichbar sind nur die Ports, die Matrix und TURN zwingend brauchen. Alles andere ist ausschließlich über Tailscale erreichbar.</p>
+      <div class="code"><pre><code>                  Internet
+                     |
+     +---------------+----------------------------+
+     | 80/443 TCP    | 3478, 5349, 49160-49200 UDP | 41641 UDP
+     v               v                            v
+ +-------+      +--------+                   +-----------+
+ | Caddy |      | coturn |                   | Tailscale |
+ +---+---+      +--------+                   +-----+-----+
+     |  Docker-Netz "matrix"                       | tailscale0
+     v                                             v
+ +---------+     +------------+              SSH, Admin-API
+ | Synapse +-----+ PostgreSQL |              (nur Tailnet)
+ +---------+     +------------+</code></pre></div>
+      <h3>Platzhalter</h3>
+      <p>Alle Werte sind Beispiele. Ersetze sie überall durch deine eigenen:</p>
+      <div class="table"><table>
+        <thead><tr><th>Platzhalter</th><th>Bedeutung</th></tr></thead>
+        <tbody>
+          <tr><td><code>example.org</code></td><td>Deine Domain, wird Teil der Matrix-IDs (<code>@anna:example.org</code>)</td></tr>
+          <tr><td><code>matrix.example.org</code></td><td>Hostname des Homeservers (Client-API und Föderation)</td></tr>
+          <tr><td><code>element.example.org</code></td><td>Element Web (optional)</td></tr>
+          <tr><td><code>turn.example.org</code></td><td>TURN-Server</td></tr>
+          <tr><td><code>203.0.113.10</code></td><td>Öffentliche IPv4 des VPS</td></tr>
+          <tr><td><code>100.101.102.103</code></td><td>Tailscale-IP des VPS (aus <code>tailscale ip -4</code>)</td></tr>
+          <tr><td><code>vps</code></td><td>Tailscale-/MagicDNS-Name des VPS</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note warn"><strong>Achtung</strong><p>Der <code>server_name</code> (hier <code>example.org</code>) lässt sich nach der ersten Inbetriebnahme <b>nicht mehr ändern</b>. Vorher bewusst wählen.</p></div>
+    </section>
+
+    <section id="voraussetzungen">
+      <h2><span class="n">02</span>Voraussetzungen</h2>
+      <ul>
+        <li>VPS mit öffentlicher IPv4 (IPv6 optional), mindestens 2 vCPU, 2–4 GB RAM, 20 GB SSD</li>
+        <li>Debian 12/13 oder Ubuntu 24.04 LTS, Root- bzw. sudo-Zugang</li>
+        <li>Tailscale ist installiert und der VPS im Tailnet angemeldet (<code>tailscale status</code>)</li>
+        <li>Eine Domain, deren DNS du verwalten kannst</li>
+        <li>Eingehende Ports beim Anbieter nicht durch eine externe Firewall blockiert (sonst in der Cloud-Firewall dieselben Ports freigeben wie in Schritt 04)</li>
+      </ul>
+      <h3>DNS-Einträge</h3>
+      <div class="table"><table>
+        <thead><tr><th>Name</th><th>Typ</th><th>Wert</th></tr></thead>
+        <tbody>
+          <tr><td><code>matrix.example.org</code></td><td>A / AAAA</td><td><code>203.0.113.10</code></td></tr>
+          <tr><td><code>element.example.org</code></td><td>A / AAAA</td><td><code>203.0.113.10</code></td></tr>
+          <tr><td><code>turn.example.org</code></td><td>A / AAAA</td><td><code>203.0.113.10</code></td></tr>
+          <tr><td><code>example.org</code></td><td>A / AAAA</td><td><code>203.0.113.10</code> (nur, wenn die Domain auch auf dem VPS liegt, siehe 06)</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><strong>Hinweis</strong><p>Für <code>turn.example.org</code> darf <b>kein</b> CDN-Proxy aktiv sein (z.&nbsp;B. Cloudflare „orange cloud“). TURN braucht die echte IP, also „DNS only“. Für die anderen Hosts ebenfalls empfohlen.</p></div>
+    </section>
+
+    <section id="grundsystem">
+      <h2><span class="n">03</span>Grundsystem und Tailscale <span class="pill req">Pflicht</span></h2>
+      <h3>System aktualisieren</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo apt update &amp;&amp; sudo apt full-upgrade -y
+sudo apt install -y curl ca-certificates gnupg ufw unattended-upgrades
+sudo dpkg-reconfigure -plow unattended-upgrades</code></pre></div>
+      <h3>Tailscale prüfen</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>tailscale status                 <span class="c"># VPS muss als "online" erscheinen</span>
+tailscale ip -4                  <span class="c"># Tailscale-IP merken, z. B. 100.101.102.103</span>
+sudo systemctl is-enabled tailscaled</code></pre></div>
+      <p>Von deinem Rechner aus testen, dass SSH über das Tailnet funktioniert, <b>bevor</b> die Firewall scharf geschaltet wird:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>ssh root@vps          <span class="c"># MagicDNS-Name oder 100.x.y.z</span></code></pre></div>
+      <p>Optional Tailscale SSH aktivieren, dann regeln die Tailscale-ACLs den SSH-Zugriff:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo tailscale set --ssh</code></pre></div>
+      <h3>Was Tailscale auf dem VPS belegt</h3>
+      <ul>
+        <li><b>UDP 41641</b> für direkte WireGuard-Verbindungen (eingehend freigeben, sonst Umweg über DERP)</li>
+        <li>Das Interface <code>tailscale0</code> mit Adressen aus <code>100.64.0.0/10</code> und <code>fd7a:115c:a1e0::/48</code></li>
+        <li>Ausgehend STUN zu den DERP-Servern von Tailscale, das kollidiert <b>nicht</b> mit coturn</li>
+      </ul>
+      <div class="note warn"><strong>Achtung</strong><p>Läuft auf demselben VPS zusätzlich ein eigener DERP-Server (<code>derper</code>), belegt der ebenfalls UDP 3478. Dann coturn auf einen anderen Port legen, z.&nbsp;B. <code>listening-port=3479</code>, und die Firewall anpassen.</p></div>
+    </section>
+
+    <section id="firewall">
+      <h2><span class="n">04</span>Firewall (ufw) <span class="pill req">Pflicht</span></h2>
+      <p>Öffentlich freigegeben werden nur Web, TURN und der Tailscale-Port. SSH ist ausschließlich über <code>tailscale0</code> erreichbar.</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+sudo ufw allow in on tailscale0          <span class="c"># alles aus dem Tailnet</span>
+sudo ufw allow 41641/udp                 <span class="c"># Tailscale direkt</span>
+
+sudo ufw allow 80/tcp                    <span class="c"># Let's Encrypt / HTTP->HTTPS</span>
+sudo ufw allow 443/tcp                   <span class="c"># Matrix Client-API + Föderation</span>
+sudo ufw allow 443/udp                   <span class="c"># HTTP/3 (optional)</span>
+
+sudo ufw allow 3478                      <span class="c"># TURN/STUN (tcp+udp)</span>
+sudo ufw allow 5349                      <span class="c"># TURN über TLS (tcp+udp)</span>
+sudo ufw allow 49160:49200/udp           <span class="c"># TURN-Relay-Ports</span>
+
+sudo ufw enable
+sudo ufw status verbose</code></pre></div>
+      <div class="note warn"><strong>Achtung</strong><p>Erst aktivieren, wenn <code>ssh root@vps</code> über Tailscale funktioniert. Ein offenes Notfall-Terminal (Webkonsole des Anbieters) bereithalten.</p></div>
+      <div class="note"><strong>Hinweis</strong><p>Docker umgeht ufw bei veröffentlichten Ports (<code>ports:</code> in Compose). Deshalb veröffentlicht dieses Setup nur Caddy (80/443) öffentlich. Synapse und PostgreSQL sind öffentlich nicht erreichbar, Synapse ist zusätzlich nur an die Tailscale-IP gebunden (Schritt 06).</p></div>
+      <h3>Portübersicht</h3>
+      <div class="table"><table>
+        <thead><tr><th>Port</th><th>Protokoll</th><th>Dienst</th><th>Erreichbar</th></tr></thead>
+        <tbody>
+          <tr><td>22</td><td>TCP</td><td>SSH</td><td>nur Tailnet</td></tr>
+          <tr><td>80, 443</td><td>TCP (443 auch UDP)</td><td>Caddy: Matrix, Element, Let's Encrypt</td><td>öffentlich</td></tr>
+          <tr><td>3478</td><td>UDP + TCP</td><td>coturn STUN/TURN</td><td>öffentlich</td></tr>
+          <tr><td>5349</td><td>UDP + TCP</td><td>coturn TURN über TLS</td><td>öffentlich</td></tr>
+          <tr><td>49160–49200</td><td>UDP</td><td>coturn Relay (Medien)</td><td>öffentlich</td></tr>
+          <tr><td>41641</td><td>UDP</td><td>Tailscale WireGuard</td><td>öffentlich</td></tr>
+          <tr><td>8008</td><td>TCP</td><td>Synapse direkt (Admin-API)</td><td>nur Tailnet</td></tr>
+          <tr><td>5432</td><td>TCP</td><td>PostgreSQL</td><td>nur Docker-intern</td></tr>
+        </tbody>
+      </table></div>
+      <p>Der Relay-Bereich bestimmt die Zahl gleichzeitiger Anrufe (grob 2 Ports pro Teilnehmer). 41 Ports reichen für einen kleinen Server. Für mehr Nutzer den Bereich vergrößern, aber nie über 41641 legen.</p>
+    </section>
+
+    <section id="docker">
+      <h2><span class="n">05</span>Docker installieren <span class="pill req">Pflicht</span></h2>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>curl -fsSL https://get.docker.com | sudo sh
+sudo systemctl enable --now docker
+docker compose version</code></pre></div>
+      <p>Docker soll erst nach Tailscale starten, weil Synapse an die Tailscale-IP gebunden wird:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo tee /etc/systemd/system/docker.service.d/after-tailscale.conf &lt;&lt;'EOF'
+[Unit]
+After=tailscaled.service
+Wants=tailscaled.service
+EOF
+sudo systemctl daemon-reload</code></pre></div>
+    </section>
+
+    <section id="stack">
+      <h2><span class="n">06</span>Matrix-Stack mit Docker Compose <span class="pill req">Pflicht</span></h2>
+      <h3>Verzeichnisse und Geheimnisse</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo mkdir -p /opt/matrix/{synapse,postgres,caddy/data,caddy/config,element}
+cd /opt/matrix
+
+openssl rand -hex 32     <span class="c"># -> POSTGRES_PASSWORD</span>
+openssl rand -hex 32     <span class="c"># -> TURN_SECRET (für coturn und Synapse)</span></code></pre></div>
+      <p>Datei <code>/opt/matrix/.env</code> anlegen und auf Rechte 600 setzen:</p>
+      <div class="code"><span class="label">/opt/matrix/.env</span><pre><code>POSTGRES_PASSWORD=&lt;erstes-geheimnis&gt;
+TS_IP=100.101.102.103</code></pre></div>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo chmod 600 /opt/matrix/.env</code></pre></div>
+
+      <h3>docker-compose.yml</h3>
+      <div class="code"><span class="label">/opt/matrix/docker-compose.yml</span><button class="copy" type="button">Kopieren</button><pre><code>services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: synapse
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: synapse
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    networks: [matrix]
+
+  synapse:
+    image: matrixdotorg/synapse:latest
+    restart: unless-stopped
+    depends_on: [postgres]
+    volumes:
+      - ./synapse:/data
+    ports:
+      - "${TS_IP}:8008:8008"        <span class="c"># nur über Tailscale erreichbar</span>
+    networks: [matrix]
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy/data:/data
+      - ./caddy/config:/config
+    networks: [matrix]
+
+  element:
+    image: vectorim/element-web:latest
+    restart: unless-stopped
+    volumes:
+      - ./element/config.json:/app/config.json:ro
+    networks: [matrix]
+
+networks:
+  matrix:</code></pre></div>
+      <div class="note"><strong>Hinweis</strong><p>Für den Produktivbetrieb feste Versionen statt <code>latest</code> eintragen (z.&nbsp;B. <code>matrixdotorg/synapse:v1.xxx.0</code>) und gezielt aktualisieren.</p></div>
+
+      <h3>Synapse-Konfiguration erzeugen</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>cd /opt/matrix
+docker run -it --rm -v ./synapse:/data \
+  -e SYNAPSE_SERVER_NAME=example.org \
+  -e SYNAPSE_REPORT_STATS=no \
+  matrixdotorg/synapse:latest generate</code></pre></div>
+      <p>Das erzeugt <code>synapse/homeserver.yaml</code>, den Signaturschlüssel und die Log-Konfiguration. Den Signaturschlüssel (<code>*.signing.key</code>) unbedingt sichern.</p>
+
+      <h3>homeserver.yaml anpassen</h3>
+      <p>Folgende Abschnitte in <code>/opt/matrix/synapse/homeserver.yaml</code> ersetzen bzw. ergänzen:</p>
+      <div class="code"><span class="label">/opt/matrix/synapse/homeserver.yaml</span><button class="copy" type="button">Kopieren</button><pre><code>server_name: "example.org"
+public_baseurl: "https://matrix.example.org/"
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [client, federation]
+        compress: false
+
+database:
+  name: psycopg2
+  args:
+    user: synapse
+    password: "&lt;POSTGRES_PASSWORD&gt;"
+    database: synapse
+    host: postgres
+    cp_min: 5
+    cp_max: 10
+
+<span class="c"># Registrierung: nur durch Admin (siehe Schritt 09)</span>
+enable_registration: false
+
+<span class="c"># TURN</span>
+turn_uris:
+  - "turn:turn.example.org:3478?transport=udp"
+  - "turn:turn.example.org:3478?transport=tcp"
+  - "turns:turn.example.org:5349?transport=tcp"
+turn_shared_secret: "&lt;TURN_SECRET&gt;"
+turn_user_lifetime: 86400000
+turn_allow_guests: false
+
+<span class="c"># Medien</span>
+max_upload_size: 100M
+url_preview_enabled: false</code></pre></div>
+      <div class="note warn"><strong>Achtung</strong><p>Das Passwort muss hier im Klartext stehen (Synapse liest die <code>.env</code> nicht). Datei schützen: <code>sudo chmod 640 synapse/homeserver.yaml</code>. Der Container läuft als UID 991, Besitzer ggf. mit <code>sudo chown -R 991:991 synapse</code> setzen.</p></div>
+
+      <h3>Caddyfile</h3>
+      <div class="code"><span class="label">/opt/matrix/Caddyfile</span><button class="copy" type="button">Kopieren</button><pre><code><span class="c"># Delegation: Matrix-IDs @user:example.org, Server läuft auf matrix.example.org</span>
+example.org {
+    header /.well-known/matrix/* Content-Type application/json
+    header /.well-known/matrix/* Access-Control-Allow-Origin *
+    respond /.well-known/matrix/server `{"m.server":"matrix.example.org:443"}`
+    respond /.well-known/matrix/client `{"m.homeserver":{"base_url":"https://matrix.example.org"}}`
+}
+
+matrix.example.org {
+    reverse_proxy /_matrix/* synapse:8008
+    reverse_proxy /_synapse/client/* synapse:8008
+    <span class="c"># /_synapse/admin wird bewusst NICHT öffentlich weitergeleitet</span>
+}
+
+element.example.org {
+    reverse_proxy element:80
+}
+
+<span class="c"># Nur damit Caddy ein Zertifikat für coturn holt (Schritt 07)</span>
+turn.example.org {
+    respond "TURN" 200
+}</code></pre></div>
+      <div class="note"><strong>Hinweis</strong><p>Liegt die Website von <code>example.org</code> woanders, entfällt der erste Block. Dann müssen die beiden <code>/.well-known/matrix/</code>-Antworten auf dem dortigen Webserver mit demselben JSON ausgeliefert werden.</p></div>
+      <p>Durch die Delegation über <code>.well-known</code> läuft die Föderation über Port 443. Port 8448 muss nicht geöffnet werden.</p>
+
+      <h3>Element Web konfigurieren</h3>
+      <div class="code"><span class="label">/opt/matrix/element/config.json</span><button class="copy" type="button">Kopieren</button><pre><code>{
+  "default_server_config": {
+    "m.homeserver": {
+      "base_url": "https://matrix.example.org",
+      "server_name": "example.org"
+    }
+  },
+  "disable_custom_urls": false,
+  "disable_guests": true,
+  "brand": "Element",
+  "default_theme": "light"
+}</code></pre></div>
+
+      <h3>Stack starten</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>cd /opt/matrix
+docker compose up -d
+docker compose ps
+docker compose logs -f synapse      <span class="c"># auf Fehler achten, Strg+C beendet</span></code></pre></div>
+      <p>Erster Funktionstest:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>curl https://matrix.example.org/_matrix/client/versions
+curl https://example.org/.well-known/matrix/server
+curl http://vps:8008/health          <span class="c"># von einem Gerät im Tailnet -> "OK"</span></code></pre></div>
+    </section>
+
+    <section id="coturn">
+      <h2><span class="n">07</span>coturn (TURN-Server) <span class="pill req">Pflicht</span></h2>
+      <p>coturn läuft direkt auf dem Host, nicht in Docker. So entfällt das Durchreichen hunderter UDP-Ports, und coturn sieht die echten Client-IPs.</p>
+      <h3>Installation</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo apt install -y coturn
+<span class="c"># Nur ältere Pakete: Dienst in /etc/default/coturn freischalten</span>
+sudo sed -i 's/^#TURNSERVER_ENABLED=1/TURNSERVER_ENABLED=1/' /etc/default/coturn 2&gt;/dev/null || true</code></pre></div>
+      <h3>Konfiguration</h3>
+      <p>Die vorhandene Datei sichern und durch folgenden Inhalt ersetzen:</p>
+      <div class="code"><span class="label">/etc/turnserver.conf</span><button class="copy" type="button">Kopieren</button><pre><code><span class="c"># --- Netzwerk: nur öffentliche IP, NICHT tailscale0 ---</span>
+listening-ip=203.0.113.10
+relay-ip=203.0.113.10
+external-ip=203.0.113.10
+listening-port=3478
+tls-listening-port=5349
+min-port=49160
+max-port=49200
+
+<span class="c"># --- Authentifizierung über das gemeinsame Geheimnis mit Synapse ---</span>
+use-auth-secret
+static-auth-secret=&lt;TURN_SECRET&gt;
+realm=turn.example.org
+
+<span class="c"># --- TLS (Zertifikate siehe unten) ---</span>
+cert=/etc/coturn/certs/turn.crt
+pkey=/etc/coturn/certs/turn.key
+no-tlsv1
+no-tlsv1_1
+
+<span class="c"># --- Härtung ---</span>
+fingerprint
+no-cli
+no-multicast-peers
+no-software-attribute
+user-quota=12
+total-quota=1200
+
+<span class="c"># --- KEIN Relaying ins Tailnet oder in private Netze ---</span>
+denied-peer-ip=100.64.0.0-100.127.255.255
+denied-peer-ip=fd7a:115c:a1e0::-fd7a:115c:a1e0:ffff:ffff:ffff:ffff:ffff
+denied-peer-ip=0.0.0.0-0.255.255.255
+denied-peer-ip=10.0.0.0-10.255.255.255
+denied-peer-ip=127.0.0.0-127.255.255.255
+denied-peer-ip=169.254.0.0-169.254.255.255
+denied-peer-ip=172.16.0.0-172.31.255.255
+denied-peer-ip=192.168.0.0-192.168.255.255
+denied-peer-ip=::1
+denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+
+log-file=syslog
+simple-log</code></pre></div>
+      <div class="note warn"><strong>Achtung</strong><p>Die <code>denied-peer-ip</code>-Zeilen sind der wichtigste Teil dieses Setups. Ohne sie könnte jeder Matrix-Nutzer mit TURN-Zugangsdaten den VPS als Sprungbrett ins Tailnet (<code>100.64.0.0/10</code>), ins Docker-Netz (<code>172.16.0.0/12</code>) oder auf lokale Dienste (<code>127.0.0.1</code>, z.&nbsp;B. PostgreSQL oder die Synapse-Admin-API) nutzen.</p></div>
+      <p>Hat der VPS auch eine öffentliche IPv6, kann sie zusätzlich angegeben werden (<code>listening-ip</code>/<code>relay-ip</code> je einmal pro Adresse).</p>
+
+      <h3>TLS-Zertifikat von Caddy übernehmen</h3>
+      <p>Caddy holt bereits ein Zertifikat für <code>turn.example.org</code> (Schritt 06). Ein kleines Skript kopiert es mit passenden Rechten zu coturn:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo mkdir -p /etc/coturn/certs
+sudo tee /usr/local/bin/coturn-certsync &lt;&lt;'EOF'
+#!/bin/sh
+set -e
+SRC=/opt/matrix/caddy/data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/turn.example.org
+DST=/etc/coturn/certs
+[ -f "$SRC/turn.example.org.crt" ] || exit 0
+if ! cmp -s "$SRC/turn.example.org.crt" "$DST/turn.crt"; then
+  install -m 644 -o root -g turnserver "$SRC/turn.example.org.crt" "$DST/turn.crt"
+  install -m 640 -o root -g turnserver "$SRC/turn.example.org.key" "$DST/turn.key"
+  systemctl restart coturn
+fi
+EOF
+sudo chmod 755 /usr/local/bin/coturn-certsync
+sudo /usr/local/bin/coturn-certsync
+
+<span class="c"># täglich prüfen</span>
+echo '17 4 * * * root /usr/local/bin/coturn-certsync' | sudo tee /etc/cron.d/coturn-certsync</code></pre></div>
+      <div class="note"><strong>Hinweis</strong><p>Der Pfad gilt für Let's Encrypt. Ist Caddy auf ZeroSSL ausgewichen, mit <code>sudo ls /opt/matrix/caddy/data/caddy/certificates/</code> nachsehen und <code>SRC</code> anpassen.</p></div>
+
+      <h3>coturn starten</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo systemctl enable --now coturn
+sudo systemctl status coturn
+sudo ss -lunpt | grep turnserver     <span class="c"># lauscht auf 203.0.113.10:3478/5349</span></code></pre></div>
+      <p>In der Ausgabe von <code>ss</code> darf <b>keine</b> 100.x-Adresse auftauchen.</p>
+    </section>
+
+    <section id="admin">
+      <h2><span class="n">08</span>Admin-Zugriff über Tailscale</h2>
+      <p>Die Synapse-Admin-API ist öffentlich nicht erreichbar, wohl aber über das Tailnet unter <code>http://vps:8008</code>. Von jedem Gerät im Tailnet:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code><span class="c"># Access-Token eines Admins (Element: Einstellungen > Hilfe &amp; Info > Erweitert)</span>
+TOKEN=syt_...
+
+curl -H "Authorization: Bearer $TOKEN" \
+  http://vps:8008/_synapse/admin/v2/users?limit=10
+
+curl -H "Authorization: Bearer $TOKEN" \
+  http://vps:8008/_synapse/admin/v1/server_version</code></pre></div>
+      <p>Grafische Oberflächen wie <b>synapse-admin</b> lassen sich lokal starten und auf <code>http://vps:8008</code> zeigen. Wer HTTPS im Tailnet möchte, nutzt <code>tailscale serve</code>:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo tailscale serve --bg --https=8448 http://100.101.102.103:8008</code></pre></div>
+      <div class="note"><strong>Hinweis</strong><p>Den Zugriff auf den VPS in den Tailscale-ACLs zusätzlich auf Admin-Geräte bzw. -Nutzer einschränken (z.&nbsp;B. nur <code>group:admins</code> auf <code>tag:matrix:22,8008</code>).</p></div>
+    </section>
+
+    <section id="benutzer">
+      <h2><span class="n">09</span>Benutzer anlegen</h2>
+      <p>Ersten Admin anlegen (fragt interaktiv nach Name und Passwort):</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>cd /opt/matrix
+docker compose exec synapse register_new_matrix_user \
+  -c /data/homeserver.yaml --admin http://localhost:8008</code></pre></div>
+      <p>Weitere Nutzer: derselbe Befehl ohne <code>--admin</code>. Alternativ die Registrierung per Token aktivieren (in <code>homeserver.yaml</code>):</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>enable_registration: true
+registration_requires_token: true</code></pre></div>
+      <p>Tokens werden dann über die Admin-API erzeugt:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>curl -X POST -H "Authorization: Bearer $TOKEN" -d '{"uses_allowed": 1}' \
+  http://vps:8008/_synapse/admin/v1/registration_tokens/new</code></pre></div>
+    </section>
+
+    <section id="tests">
+      <h2><span class="n">10</span>Tests</h2>
+      <h3>Föderation</h3>
+      <ul>
+        <li>Im Browser den Matrix Federation Tester (<code>federationtester.matrix.org</code>) aufrufen und <code>example.org</code> prüfen. Alle Prüfungen müssen grün sein.</li>
+        <li>In Element einem öffentlichen Raum beitreten, z.&nbsp;B. <code>#matrix:matrix.org</code>.</li>
+      </ul>
+      <h3>TURN</h3>
+      <p>Synapse muss TURN-Zugangsdaten ausgeben:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>curl -H "Authorization: Bearer $TOKEN" \
+  https://matrix.example.org/_matrix/client/v3/voip/turnServer</code></pre></div>
+      <p>Mit diesen Daten (<code>username</code>, <code>password</code>) die WebRTC-Beispielseite „Trickle ICE“ aufrufen, <code>turn:turn.example.org:3478</code> eintragen und „Gather candidates“ klicken. Es muss ein Kandidat vom Typ <b>relay</b> mit <code>203.0.113.10</code> erscheinen.</p>
+      <p>Gegenprobe der Sperrliste: Ein Relay-Versuch zu einer 100.x-Adresse muss fehlschlagen. Im Log (<code>journalctl -u coturn</code>) erscheint dann <i>„peer IP is denied“</i> bzw. Fehler 403.</p>
+      <h3>Anruf</h3>
+      <p>Einen 1:1-Videoanruf zwischen zwei Geräten in verschiedenen Netzen starten (z.&nbsp;B. Laptop im WLAN und Handy im Mobilfunk, beide <b>ohne</b> Tailscale).</p>
+    </section>
+
+    <section id="wartung">
+      <h2><span class="n">11</span>Betrieb und Wartung</h2>
+      <h3>Updates</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>cd /opt/matrix
+docker compose pull
+docker compose up -d
+docker image prune -f
+sudo apt update &amp;&amp; sudo apt upgrade -y      <span class="c"># coturn, Tailscale, System</span></code></pre></div>
+      <p>Vor Synapse-Updates die Release-Notes und Upgrade-Hinweise im Synapse-Repository (<code>element-hq/synapse</code>) lesen.</p>
+      <h3>Backup</h3>
+      <p>Zu sichern sind die Datenbank, das Synapse-Verzeichnis (Signaturschlüssel, Medien) und die Konfiguration:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo mkdir -p /root/backup &amp;&amp; cd /opt/matrix
+docker compose exec -T postgres pg_dump -U synapse -Fc synapse &gt; /root/backup/synapse-$(date +%F).dump
+sudo tar czf /root/backup/matrix-files-$(date +%F).tgz \
+  .env docker-compose.yml Caddyfile element synapse /etc/turnserver.conf</code></pre></div>
+      <p>Backups regelmäßig per Cron erzeugen und außerhalb des VPS ablegen, z.&nbsp;B. per <code>rsync</code> oder <code>restic</code> auf einen Rechner im Tailnet.</p>
+      <h3>Wiederherstellung (Kurzfassung)</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code><span class="c"># Dateien zurückspielen, dann nur postgres starten:</span>
+docker compose up -d postgres
+docker compose exec -T postgres pg_restore -U synapse -d synapse --clean &lt; synapse-DATUM.dump
+docker compose up -d</code></pre></div>
+    </section>
+
+    <section id="debug">
+      <h2><span class="n">12</span>Fehlersuche</h2>
+      <div class="table"><table>
+        <thead><tr><th>Symptom</th><th>Ursache / Lösung</th></tr></thead>
+        <tbody>
+          <tr><td>Caddy bekommt kein Zertifikat</td><td>DNS zeigt nicht auf den VPS, Port 80/443 in der Anbieter-Firewall zu oder CDN-Proxy aktiv. <code>docker compose logs caddy</code></td></tr>
+          <tr><td>Synapse startet nicht: „database encoding“</td><td>PostgreSQL ohne C-Locale initialisiert. <code>postgres/</code> leeren und neu starten (nur bei frischer Installation!)</td></tr>
+          <tr><td>Synapse startet nicht: Port 8008 nicht bindbar</td><td>Tailscale war beim Docker-Start noch nicht oben oder <code>TS_IP</code> falsch. <code>tailscale ip -4</code> prüfen, <code>docker compose up -d</code> erneut</td></tr>
+          <tr><td>Föderationstester: Fehler</td><td><code>/.well-known/matrix/server</code> fehlt oder liefert kein JSON, Zertifikat für <code>matrix.example.org</code> prüfen</td></tr>
+          <tr><td>Anrufe verbinden nicht / kein Ton</td><td>TURN nicht erreichbar: ufw- und Anbieter-Firewall für 3478 und 49160–49200/udp prüfen, <code>external-ip</code> korrekt, Secret in Synapse und coturn identisch</td></tr>
+          <tr><td>Kein relay-Kandidat im Trickle-ICE-Test</td><td>Zugangsdaten abgelaufen (neu abrufen) oder coturn lauscht auf falscher IP (<code>ss -lunpt</code>)</td></tr>
+          <tr><td>SSH nach ufw-Aktivierung weg</td><td>Über die Webkonsole des Anbieters einloggen, <code>ufw allow in on tailscale0</code> prüfen, <code>tailscale status</code></td></tr>
+          <tr><td>Tailscale nur über DERP (langsam)</td><td>UDP 41641 eingehend freigeben, <code>tailscale netcheck</code></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Nützliche Befehle</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>docker compose ps                        <span class="c"># Zustand der Container</span>
+docker compose logs -f --tail=100 synapse
+journalctl -u coturn -f                  <span class="c"># coturn-Log</span>
+sudo ufw status numbered
+tailscale status ; tailscale netcheck
+sudo ss -lntup                           <span class="c"># wer lauscht wo</span></code></pre></div>
+    </section>
+
+    <section id="checkliste">
+      <h2><span class="n">13</span>Checkliste</h2>
+      <ul class="checks">
+        <li>DNS-Einträge gesetzt, kein CDN-Proxy für <code>turn.example.org</code></li>
+        <li>SSH über Tailscale getestet, danach ufw aktiviert</li>
+        <li>Docker startet nach <code>tailscaled</code></li>
+        <li><code>homeserver.yaml</code>: <code>server_name</code>, <code>public_baseurl</code>, PostgreSQL, TURN</li>
+        <li>Caddy liefert <code>.well-known</code> und Zertifikate aus</li>
+        <li>Synapse-Port 8008 nur auf der Tailscale-IP</li>
+        <li>coturn lauscht nur auf der öffentlichen IP, <code>denied-peer-ip</code> inkl. <code>100.64.0.0/10</code></li>
+        <li>Gleiches TURN-Secret in Synapse und coturn</li>
+        <li>Admin-Nutzer angelegt, Registrierung geschlossen oder per Token</li>
+        <li>Federation Tester grün, relay-Kandidat im ICE-Test, Testanruf erfolgreich</li>
+        <li>Signaturschlüssel und Datenbank-Backup außerhalb des VPS gesichert</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>Matrix-Stack auf einem VPS mit Tailscale · Entwurf, ungetestet · Beispielwerte: RFC 5737 / 2606, Tailscale-Beispiel-IP</footer>
+
+<script>
+document.querySelectorAll('.code .copy').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var pre = btn.parentElement.querySelector('pre');
+    var text = pre.innerText.replace(/\n$/, '');
+    var done = function (msg) { btn.textContent = msg; setTimeout(function () { btn.textContent = 'Kopieren'; }, 1500); };
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      done('Markiert');
+    };
+    try {
+      navigator.clipboard.writeText(text).then(function () { done('Kopiert'); }, fallback);
+    } catch (e) { fallback(); }
+  });
+});
+// Inhaltsverzeichnis auf schmalen Bildschirmen eingeklappt starten
+if (window.matchMedia('(max-width: 959px)').matches) {
+  var d = document.getElementById('toc-details'); if (d) d.open = false;
+}
+</script>
+
+<footer class="vlb vlb-foot"><div><span><span class="sess">[oliverheld.com]</span><a href="../">0:index</a> &nbsp;<a href="../ueber-mich.html">1:über-mich</a> &nbsp;<a href="../docs.html">2:docs</a> &nbsp;<a href="../projekte.html">3:projekte</a> &nbsp;<a href="../musik.html">4:musik</a> &nbsp;<a href="../impressum.html">5:impressum</a> &nbsp;<a href="../datenschutz.html">6:datenschutz</a></span><span>cookies:<b>0</b> tracker:<b>0</b></span></div></footer>
+</body></html>

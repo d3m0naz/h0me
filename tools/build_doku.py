@@ -97,13 +97,14 @@ def build_demo(f, out, anchor):
 
 # saubere Dateinamen für Pool-Dokus mit Leerzeichen
 NAMES = {"Headscale auf eigenem VPS.html": "headscale-vps.html"}
+SKIP = {"headscale-neuer-vps.html"}  # Überarbeitung, nicht veröffentlichen
 
 
 def main():
     for name, (rel, anchor) in DEMOS.items():
         build_demo(SRC / name, DST.parent / rel, anchor)
     for f in sorted(SRC.glob("*.html")):
-        if f.name in DEMOS:
+        if f.name in DEMOS or f.name in SKIP:
             continue
         build(f, DST / NAMES.get(f.name, f.name), "../")
     for f in sorted(SRC.glob("*/*.html")):

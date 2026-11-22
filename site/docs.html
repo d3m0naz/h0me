@@ -33,13 +33,26 @@
   </section>
 
   <section id="doku" aria-labelledby="h-doku">
-    <div class="sh"><h2 id="h-doku"><span class="ps">#</span> ls -lt <span class="arg">doku/</span></h2><span class="count">5 einträge</span></div>
+    <div class="sh"><h2 id="h-doku"><span class="ps">#</span> ls -lt <span class="arg">doku/</span></h2><span class="count">6 einträge</span></div>
 
     <ul class="incidents">
       <li class="inc">
+        <span class="sev tool">CHAT</span>
+        <div>
+          <p class="meta"><time datetime="2026-11-22">2026-11-22</time><span>docker compose · synapse · coturn · tailscale</span><span class="ai">ki-generiert</span><span class="draft" title="Noch nicht umgesetzt, Befehle nicht durchgespielt">○ ungetestet</span></p>
+          <h3><a href="doku/matrix-stack-vps.html">Matrix-Stack auf einem VPS</a></h3>
+          <p>Synapse, PostgreSQL, Caddy, Element und coturn per Compose. Öffentlich nur Matrix und TURN, SSH und Admin-API nur übers Tailnet.</p>
+        </div>
+        <div class="stat" aria-label="Matrix-Föderation über Port 443">
+          <span class="v t-amber">:443</span>
+          <span class="l">föderation · 13 schritte</span>
+        </div>
+      </li>
+
+      <li class="inc">
         <span class="sev tool">VPN</span>
         <div>
-          <p class="meta"><time datetime="2026-11-22">2026-11-22</time><span>debian 13 · headscale · caddy · tailscale</span><span class="ai">ki-generiert</span></p>
+          <p class="meta"><time datetime="2026-11-22">2026-11-22</time><span>debian 13 · headscale · caddy · tailscale</span><span class="ai">ki-generiert</span><span class="ok" title="In echt umgesetzt und läuft">✓ umgesetzt</span></p>
           <h3><a href="doku/headscale-vps.html">Headscale auf eigenem VPS</a></h3>
           <p>Eigener Koordinationsserver statt Tailscale-Cloud: frischen Server härten, headscale hinter Caddy mit automatischem TLS, Clients anmelden, ACLs und ein Exit-Node für unterwegs.</p>
         </div>
@@ -52,7 +65,7 @@
       <li class="inc">
         <span class="sev tool">STACK</span>
         <div>
-          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>docker · ollama · ryzen 5700g, keine gpu</span><span class="ai">ki-generiert</span></p>
+          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>docker · ollama · ryzen 5700g, keine gpu</span><span class="ai">ki-generiert</span><span class="ok" title="In echt umgesetzt und läuft">✓ umgesetzt</span></p>
           <h3><a href="doku/ollama-docker/index.html">Lokaler KI-Stack: Ollama + OpenCode + Hermes Agent</a></h3>
           <p>Coding-Agent und autonomer Agent komplett auf eigener Hardware, ohne Cloud-API. Mit Modellwahl, warum MoE auf der CPU gewinnt, und einer <a href="doku/ollama-docker/modell-optimieren.html">Anleitung zum Modell-Optimieren</a>.</p>
         </div>
@@ -65,7 +78,7 @@
       <li class="inc">
         <span class="sev crit">CRIT</span>
         <div>
-          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>nas · debian · ironwolf 12tb</span><span class="ai">ki-generiert</span></p>
+          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>nas · debian · ironwolf 12tb</span><span class="ai">ki-generiert</span><span class="ok" title="In echt umgesetzt und läuft">✓ umgesetzt</span></p>
           <h3><a href="doku/nas-hdd-ueberhitzung-fallbericht.html">Überhitzte NAS-Festplatte und SATA-I/O-Fehler</a></h3>
           <p>44 Stunden bei 62–68&nbsp;°C, weil der Gehäuselüfter stand. Der I/O-Fehler danach war kein Medienschaden, sondern ein kurzer Verbindungsabbruch.</p>
         </div>
@@ -82,7 +95,7 @@
       <li class="inc">
         <span class="sev fix">FIX</span>
         <div>
-          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>openmediavault 8 · systemd</span><span class="ai">ki-generiert</span></p>
+          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>openmediavault 8 · systemd</span><span class="ai">ki-generiert</span><span class="ok" title="In echt umgesetzt und läuft">✓ umgesetzt</span></p>
           <h3><a href="doku/luefter-ueberwachung.html">Gehäuselüfter-Überwachung mit hwmon, systemd und Mail</a></h3>
           <p>Die Konsequenz aus dem CRIT darüber: Ein Skript prüft jede Minute die Drehzahl und meldet sich genau einmal, wenn der Lüfter steht, und einmal, wenn er wieder läuft.</p>
         </div>
@@ -99,7 +112,7 @@
       <li class="inc">
         <span class="sev tool">TOOL</span>
         <div>
-          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>opnsense · posix sh</span><span class="ai">ki-generiert</span></p>
+          <p class="meta"><time datetime="2026-11-21">2026-11-21</time><span>opnsense · posix sh</span><span class="ai">ki-generiert</span><span class="ok" title="In echt umgesetzt und läuft">✓ umgesetzt</span></p>
           <h3><a href="doku/rename_if_doku.html">rename_if.sh: Interface-Namen in der OPNsense-Konfiguration umbenennen</a></h3>
           <p>Neue NICs, neuer Treiber, und <code>em0</code> passt nicht mehr. Das Skript biegt <code>config.xml</code> um, mit Diff, Rückfrage und Backup.</p>
         </div>

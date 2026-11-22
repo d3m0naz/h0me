@@ -33,7 +33,8 @@ https://oliverheld.com über GitHub Pages (Repo `d3m0naz/h0me`, Branch `gh-pages
 
 - `index.html`: Landing (Hero, neofetch, `#themen`-Karten, `#wie`).
 - `ueber-mich.html`: finger, `#werdegang` (C116 → … → Arch-Derivat „btw“), `#damals`.
-- `docs.html`: `.inc`-Karten auf `doku/*`. Neue Doku → Karte hier und Peek/Zähler
+- `docs.html`: `.inc`-Karten auf `doku/*`. In der Meta-Zeile nach `ki-generiert` steht
+  `<span class="ok">✓ umgesetzt</span>`, wenn die Doku in echt umgesetzt wurde, sonst `<span class="draft">○ ungetestet</span>` (amber, z. B. Matrix-Stack). Neue Doku → Karte hier und Peek/Zähler
   der Docs-Karte in `index.html` anpassen.
 - `projekte.html`: Repo-Karten, Thumbnails lokal in `assets/thumbs/`.
 - `musik.html`, `impressum.html`, `datenschutz.html` (geht von Hosting auf GitHub Pages aus).
@@ -48,7 +49,9 @@ https://oliverheld.com über GitHub Pages (Repo `d3m0naz/h0me`, Branch `gh-pages
   localStorage-Aufrufe und Google-Fonts-Links werden entfernt (Asserts gegen Storage und
   externe `src`/`<link>`; externe `<a>`-Links sind erlaubt → datenschutz §5 prüfen).
   Pool-Dateien mit Leerzeichen im Namen bekommen über das Dict `NAMES` einen sauberen
-  Ausgabenamen (z. B. `headscale-vps.html`).
+  Ausgabenamen (z. B. `headscale-vps.html`). Dateien im Set `SKIP` werden nicht gebaut
+  (z. B. `headscale-neuer-vps.html`). PDFs in `pool/` werden von Hand in eine HTML-Doku
+  im Stil der Headscale-Doku übertragen (z. B. `matrix-stack-vps.html`).
 - Vollbild-Demos (Dict `DEMOS`) → `site/demo/` ohne Doku-Kopf, mit kleiner Linkleiste
   (← über mich · ki-generiert · impressum · datenschutz). Google-Fonts-Links werden
   entfernt, Asserts gegen externe URLs und Storage. Textkorrekturen über die
