@@ -1,0 +1,334 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="referrer" content="no-referrer">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+.vlb{--v-bg:#13161a;--v-line:#262c33;--v-ink:#d4d9d0;--v-muted:#7d8791;--v-dim:#535c66;--v-green:#7ee787;--v-violet:#c49bff;--v-cyan:#79c0ff;--v-on:#0d0f11}
+@media (prefers-color-scheme: light){.vlb{--v-bg:#ecebe4;--v-line:#dddbd2;--v-ink:#2a2f2b;--v-muted:#68706a;--v-dim:#9aa098;--v-green:#2f7d32;--v-violet:#7a46c9;--v-cyan:#1f6fb2;--v-on:#f4f3ee}}
+.vlb{font:12.5px/1.5 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;background:var(--v-bg);color:var(--v-muted);border-bottom:1px solid var(--v-line)}
+.vlb div{max-width:880px;margin:0 auto;padding:9px 24px;display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:space-between;align-items:center}
+.vlb a{color:var(--v-ink);text-decoration:none}.vlb a:hover{color:var(--v-green)}
+.vlb b{color:var(--v-green);font-weight:400}.vlb s{color:var(--v-dim);text-decoration:none}.vlb i{font-style:normal;color:var(--v-violet)}
+.vlb .h{color:var(--v-cyan)}
+.vlb-foot{border-top:1px solid var(--v-line);border-bottom:0;margin-top:32px}
+.vlb-foot .sess{background:var(--v-green);color:var(--v-on);padding:2px 8px;font-weight:600;margin-right:8px}
+@media print{.vlb{display:none}}
+</style>
+<style>
+:root:root:root,:root:root:root[data-theme="dark"]{--bg:#0d0f11;--surface:#161a1e;--card:#161a1e;--sidebar:#13161a;--code:#1c2126;--code-bg:#1c2126;--soft:#1c2126;--pre-bg:#1c2126;--pre-text:#d4d9d0;--fg:#d4d9d0;--ink:#d4d9d0;--text:#d4d9d0;--muted:#7d8791;--line:#323a43;--border:#323a43;--accent:#7ee787;--accent-soft:color-mix(in srgb,#7ee787 12%,#0d0f11);--ok:#7ee787;--bad:#ff7b72;--warn:#f0b45a;--warn-soft:color-mix(in srgb,#f0b45a 12%,#0d0f11);--warnbg:color-mix(in srgb,#f0b45a 12%,#0d0f11);--warn-bg:color-mix(in srgb,#f0b45a 12%,#0d0f11);--warn-line:#f0b45a;--note-bg:color-mix(in srgb,#f0b45a 12%,#0d0f11);--note-border:#f0b45a;color-scheme:dark;}
+@media (prefers-color-scheme: light){:root:root:root:not([data-theme="dark"]){--bg:#f4f3ee;--surface:#fbfaf6;--card:#fbfaf6;--sidebar:#ecebe4;--code:#f0efe8;--code-bg:#f0efe8;--soft:#f0efe8;--pre-bg:#f0efe8;--pre-text:#2a2f2b;--fg:#2a2f2b;--ink:#2a2f2b;--text:#2a2f2b;--muted:#68706a;--line:#cfccc1;--border:#cfccc1;--accent:#2f7d32;--accent-soft:color-mix(in srgb,#2f7d32 12%,#f4f3ee);--ok:#2f7d32;--bad:#c4372c;--warn:#a86400;--warn-soft:color-mix(in srgb,#a86400 12%,#f4f3ee);--warnbg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-line:#a86400;--note-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--note-border:#a86400;color-scheme:light;}}
+:root:root:root[data-theme="light"]{--bg:#f4f3ee;--surface:#fbfaf6;--card:#fbfaf6;--sidebar:#ecebe4;--code:#f0efe8;--code-bg:#f0efe8;--soft:#f0efe8;--pre-bg:#f0efe8;--pre-text:#2a2f2b;--fg:#2a2f2b;--ink:#2a2f2b;--text:#2a2f2b;--muted:#68706a;--line:#cfccc1;--border:#cfccc1;--accent:#2f7d32;--accent-soft:color-mix(in srgb,#2f7d32 12%,#f4f3ee);--ok:#2f7d32;--bad:#c4372c;--warn:#a86400;--warn-soft:color-mix(in srgb,#a86400 12%,#f4f3ee);--warnbg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-line:#a86400;--note-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--note-border:#a86400;color-scheme:light;}
+body{background:var(--bg)!important}
+.copy{background:var(--surface)!important;color:var(--muted)!important;border-color:var(--line)!important}
+.copy:hover{color:var(--accent)!important}
+</style>
+</head><body>
+<header class="vlb"><div><a href="../" style="text-decoration:none"><b>ai</b><s>@</s><span class="h">oliverheld.com</span><s>$</s></a><a href="../docs.html">← docs</a><span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>
+<title>RADIUS mit OPNsense und UniFi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: Runbook – feste Inhaltsleiste links, eine Lesespalte rechts, Schritte als echte Reihenfolge */
+:root {
+  --bg: #f5f7f5;
+  --surface: #ffffff;
+  --fg: #16201b;
+  --muted: #56635c;
+  --line: #d6ddd8;
+  --accent: #0b6b4c;
+  --accent-soft: #e1efe8;
+  --code-bg: #eaeeeb;
+  --warn: #8a5a00;
+  --warn-soft: #fbf0d9;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111714; --surface: #18201c; --fg: #e2e9e5; --muted: #9aa8a0; --line: #2c3832;
+    --accent: #5ec89d; --accent-soft: #1b3229; --code-bg: #1d2622; --warn: #e8b04b; --warn-soft: #33290f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111714; --surface: #18201c; --fg: #e2e9e5; --muted: #9aa8a0; --line: #2c3832;
+  --accent: #5ec89d; --accent-soft: #1b3229; --code-bg: #1d2622; --warn: #e8b04b; --warn-soft: #33290f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 32px; }
+@media (min-width: 960px) { .wrap { grid-template-columns: 232px minmax(0, 1fr); gap: 56px; } }
+
+header.top { max-width: 1120px; margin: 0 auto; padding-block: 48px 32px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 750; font-stretch: 87%; font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.05; margin: 12px 0 16px; text-wrap: balance; letter-spacing: -.01em; }
+.lede { max-width: 62ch; color: var(--muted); font-size: 1.07rem; margin: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 20px; font: 13px/1.4 var(--font-mono); color: var(--muted); }
+
+nav.toc { font-size: 14px; }
+@media (min-width: 960px) { nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; } }
+nav.toc details { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+nav.toc summary { cursor: pointer; padding: 10px 14px; font-weight: 600; list-style: none; }
+nav.toc summary::-webkit-details-marker { display: none; }
+@media (min-width: 960px) { nav.toc details { border: 0; background: transparent; } nav.toc summary { padding: 0 0 10px; pointer-events: none; } }
+nav.toc ol { list-style: none; margin: 0; padding: 0 14px 12px; display: grid; gap: 2px; counter-reset: t; }
+@media (min-width: 960px) { nav.toc ol { padding: 0; } }
+nav.toc li a { display: grid; grid-template-columns: 2.2em 1fr; padding: 4px 0; color: var(--muted); text-decoration: none; }
+nav.toc li a:hover { color: var(--fg); }
+nav.toc li a .n { font: 12px/1.7 var(--font-mono); color: var(--accent); }
+nav.toc .grp { margin-top: 10px; font: 500 11px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 6px 0; }
+
+main { min-width: 0; max-width: 760px; }
+section { padding-block: 8px 28px; scroll-margin-top: 24px; }
+section + section { border-top: 1px solid var(--line); padding-top: 28px; }
+h2 { font-family: var(--font-display); font-weight: 600; font-stretch: 87%; font-size: 1.55rem; line-height: 1.2; margin: 0 0 12px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; text-wrap: balance; }
+h2 .n { font: 500 14px/1 var(--font-mono); color: var(--accent); }
+h3 { font-size: 1rem; font-weight: 600; margin: 22px 0 6px; }
+p, li { max-width: 68ch; }
+p { margin: 0 0 12px; }
+ul, ol { padding-left: 1.3em; margin: 0 0 12px; }
+li + li { margin-top: 4px; }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+
+.pill { font: 500 11px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.pill.req { color: var(--accent); border-color: var(--accent); }
+
+.code { position: relative; margin: 10px 0 16px; }
+.code .label { font: 12px/1 var(--font-mono); color: var(--muted); padding: 0 0 6px; display: block; overflow-wrap: anywhere; }
+.code pre { margin: 0; background: var(--code-bg); border-radius: 6px; padding: 14px 16px; overflow-x: auto; font: 13.5px/1.6 var(--font-mono); tab-size: 2; }
+.code pre code { background: none; padding: 0; font-size: inherit; overflow-wrap: normal; }
+.code .c { color: var(--muted); }
+.copy { position: absolute; right: 8px; bottom: calc(100% - 26px - 22px); font: 500 12px/1 var(--font-body); padding: 6px 9px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
+.code .label + .copy { bottom: auto; top: 26px; }
+.code > .copy:first-child { top: 6px; bottom: auto; }
+.copy:hover { color: var(--fg); }
+.code:has(.copy) pre { padding-right: 76px; }
+
+.note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0 16px; max-width: 68ch; }
+.note.warn { border-color: var(--warn); background: var(--warn-soft); }
+.note strong:first-child { display: block; font-size: .85rem; letter-spacing: .02em; margin-bottom: 2px; }
+.note.warn strong:first-child { color: var(--warn); }
+.note p:last-child { margin-bottom: 0; }
+
+.table { overflow-x: auto; margin: 10px 0 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 500 12px/1.3 var(--font-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+td code { white-space: nowrap; }
+
+.checks { list-style: none; padding: 0; display: grid; gap: 6px; }
+.checks li { position: relative; padding-left: 1.6em; margin-top: 0; }
+.checks li::before { content: "□"; position: absolute; left: 0; top: 0; color: var(--accent); font-family: var(--font-mono); }
+
+footer { max-width: 1120px; margin: 48px auto 0; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+.draft { color: var(--warn); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+</style>
+
+<header class="top">
+  <div class="eyebrow">Runbook · OPNsense + FreeRADIUS · UniFi</div>
+  <h1>WPA-Enterprise mit OPNsense und UniFi</h1>
+  <p class="lede">FreeRADIUS läuft auf der OPNsense, die UniFi-APs fragen dort direkt an. Am Ende meldet sich jeder Benutzer mit eigenem Namen und Passwort am WLAN an und landet in einem festen oder per RADIUS zugewiesenen VLAN.</p>
+  <div class="meta"><span>Läuft auf: OPNsense · UniFi U6 Lite, U6+, U6-LR</span><span>Beispielwerte: RFC 1918 / 2606</span><span>Stand: November 2026</span></div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Inhalt">
+    <details open id="toc-details">
+      <summary>Inhalt</summary>
+      <ol>
+        <li><a href="#ueberblick"><span class="n">01</span>Überblick</a></li>
+        <li><a href="#platzhalter"><span class="n">02</span>Platzhalter</a></li>
+        <li class="grp">OPNsense</li>
+        <li><a href="#plugin"><span class="n">03</span>Plugin &amp; Zertifikate</a></li>
+        <li><a href="#eap"><span class="n">04</span>EAP</a></li>
+        <li><a href="#clients"><span class="n">05</span>APs als Clients</a></li>
+        <li><a href="#users"><span class="n">06</span>Benutzer</a></li>
+        <li><a href="#firewall"><span class="n">07</span>Aktivieren &amp; Firewall</a></li>
+        <li class="grp">UniFi</li>
+        <li><a href="#profil"><span class="n">08</span>RADIUS-Profil</a></li>
+        <li><a href="#ssid"><span class="n">09</span>SSID</a></li>
+        <li class="grp">Optional</li>
+        <li><a href="#vlan"><span class="n">10</span>VLAN pro Benutzer</a></li>
+        <li class="grp">Betrieb</li>
+        <li><a href="#geraete"><span class="n">11</span>Geräte &amp; Zertifikate</a></li>
+        <li><a href="#debug"><span class="n">12</span>Fehlersuche</a></li>
+        <li><a href="#mehr"><span class="n">13</span>Ausbaustufen</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main>
+    <section id="ueberblick">
+      <h2><span class="n">01</span>Überblick</h2>
+      <p>Der Controller ist an der Anmeldung nicht beteiligt. Er verteilt nur die Konfiguration an die APs. Die eigentliche RADIUS-Anfrage schickt jeder AP selbst an die OPNsense.</p>
+      <div class="code"><pre><code>Client ──WPA2/3-Enterprise──▶ UniFi-AP ──RADIUS, UDP 1812/1813──▶ OPNsense (FreeRADIUS)
+                                 │
+                                 └─▶ Client landet in VLAN 30
+                                     (fest pro SSID oder per RADIUS pro Benutzer)</code></pre></div>
+    </section>
+
+    <section id="platzhalter">
+      <h2><span class="n">02</span>Platzhalter</h2>
+      <p>Alle Werte sind Beispiele. Ersetze sie durch deine eigenen.</p>
+      <div class="table"><table>
+        <thead><tr><th>Platzhalter</th><th>Bedeutung</th></tr></thead>
+        <tbody>
+          <tr><td><code>10.0.10.0/24</code></td><td>Management-Netz, aus dem die APs kommen</td></tr>
+          <tr><td><code>10.0.10.1</code></td><td>IP der OPNsense in diesem Netz</td></tr>
+          <tr><td><code>30</code>, <code>40</code></td><td>VLAN-IDs für die WLAN-Clients</td></tr>
+          <tr><td><code>radius.example.com</code></td><td>Name im Server-Zertifikat, wird auf Android als Domain eingetragen</td></tr>
+          <tr><td><code>Beispiel-WLAN</code></td><td>Name der Enterprise-SSID</td></tr>
+          <tr><td><code>alice</code>, <code>bob</code></td><td>RADIUS-Benutzer</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="plugin">
+      <h2><span class="n">03</span>Plugin und Zertifikate <span class="pill req">Pflicht</span></h2>
+      <ol>
+        <li>Unter <code>System → Firmware → Plugins</code> das Plugin <code>os-freeradius</code> installieren.</li>
+        <li>Unter <code>System → Trust → Authorities</code> eine eigene CA anlegen, z.&nbsp;B. <code>RADIUS-CA</code>.</li>
+        <li>Unter <code>System → Trust → Certificates</code> ein Zertifikat vom Typ <b>Server</b> erstellen, signiert von dieser CA, Common Name <code>radius.example.com</code>.</li>
+      </ol>
+      <div class="note"><strong>Hinweis</strong><p>Die CA brauchst du später noch einmal: Sie wird auf die Geräte verteilt, damit sie dem RADIUS-Server vertrauen (Schritt 11).</p></div>
+    </section>
+
+    <section id="eap">
+      <h2><span class="n">04</span>EAP einstellen</h2>
+      <p>Unter <code>Services → FreeRADIUS → EAP</code>:</p>
+      <ul>
+        <li><b>Default EAP Type:</b> <code>PEAP</code> mit MSCHAPv2. Das können praktisch alle Clients.</li>
+        <li>CA und Server-Zertifikat aus Schritt 03 auswählen.</li>
+      </ul>
+    </section>
+
+    <section id="clients">
+      <h2><span class="n">05</span>APs als RADIUS-Clients</h2>
+      <p>Unter <code>Services → FreeRADIUS → Clients</code> trägst du die <b>APs</b> ein, nicht den Controller. Am einfachsten gleich das ganze Management-Netz:</p>
+      <div class="table"><table>
+        <thead><tr><th>Feld</th><th>Wert</th></tr></thead>
+        <tbody>
+          <tr><td>IP / Netz</td><td><code>10.0.10.0/24</code></td></tr>
+          <tr><td>Shared Secret</td><td>langes Zufallspasswort, z.&nbsp;B. aus <code>openssl rand -base64 32</code></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="users">
+      <h2><span class="n">06</span>Benutzer anlegen</h2>
+      <p>Unter <code>Services → FreeRADIUS → Users</code> pro Person einen Benutzer mit Passwort anlegen, z.&nbsp;B. <code>alice</code> und <code>bob</code>. Das Feld <b>VLAN</b> bleibt vorerst leer, es wird erst in Schritt 10 interessant.</p>
+    </section>
+
+    <section id="firewall">
+      <h2><span class="n">07</span>Aktivieren und Firewall <span class="pill req">Pflicht</span></h2>
+      <ol>
+        <li>Unter <code>Services → FreeRADIUS → General</code> den Dienst aktivieren und <b>Log Authentication Requests</b> einschalten. Ohne dieses Log ist die Fehlersuche Raten.</li>
+        <li>Auf dem Interface, über das die APs kommen, eine Regel anlegen:</li>
+      </ol>
+      <div class="table"><table>
+        <thead><tr><th>Quelle</th><th>Ziel</th><th>Protokoll / Port</th></tr></thead>
+        <tbody>
+          <tr><td><code>10.0.10.0/24</code></td><td><code>10.0.10.1</code></td><td>UDP <code>1812</code> (Auth), <code>1813</code> (Accounting)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="profil">
+      <h2><span class="n">08</span>RADIUS-Profil in UniFi</h2>
+      <p>Unter <code>Settings → Profiles → RADIUS → Create New</code>:</p>
+      <ul>
+        <li><b>Authentication Server:</b> <code>10.0.10.1</code>, Port <code>1812</code>, Shared Secret aus Schritt 05</li>
+        <li><b>Accounting:</b> optional, <code>10.0.10.1</code>, Port <code>1813</code></li>
+      </ul>
+    </section>
+
+    <section id="ssid">
+      <h2><span class="n">09</span>SSID anlegen</h2>
+      <p>Unter <code>Settings → WiFi</code> eine neue SSID <code>Beispiel-WLAN</code> anlegen oder eine bestehende umstellen:</p>
+      <ul>
+        <li><b>Security:</b> WPA2-Enterprise, oder WPA2/WPA3-Enterprise, wenn alle Geräte WPA3 können</li>
+        <li><b>RADIUS-Profil:</b> das Profil aus Schritt 08</li>
+        <li><b>Network:</b> das Netz mit VLAN <code>30</code></li>
+      </ul>
+      <p>Damit läuft die einfache Variante: Wer sich an <code>Beispiel-WLAN</code> anmeldet, muss sich per RADIUS ausweisen und landet in VLAN <code>30</code>.</p>
+    </section>
+
+    <section id="vlan">
+      <h2><span class="n">10</span>VLAN pro Benutzer <span class="pill">Optional</span></h2>
+      <p>Mit einer einzigen SSID kann jeder Benutzer in einem eigenen VLAN landen, z.&nbsp;B. <code>alice</code> in <code>30</code> und <code>bob</code> in <code>40</code>.</p>
+      <ol>
+        <li><b>UniFi:</b> im RADIUS-Profil <i>Enable RADIUS assigned VLAN for wireless network</i> einschalten.</li>
+        <li><b>OPNsense:</b> beim Benutzer das Feld <b>VLAN</b> ausfüllen. FreeRADIUS schickt die ID dann als <code>Tunnel-Private-Group-ID</code> an den AP.</li>
+      </ol>
+      <div class="note warn"><strong>Voraussetzung</strong><p>Jedes VLAN, das RADIUS vergeben kann, muss in UniFi als Netzwerk existieren und auf den Switch-Ports der APs getaggt sein. Sonst hängt der Client ohne Adresse in der Luft.</p></div>
+    </section>
+
+    <section id="geraete">
+      <h2><span class="n">11</span>Geräte und Zertifikate</h2>
+      <ul>
+        <li><b>Android ab 11</b> will im WLAN-Profil eine CA und eine Domain. Die CA aus Schritt 03 exportieren, auf dem Gerät installieren und als Domain <code>radius.example.com</code> eintragen. Mit einem öffentlich signierten Zertifikat reicht stattdessen „Systemzertifikate“ plus Domain.</li>
+        <li><b>Windows und macOS</b> fragen beim ersten Verbinden nach, ob sie dem Zertifikat trauen sollen. Einmal bestätigen, fertig.</li>
+        <li>Bei <b>vielen Geräten</b> die CA lieber per Profil verteilen, unter macOS und iOS z.&nbsp;B. als <code>.mobileconfig</code>.</li>
+      </ul>
+    </section>
+
+    <section id="debug">
+      <h2><span class="n">12</span>Fehlersuche</h2>
+      <p>Erster Blick immer in <code>Services → FreeRADIUS → Log File</code>:</p>
+      <div class="table"><table>
+        <thead><tr><th>Im Log</th><th>Wahrscheinliche Ursache</th></tr></thead>
+        <tbody>
+          <tr><td>gar nichts</td><td>Netz, Firewall-Regel (falsches Interface?) oder der AP fehlt unter Clients</td></tr>
+          <tr><td><code>Reject</code></td><td>Benutzer, Passwort oder Zertifikat</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><strong>Klassiker</strong><p>Die Anfrage kommt von der IP des APs, nicht vom Controller. Steht unter Clients nur die Controller-IP, wird jede Anfrage stillschweigend verworfen.</p></div>
+    </section>
+
+    <section id="mehr">
+      <h2><span class="n">13</span>Ausbaustufen</h2>
+      <ul>
+        <li><b>Kabel:</b> Derselbe RADIUS kann Ports an UniFi-Switches per 802.1X absichern.</li>
+        <li><b>IoT:</b> Geräte ohne Enterprise-WLAN lassen sich per MAC-Authentifizierung (MAB) anbinden. Das ist bequemer, aber MAC-Adressen sind leicht zu fälschen.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>WPA-Enterprise mit OPNsense und UniFi · umgesetzt auf UniFi U6 Lite, U6+ und U6-LR · Beispielwerte: RFC 1918 / 2606</footer>
+
+<script>
+document.querySelectorAll('.code .copy').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var pre = btn.parentElement.querySelector('pre');
+    var text = pre.innerText.replace(/\n$/, '');
+    var done = function (msg) { btn.textContent = msg; setTimeout(function () { btn.textContent = 'Kopieren'; }, 1500); };
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      done('Markiert');
+    };
+    try {
+      navigator.clipboard.writeText(text).then(function () { done('Kopiert'); }, fallback);
+    } catch (e) { fallback(); }
+  });
+});
+// Inhaltsverzeichnis auf schmalen Bildschirmen eingeklappt starten
+if (window.matchMedia('(max-width: 959px)').matches) {
+  var d = document.getElementById('toc-details'); if (d) d.open = false;
+}
+</script>
+
+<footer class="vlb vlb-foot"><div><span><span class="sess">[oliverheld.com]</span><a href="../">0:index</a> &nbsp;<a href="../ueber-mich.html">1:über-mich</a> &nbsp;<a href="../docs.html">2:docs</a> &nbsp;<a href="../projekte.html">3:projekte</a> &nbsp;<a href="../musik.html">4:musik</a> &nbsp;<a href="../impressum.html">5:impressum</a> &nbsp;<a href="../datenschutz.html">6:datenschutz</a></span><span>cookies:<b>0</b> tracker:<b>0</b></span></div></footer>
+</body></html>
