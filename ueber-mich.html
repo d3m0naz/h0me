@@ -75,14 +75,18 @@
 
   <section id="damals" aria-labelledby="h-damals">
     <div class="sh"><h2 id="h-damals"><span class="ps">#</span> git log <span class="arg">oliverheld.com</span></h2><span class="count">vor-ki, ca. 2008</span></div>
-    <p class="intro">Diese Domain hatte jahrelang keine eigene Seite. Sie leitete einfach auf ein
+    <p class="intro">Diese Domain hatte fast 25 Jahre lang keine eigene Seite. Sie leitete einfach auf ein
     Stück Internetgeschichte weiter: <i>The Website Is Down</i>, die Videoserie über den Sales Guy
     und den Web Dude. Damals haben Admins ihre Witze noch selbst geschrieben, und jeder kannte
     mindestens einen Sales Guy persönlich. Jetzt steht hier diese Seite, aber die Erinnerung
     bleibt verlinkt.</p>
     <div class="term retro">
       <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>bash · aus der history</span></div>
-<pre class="hdrs"><span class="ps">$</span> curl -sIL https://oliverheld.com/ | grep -iE '^(http|location)'
+<pre class="hdrs"><span class="ps">$</span> whois oliverheld.com | grep -i creation
+<span class="k">Creation Date:</span> 2001-12-07
+<span class="dim"># 25 jahre am 07.12.2026.</span>
+<span class="dim"># erste eigene website: 21.11.2026.</span>
+<span class="ps">$</span> curl -sIL https://oliverheld.com/ | grep -iE '^(http|location)'
 <span class="st">HTTP/2 301</span>
 <span class="k">location:</span> http://www.thewebsiteisdown.com/
 <span class="st">HTTP/1.1 301 Moved Permanently</span>
