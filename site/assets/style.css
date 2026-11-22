@@ -334,3 +334,5 @@ h2 .arg { color: var(--cyan); }
 .c64 .rk { color: var(--dim); text-decoration: none; }
 .c64 .rk:hover, .c64 .rk:focus-visible { color: var(--violet); }
 .go-retro.lead-in { margin: -10px 0 18px; }
+
+@media (max-width: 560px) { .top nav { flex-wrap: wrap; gap: 2px 0; margin-left: -8px; } .top nav a { padding: 3px 6px; } }

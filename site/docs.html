@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Docs · ai@oliverheld.com</title>
-<meta name="description" content="Fallberichte und Anleitungen zu echten Problemen. Größtenteils KI-generiert, von einem Menschen geprüft.">
+<meta name="description" content="Fallberichte und Anleitungen zu echten Incidents. Größtenteils KI-generiert, von einem Menschen geprüft.">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
@@ -28,14 +28,27 @@
 
   <section class="pagehead">
     <p class="kicker">$ cd ~/docs</p>
-    <h1>Echte Probleme.<br><span class="syn">Synthetische Doku.</span></h1>
+    <h1>Echte Incidents.<br><span class="syn">Synthetische Doku.</span></h1>
     <p class="lead">Was kaputtging, warum, und wie es wieder lief. Aufgeschrieben, damit es beim nächsten Mal schneller geht.</p>
   </section>
 
   <section id="doku" aria-labelledby="h-doku">
-    <div class="sh"><h2 id="h-doku"><span class="ps">#</span> ls -lt <span class="arg">doku/</span></h2><span class="count">6 einträge</span></div>
+    <div class="sh"><h2 id="h-doku"><span class="ps">#</span> ls -lt <span class="arg">doku/</span></h2><span class="count">7 einträge</span></div>
 
     <ul class="incidents">
+      <li class="inc">
+        <span class="sev tool">WLAN</span>
+        <div>
+          <p class="meta"><time datetime="2026-11-22">2026-11-22</time><span>opnsense · freeradius · unifi u6 lite / u6+ / u6-lr</span><span class="ai">ki-generiert</span><span class="ok" title="In echt umgesetzt und läuft">✓ umgesetzt</span></p>
+          <h3><a href="doku/radius-opnsense-unifi.html">WPA-Enterprise mit OPNsense und UniFi</a></h3>
+          <p>FreeRADIUS auf der OPNsense, UniFi-APs fragen direkt an. Eigene Zugangsdaten pro Person statt eines geteilten WLAN-Passworts, optional ein eigenes VLAN pro Benutzer.</p>
+        </div>
+        <div class="stat" aria-label="RADIUS über UDP-Port 1812">
+          <span class="v t-amber">:1812</span>
+          <span class="l">radius · udp · 13 schritte</span>
+        </div>
+      </li>
+
       <li class="inc">
         <span class="sev tool">CHAT</span>
         <div>

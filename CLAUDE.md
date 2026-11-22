@@ -41,6 +41,7 @@ https://oliverheld.com über GitHub Pages (Repo `d3m0naz/h0me`, Branch `gh-pages
 - `docs.html`: `.inc`-Karten auf `doku/*`. In der Meta-Zeile nach `ki-generiert` steht
   `<span class="ok">✓ umgesetzt</span>`, wenn die Doku in echt umgesetzt wurde, sonst `<span class="draft">○ ungetestet</span>` (amber, z. B. Matrix-Stack). Neue Doku → Karte hier und Peek/Zähler
   der Docs-Karte in `index.html` anpassen.
+- Wording: „Incidents“ statt „Probleme“ (Startseite, Docs).
 - `projekte.html`: Repo-Karten, Thumbnails lokal in `assets/thumbs/`.
 - `musik.html`, `impressum.html`, `datenschutz.html` (geht von Hosting auf GitHub Pages aus).
 - Stil in `site/assets/style.css`. Innere Links in `.inc`-Karten brauchen
@@ -51,6 +52,9 @@ https://oliverheld.com über GitHub Pages (Repo `d3m0naz/h0me`, Branch `gh-pages
 `python3 tools/build_doku.py` erzeugt aus `pool/`:
 
 - `pool/*.html` → `site/doku/`, `pool/<x>/*.html` → `site/doku/<x>/` mit Site-Kopf/-Fuß.
+  Farben: `THEME` in `build_doku.py` überschreibt die CSS-Variablen der Pool-Dokus (alle
+  bekannten Variablennamen) mit der Palette der Startseite (`PAL`, dark/light).
+  Neue Doku mit anderen Variablennamen → `theme_vars()` ergänzen. Demos behalten ihre Retro-Farben.
   localStorage-Aufrufe und Google-Fonts-Links werden entfernt (Asserts gegen Storage und
   externe `src`/`<link>`; externe `<a>`-Links sind erlaubt → datenschutz §5 prüfen).
   Pool-Dateien mit Leerzeichen im Namen bekommen über das Dict `NAMES` einen sauberen

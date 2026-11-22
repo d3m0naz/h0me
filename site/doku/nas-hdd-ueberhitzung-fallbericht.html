@@ -48,17 +48,28 @@
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <style>
-.vlb{font:12.5px/1.5 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;background:#13161a;color:#7d8791;border-bottom:1px solid #262c33}
+.vlb{--v-bg:#13161a;--v-line:#262c33;--v-ink:#d4d9d0;--v-muted:#7d8791;--v-dim:#535c66;--v-green:#7ee787;--v-violet:#c49bff;--v-cyan:#79c0ff;--v-on:#0d0f11}
+@media (prefers-color-scheme: light){.vlb{--v-bg:#ecebe4;--v-line:#dddbd2;--v-ink:#2a2f2b;--v-muted:#68706a;--v-dim:#9aa098;--v-green:#2f7d32;--v-violet:#7a46c9;--v-cyan:#1f6fb2;--v-on:#f4f3ee}}
+.vlb{font:12.5px/1.5 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;background:var(--v-bg);color:var(--v-muted);border-bottom:1px solid var(--v-line)}
 .vlb div{max-width:880px;margin:0 auto;padding:9px 24px;display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:space-between;align-items:center}
-.vlb a{color:#d4d9d0;text-decoration:none}.vlb a:hover{color:#7ee787}
-.vlb b{color:#7ee787;font-weight:400}.vlb s{color:#535c66;text-decoration:none}.vlb i{font-style:normal;color:#c49bff}
-.vlb-foot{border-top:1px solid #262c33;border-bottom:0;margin-top:32px}
-.vlb-foot .sess{background:#7ee787;color:#0d0f11;padding:2px 8px;font-weight:600;margin-right:8px}
+.vlb a{color:var(--v-ink);text-decoration:none}.vlb a:hover{color:var(--v-green)}
+.vlb b{color:var(--v-green);font-weight:400}.vlb s{color:var(--v-dim);text-decoration:none}.vlb i{font-style:normal;color:var(--v-violet)}
+.vlb .h{color:var(--v-cyan)}
+.vlb-foot{border-top:1px solid var(--v-line);border-bottom:0;margin-top:32px}
+.vlb-foot .sess{background:var(--v-green);color:var(--v-on);padding:2px 8px;font-weight:600;margin-right:8px}
 @media print{.vlb{display:none}}
+</style>
+<style>
+:root:root:root,:root:root:root[data-theme="dark"]{--bg:#0d0f11;--surface:#161a1e;--card:#161a1e;--sidebar:#13161a;--code:#1c2126;--code-bg:#1c2126;--soft:#1c2126;--pre-bg:#1c2126;--pre-text:#d4d9d0;--fg:#d4d9d0;--ink:#d4d9d0;--text:#d4d9d0;--muted:#7d8791;--line:#323a43;--border:#323a43;--accent:#7ee787;--accent-soft:color-mix(in srgb,#7ee787 12%,#0d0f11);--ok:#7ee787;--bad:#ff7b72;--warn:#f0b45a;--warn-soft:color-mix(in srgb,#f0b45a 12%,#0d0f11);--warnbg:color-mix(in srgb,#f0b45a 12%,#0d0f11);--warn-bg:color-mix(in srgb,#f0b45a 12%,#0d0f11);--warn-line:#f0b45a;--note-bg:color-mix(in srgb,#f0b45a 12%,#0d0f11);--note-border:#f0b45a;color-scheme:dark;}
+@media (prefers-color-scheme: light){:root:root:root:not([data-theme="dark"]){--bg:#f4f3ee;--surface:#fbfaf6;--card:#fbfaf6;--sidebar:#ecebe4;--code:#f0efe8;--code-bg:#f0efe8;--soft:#f0efe8;--pre-bg:#f0efe8;--pre-text:#2a2f2b;--fg:#2a2f2b;--ink:#2a2f2b;--text:#2a2f2b;--muted:#68706a;--line:#cfccc1;--border:#cfccc1;--accent:#2f7d32;--accent-soft:color-mix(in srgb,#2f7d32 12%,#f4f3ee);--ok:#2f7d32;--bad:#c4372c;--warn:#a86400;--warn-soft:color-mix(in srgb,#a86400 12%,#f4f3ee);--warnbg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-line:#a86400;--note-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--note-border:#a86400;color-scheme:light;}}
+:root:root:root[data-theme="light"]{--bg:#f4f3ee;--surface:#fbfaf6;--card:#fbfaf6;--sidebar:#ecebe4;--code:#f0efe8;--code-bg:#f0efe8;--soft:#f0efe8;--pre-bg:#f0efe8;--pre-text:#2a2f2b;--fg:#2a2f2b;--ink:#2a2f2b;--text:#2a2f2b;--muted:#68706a;--line:#cfccc1;--border:#cfccc1;--accent:#2f7d32;--accent-soft:color-mix(in srgb,#2f7d32 12%,#f4f3ee);--ok:#2f7d32;--bad:#c4372c;--warn:#a86400;--warn-soft:color-mix(in srgb,#a86400 12%,#f4f3ee);--warnbg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-line:#a86400;--note-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--note-border:#a86400;color-scheme:light;}
+body{background:var(--bg)!important}
+.copy{background:var(--surface)!important;color:var(--muted)!important;border-color:var(--line)!important}
+.copy:hover{color:var(--accent)!important}
 </style>
 </head>
 <body>
-<header class="vlb"><div><a href="../" style="text-decoration:none"><b>ai</b><s>@</s><span style="color:#79c0ff">oliverheld.com</span><s>$</s></a><a href="../docs.html">← docs</a><span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>
+<header class="vlb"><div><a href="../" style="text-decoration:none"><b>ai</b><s>@</s><span class="h">oliverheld.com</span><s>$</s></a><a href="../docs.html">← docs</a><span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>
 <main>
 
 <h1>Fallbericht: Überhitzte NAS-Festplatte und SATA-I/O-Fehler</h1>
