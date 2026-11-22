@@ -305,6 +305,7 @@ h2 .arg { color: var(--cyan); }
 .hist li.now .yr { color: var(--green); }
 .hist .btw { font-size: .72rem; color: var(--violet); border: 1px solid currentColor; border-radius: 4px; padding: 0 5px; margin-left: 4px; }
 .hist code { font-size: .92em; }
+.hist .tt small a { color: var(--green); text-decoration: underline; }
 .hist li { grid-template-columns: 2.4em 4.6em minmax(0, 1fr); } .hist .yr { white-space: nowrap; }
 
 /* landing: 4 themen als 2x2, ueber-mich */
