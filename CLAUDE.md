@@ -45,7 +45,10 @@ https://oliverheld.com über GitHub Pages (Repo `d3m0naz/h0me`, Branch `gh-pages
 `python3 tools/build_doku.py` erzeugt aus `pool/`:
 
 - `pool/*.html` → `site/doku/`, `pool/<x>/*.html` → `site/doku/<x>/` mit Site-Kopf/-Fuß.
-  localStorage-Aufrufe werden entfernt (Assert prüft das).
+  localStorage-Aufrufe und Google-Fonts-Links werden entfernt (Asserts gegen Storage und
+  externe `src`/`<link>`; externe `<a>`-Links sind erlaubt → datenschutz §5 prüfen).
+  Pool-Dateien mit Leerzeichen im Namen bekommen über das Dict `NAMES` einen sauberen
+  Ausgabenamen (z. B. `headscale-vps.html`).
 - Vollbild-Demos (Dict `DEMOS`) → `site/demo/` ohne Doku-Kopf, mit kleiner Linkleiste
   (← über mich · ki-generiert · impressum · datenschutz). Google-Fonts-Links werden
   entfernt, Asserts gegen externe URLs und Storage. Textkorrekturen über die

@@ -37,7 +37,9 @@ STORAGE = re.compile(r"try \{[^{}]*localStorage[^{}]*\} catch \(e\) \{\}")
 def build(f, out, R):
     html = f.read_text(encoding="utf-8")
     html = STORAGE.sub("", html)
+    html = FONTS.sub("", html)  # keine externen Schriften, Fallback auf Systemschriften
     assert "localStorage" not in html and "sessionStorage" not in html, f
+    assert not re.search(r'(src|<link[^>]*href)="(https?:)?//', html), f  # externe Links per <a> erlaubt
     html = html.replace("</head>", '<meta name="referrer" content="no-referrer">\n'
                         f'<link rel="icon" href="{R}assets/favicon.svg" type="image/svg+xml">\n'
                         + STYLE + "\n</head>", 1)
@@ -93,13 +95,17 @@ def build_demo(f, out, anchor):
     print(out.relative_to(DST.parent))
 
 
+# saubere Dateinamen für Pool-Dokus mit Leerzeichen
+NAMES = {"Headscale auf eigenem VPS.html": "headscale-vps.html"}
+
+
 def main():
     for name, (rel, anchor) in DEMOS.items():
         build_demo(SRC / name, DST.parent / rel, anchor)
     for f in sorted(SRC.glob("*.html")):
         if f.name in DEMOS:
             continue
-        build(f, DST / f.name, "../")
+        build(f, DST / NAMES.get(f.name, f.name), "../")
     for f in sorted(SRC.glob("*/*.html")):
         build(f, DST / f.parent.name / f.name, "../../")
 
