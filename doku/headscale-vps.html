@@ -1,0 +1,495 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="referrer" content="no-referrer">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+.vlb{font:12.5px/1.5 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;background:#13161a;color:#7d8791;border-bottom:1px solid #262c33}
+.vlb div{max-width:880px;margin:0 auto;padding:9px 24px;display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:space-between;align-items:center}
+.vlb a{color:#d4d9d0;text-decoration:none}.vlb a:hover{color:#7ee787}
+.vlb b{color:#7ee787;font-weight:400}.vlb s{color:#535c66;text-decoration:none}.vlb i{font-style:normal;color:#c49bff}
+.vlb-foot{border-top:1px solid #262c33;border-bottom:0;margin-top:32px}
+.vlb-foot .sess{background:#7ee787;color:#0d0f11;padding:2px 8px;font-weight:600;margin-right:8px}
+@media print{.vlb{display:none}}
+</style>
+</head><body>
+<header class="vlb"><div><a href="../" style="text-decoration:none"><b>ai</b><s>@</s><span style="color:#79c0ff">oliverheld.com</span><s>$</s></a><a href="../docs.html">← docs</a><span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>
+<title>Headscale auf eigenem VPS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: Runbook – feste Inhaltsleiste links, eine Lesespalte rechts, Schritte als echte Reihenfolge */
+:root {
+  --bg: #f5f7f5;
+  --surface: #ffffff;
+  --fg: #16201b;
+  --muted: #56635c;
+  --line: #d6ddd8;
+  --accent: #0b6b4c;
+  --accent-soft: #e1efe8;
+  --code-bg: #eaeeeb;
+  --warn: #8a5a00;
+  --warn-soft: #fbf0d9;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111714; --surface: #18201c; --fg: #e2e9e5; --muted: #9aa8a0; --line: #2c3832;
+    --accent: #5ec89d; --accent-soft: #1b3229; --code-bg: #1d2622; --warn: #e8b04b; --warn-soft: #33290f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111714; --surface: #18201c; --fg: #e2e9e5; --muted: #9aa8a0; --line: #2c3832;
+  --accent: #5ec89d; --accent-soft: #1b3229; --code-bg: #1d2622; --warn: #e8b04b; --warn-soft: #33290f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 32px; }
+@media (min-width: 960px) { .wrap { grid-template-columns: 232px minmax(0, 1fr); gap: 56px; } }
+
+header.top { max-width: 1120px; margin: 0 auto; padding-block: 48px 32px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 750; font-stretch: 87%; font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.05; margin: 12px 0 16px; text-wrap: balance; letter-spacing: -.01em; }
+.lede { max-width: 62ch; color: var(--muted); font-size: 1.07rem; margin: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 20px; font: 13px/1.4 var(--font-mono); color: var(--muted); }
+
+nav.toc { font-size: 14px; }
+@media (min-width: 960px) { nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; } }
+nav.toc details { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+nav.toc summary { cursor: pointer; padding: 10px 14px; font-weight: 600; list-style: none; }
+nav.toc summary::-webkit-details-marker { display: none; }
+@media (min-width: 960px) { nav.toc details { border: 0; background: transparent; } nav.toc summary { padding: 0 0 10px; pointer-events: none; } }
+nav.toc ol { list-style: none; margin: 0; padding: 0 14px 12px; display: grid; gap: 2px; counter-reset: t; }
+@media (min-width: 960px) { nav.toc ol { padding: 0; } }
+nav.toc li a { display: grid; grid-template-columns: 2.2em 1fr; padding: 4px 0; color: var(--muted); text-decoration: none; }
+nav.toc li a:hover { color: var(--fg); }
+nav.toc li a .n { font: 12px/1.7 var(--font-mono); color: var(--accent); }
+nav.toc .grp { margin-top: 10px; font: 500 11px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 6px 0; }
+
+main { min-width: 0; max-width: 760px; }
+section { padding-block: 8px 28px; scroll-margin-top: 24px; }
+section + section { border-top: 1px solid var(--line); padding-top: 28px; }
+h2 { font-family: var(--font-display); font-weight: 600; font-stretch: 87%; font-size: 1.55rem; line-height: 1.2; margin: 0 0 12px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; text-wrap: balance; }
+h2 .n { font: 500 14px/1 var(--font-mono); color: var(--accent); }
+h3 { font-size: 1rem; font-weight: 600; margin: 22px 0 6px; }
+p, li { max-width: 68ch; }
+p { margin: 0 0 12px; }
+ul, ol { padding-left: 1.3em; margin: 0 0 12px; }
+li + li { margin-top: 4px; }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+
+.pill { font: 500 11px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.pill.req { color: var(--accent); border-color: var(--accent); }
+
+.code { position: relative; margin: 10px 0 16px; }
+.code .label { font: 12px/1 var(--font-mono); color: var(--muted); padding: 0 0 6px; display: block; overflow-wrap: anywhere; }
+.code pre { margin: 0; background: var(--code-bg); border-radius: 6px; padding: 14px 16px; overflow-x: auto; font: 13.5px/1.6 var(--font-mono); tab-size: 2; }
+.code pre code { background: none; padding: 0; font-size: inherit; overflow-wrap: normal; }
+.code .c { color: var(--muted); }
+.copy { position: absolute; right: 8px; bottom: calc(100% - 26px - 22px); font: 500 12px/1 var(--font-body); padding: 6px 9px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
+.code .label + .copy { bottom: auto; top: 26px; }
+.code > .copy:first-child { top: 6px; bottom: auto; }
+.copy:hover { color: var(--fg); }
+.code:has(.copy) pre { padding-right: 76px; }
+
+.note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0 16px; max-width: 68ch; }
+.note.warn { border-color: var(--warn); background: var(--warn-soft); }
+.note strong:first-child { display: block; font-size: .85rem; letter-spacing: .02em; margin-bottom: 2px; }
+.note.warn strong:first-child { color: var(--warn); }
+.note p:last-child { margin-bottom: 0; }
+
+.table { overflow-x: auto; margin: 10px 0 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 500 12px/1.3 var(--font-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+td code { white-space: nowrap; }
+
+.checks { list-style: none; padding: 0; display: grid; gap: 6px; }
+.checks li { position: relative; padding-left: 1.6em; margin-top: 0; }
+.checks li::before { content: "□"; position: absolute; left: 0; top: 0; color: var(--accent); font-family: var(--font-mono); }
+
+footer { max-width: 1120px; margin: 48px auto 0; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<header class="top">
+  <div class="eyebrow">Runbook · Debian 13 · headscale + Caddy</div>
+  <h1>Headscale auf einem neuen VPS</h1>
+  <p class="lede">Ein eigener Koordinationsserver für Tailscale-Clients: vom frischen Debian-Server über Härtung, Reverse-Proxy mit automatischem TLS bis zu ACLs und optionalem Exit-Node.</p>
+  <div class="meta"><span>Beispielwerte: RFC 5737 / 3849 / 2606</span><span>Stand: November 2026</span></div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Inhalt">
+    <details open id="toc-details">
+      <summary>Inhalt</summary>
+      <ol>
+        <li><a href="#platzhalter"><span class="n">00</span>Platzhalter</a></li>
+        <li class="grp">Server vorbereiten</li>
+        <li><a href="#dns"><span class="n">01</span>DNS-Einträge</a></li>
+        <li><a href="#admin"><span class="n">02</span>Admin-User &amp; SSH</a></li>
+        <li><a href="#updates"><span class="n">03</span>Automatische Updates</a></li>
+        <li><a href="#firewall"><span class="n">04</span>Firewall &amp; fail2ban</a></li>
+        <li><a href="#system"><span class="n">05</span>Kernel &amp; Dienste</a></li>
+        <li class="grp">headscale</li>
+        <li><a href="#install"><span class="n">06</span>Installieren</a></li>
+        <li><a href="#config"><span class="n">07</span>Konfigurieren</a></li>
+        <li><a href="#caddy"><span class="n">08</span>Caddy &amp; TLS</a></li>
+        <li><a href="#verwaltung"><span class="n">09</span>User &amp; Keys</a></li>
+        <li><a href="#clients"><span class="n">10</span>Clients verbinden</a></li>
+        <li class="grp">Optional</li>
+        <li><a href="#acl"><span class="n">11</span>ACLs</a></li>
+        <li><a href="#exit"><span class="n">12</span>Exit-Node</a></li>
+        <li class="grp">Betrieb</li>
+        <li><a href="#backup"><span class="n">13</span>Backup</a></li>
+        <li><a href="#debug"><span class="n">14</span>Fehlersuche</a></li>
+      </ol>
+    </details>
+  </nav>
+
+  <main>
+    <section id="platzhalter">
+      <h2><span class="n">00</span>Platzhalter</h2>
+      <p>Alle Werte in dieser Anleitung sind Beispiele aus den reservierten Dokumentationsbereichen. Ersetze sie vor dem Kopieren durch deine eigenen.</p>
+      <div class="table"><table>
+        <thead><tr><th>Platzhalter</th><th>Bedeutung</th></tr></thead>
+        <tbody>
+          <tr><td><code>hs.example.com</code></td><td>Öffentlicher Name des headscale-Servers</td></tr>
+          <tr><td><code>ts.example.com</code></td><td>MagicDNS-Domain für Geräte im Tailnet. Muss sich von der Server-Domain unterscheiden.</td></tr>
+          <tr><td><code>203.0.113.10</code></td><td>Öffentliche IPv4 des VPS</td></tr>
+          <tr><td><code>2001:db8::10</code></td><td>Öffentliche IPv6 des VPS</td></tr>
+          <tr><td><code>admin</code></td><td>Dein Admin-Benutzer auf dem Server</td></tr>
+          <tr><td><code>alice</code>, <code>bob</code></td><td>headscale-User, meist ein User pro Gerät oder Person</td></tr>
+          <tr><td><code>100.64.0.X</code></td><td>Tailnet-IP eines Geräts, aus <code>headscale nodes list</code></td></tr>
+        </tbody>
+      </table></div>
+      <p>Voraussetzung: ein VPS mit frischem Debian 13 (trixie), Root-Zugang per SSH und eine Domain, deren DNS du verwalten kannst.</p>
+    </section>
+
+    <section id="dns">
+      <h2><span class="n">01</span>DNS-Einträge <span class="pill req">Pflicht</span></h2>
+      <p>Lege beim DNS-Anbieter zwei Einträge an. Caddy holt das TLS-Zertifikat erst, wenn der Name auf den Server zeigt.</p>
+      <div class="table"><table>
+        <thead><tr><th>Name</th><th>Typ</th><th>Wert</th></tr></thead>
+        <tbody>
+          <tr><td><code>hs.example.com</code></td><td>A</td><td><code>203.0.113.10</code></td></tr>
+          <tr><td><code>hs.example.com</code></td><td>AAAA</td><td><code>2001:db8::10</code></td></tr>
+        </tbody>
+      </table></div>
+      <p>Für <code>ts.example.com</code> brauchst du keinen Eintrag. MagicDNS löst diese Namen nur innerhalb des Tailnets auf.</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>dig +short hs.example.com A
+dig +short hs.example.com AAAA</code></pre></div>
+    </section>
+
+    <section id="admin">
+      <h2><span class="n">02</span>Admin-User &amp; SSH <span class="pill req">Pflicht</span></h2>
+      <p>Als root anmelden, Hostname setzen und einen eigenen Admin-User mit sudo anlegen.</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>apt update &amp;&amp; apt full-upgrade -y
+hostnamectl set-hostname hs
+sed -i 's/^127\.0\.1\.1.*/127.0.1.1 hs.example.com hs/' /etc/hosts
+
+adduser admin
+usermod -aG sudo admin
+echo 'admin ALL=(ALL:ALL) ALL' &gt; /etc/sudoers.d/90-admin
+chmod 440 /etc/sudoers.d/90-admin
+visudo -c</code></pre></div>
+      <p>Vom eigenen Rechner aus den SSH-Key hinterlegen und den Login testen:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>ssh-copy-id admin@hs.example.com
+ssh admin@hs.example.com</code></pre></div>
+      <h3>SSH absichern</h3>
+      <div class="code"><span class="label">/etc/ssh/sshd_config.d/10-hardening.conf</span><button class="copy" type="button">Kopieren</button><pre><code>PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no</code></pre></div>
+      <div class="code"><span class="label">/etc/ssh/sshd_config.d/20-extra.conf</span><button class="copy" type="button">Kopieren</button><pre><code>AllowUsers admin
+MaxAuthTries 3
+X11Forwarding no
+AllowAgentForwarding no</code></pre></div>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo sshd -t &amp;&amp; sudo systemctl reload ssh</code></pre></div>
+      <div class="note warn"><strong>Aussperren vermeiden</strong><p>Lass die aktuelle Sitzung offen und teste den Key-Login in einem zweiten Terminal, bevor du sie schließt. Ab hier läuft alles als <code>admin</code> mit <code>sudo</code>.</p></div>
+    </section>
+
+    <section id="updates">
+      <h2><span class="n">03</span>Automatische Updates <span class="pill req">Pflicht</span></h2>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo apt install -y unattended-upgrades</code></pre></div>
+      <div class="code"><span class="label">/etc/apt/apt.conf.d/20auto-upgrades</span><button class="copy" type="button">Kopieren</button><pre><code>APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";</code></pre></div>
+      <div class="code"><span class="label">/etc/apt/apt.conf.d/52unattended-reboot</span><button class="copy" type="button">Kopieren</button><pre><code>Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-Time "04:00";</code></pre></div>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo unattended-upgrade --dry-run --debug 2&gt;&amp;1 | tail -n 20</code></pre></div>
+      <p>unattended-upgrades aktualisiert nur Pakete aus den Debian-Quellen. headscale (eigenes <code>.deb</code>) und Tailscale (eigenes Repo) musst du selbst aktualisieren.</p>
+    </section>
+
+    <section id="firewall">
+      <h2><span class="n">04</span>Firewall &amp; fail2ban <span class="pill req">Pflicht</span></h2>
+      <p>Eingehend ist alles gesperrt, außer SSH mit Rate-Limit und HTTP/HTTPS für Caddy.</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo apt install -y ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw limit 22/tcp
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+sudo ufw status verbose</code></pre></div>
+      <h3>fail2ban</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo apt install -y fail2ban python3-systemd</code></pre></div>
+      <div class="code"><span class="label">/etc/fail2ban/jail.local</span><button class="copy" type="button">Kopieren</button><pre><code>[DEFAULT]
+backend   = systemd
+banaction = ufw
+
+[sshd]
+enabled = true</code></pre></div>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo systemctl restart fail2ban
+sudo fail2ban-client status sshd</code></pre></div>
+    </section>
+
+    <section id="system">
+      <h2><span class="n">05</span>Kernel &amp; Dienste <span class="pill">Empfohlen</span></h2>
+      <div class="code"><span class="label">/etc/sysctl.d/99-hardening.conf</span><button class="copy" type="button">Kopieren</button><pre><code><span class="c"># Loose statt strict, damit ein späterer Exit-Node funktioniert</span>
+net.ipv4.conf.all.rp_filter = 2
+net.ipv4.conf.default.rp_filter = 2
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv6.conf.default.accept_redirects = 0
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0
+net.ipv4.tcp_syncookies = 1
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+kernel.kptr_restrict = 2
+kernel.dmesg_restrict = 1</code></pre></div>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo sysctl --system &gt;/dev/null</code></pre></div>
+      <h3>LLMNR und mDNS abschalten</h3>
+      <p>Nur nötig, wenn <code>systemd-resolved</code> läuft (<code>systemctl is-active systemd-resolved</code>).</p>
+      <div class="code"><span class="label">/etc/systemd/resolved.conf.d/no-llmnr.conf</span><button class="copy" type="button">Kopieren</button><pre><code>[Resolve]
+LLMNR=no
+MulticastDNS=no</code></pre></div>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo systemctl restart systemd-resolved</code></pre></div>
+      <h3>Unnötige Pakete entfernen</h3>
+      <p>Viele VPS-Images bringen einen Mailserver mit. Wenn der Server keine Mails verschicken soll:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo apt purge -y 'exim4*' logwatch &amp;&amp; sudo apt autoremove -y</code></pre></div>
+    </section>
+
+    <section id="install">
+      <h2><span class="n">06</span>headscale installieren <span class="pill req">Pflicht</span></h2>
+      <p>headscale hat kein apt-Repo. Das offizielle <code>.deb</code> aus den GitHub-Releases enthält Binary, systemd-Unit und Beispielkonfiguration. Lies vor jedem Update die <a href="https://github.com/juanfont/headscale/releases">Release-Notes</a>, weil sich Config-Optionen und CLI-Flags zwischen Versionen ändern.</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>VER=$(curl -s https://api.github.com/repos/juanfont/headscale/releases/latest | grep -oP '"tag_name": "v\K[^"]+')
+ARCH=$(dpkg --print-architecture)
+curl -fLo /tmp/headscale.deb "https://github.com/juanfont/headscale/releases/download/v${VER}/headscale_${VER}_linux_${ARCH}.deb"
+sudo apt install -y /tmp/headscale.deb &amp;&amp; rm /tmp/headscale.deb
+headscale version</code></pre></div>
+      <p>Für ein späteres Update führst du denselben Block noch einmal aus und startest danach mit <code>sudo systemctl restart headscale</code> neu.</p>
+    </section>
+
+    <section id="config">
+      <h2><span class="n">07</span>headscale konfigurieren <span class="pill req">Pflicht</span></h2>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo cp /etc/headscale/config.yaml /etc/headscale/config.yaml.orig
+sudoedit /etc/headscale/config.yaml</code></pre></div>
+      <p>Diese drei Werte anpassen, alles andere bleibt auf dem Standard:</p>
+      <div class="code"><span class="label">/etc/headscale/config.yaml (Auszug)</span><button class="copy" type="button">Kopieren</button><pre><code>server_url: https://hs.example.com
+listen_addr: 127.0.0.1:8080   <span class="c"># nur lokal, Caddy macht TLS</span>
+dns:
+  base_domain: ts.example.com</code></pre></div>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo systemctl enable --now headscale
+sudo systemctl status headscale --no-pager</code></pre></div>
+    </section>
+
+    <section id="caddy">
+      <h2><span class="n">08</span>Caddy &amp; TLS <span class="pill req">Pflicht</span></h2>
+      <p>Caddy ist in Debian enthalten, holt das Let's-Encrypt-Zertifikat selbst und leitet auf den lokalen headscale-Port weiter.</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo apt install -y caddy</code></pre></div>
+      <div class="code"><span class="label">/etc/caddy/Caddyfile</span><button class="copy" type="button">Kopieren</button><pre><code>hs.example.com {
+    reverse_proxy 127.0.0.1:8080
+}</code></pre></div>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo systemctl reload caddy
+curl -s https://hs.example.com/health</code></pre></div>
+      <p>Erwartete Antwort: <code>{"status":"pass"}</code>. Wenn das Zertifikat fehlt, prüfe DNS und ob Port 80 offen ist.</p>
+    </section>
+
+    <section id="verwaltung">
+      <h2><span class="n">09</span>User &amp; Keys <span class="pill req">Pflicht</span></h2>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo headscale users create alice
+sudo headscale users list
+sudo headscale preauthkeys create --user alice --expiration 24h
+sudo headscale nodes list</code></pre></div>
+      <p>Je nach Version erwartet <code>--user</code> den Namen oder die numerische ID aus <code>users list</code>. Die Meldung „user not found“ heißt meist, dass der User noch nicht angelegt ist.</p>
+      <div class="note"><strong>Ein User pro Gerät</strong><p>ACLs arbeiten mit Usern. Wenn du Geräte später unterschiedlich berechtigen willst, gib jedem einen eigenen User.</p></div>
+    </section>
+
+    <section id="clients">
+      <h2><span class="n">10</span>Clients verbinden <span class="pill req">Pflicht</span></h2>
+      <h3>Linux und macOS (CLI) mit Pre-Auth-Key</h3>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo tailscale up --login-server https://hs.example.com --authkey &lt;KEY&gt;</code></pre></div>
+      <ul>
+        <li>macOS-App per CLI: <code>/Applications/Tailscale.app/Contents/MacOS/Tailscale up …</code></li>
+        <li>Homebrew: erst <code>sudo brew services start tailscale</code>, dann <code>tailscale up …</code></li>
+      </ul>
+      <h3>macOS-App (GUI)</h3>
+      <p>Mit gedrückter <kbd>⌥</kbd>-Taste aufs Menüleisten-Icon klicken, dann <em>Debug → Custom Login Server</em> und <code>https://hs.example.com</code> eintragen.</p>
+      <h3>iPhone und iPad</h3>
+      <p>In der Tailscale-App auf <em>Log in</em> tippen, dann <em>⋯ → Use custom coordination server</em> und <code>https://hs.example.com</code> eintragen. In älteren Versionen steht die Option unter iOS-Einstellungen → Tailscale → <em>Alternate Coordination Server URL</em>.</p>
+      <p>Die Login-Seite zeigt einen Registrierungs-Key. Diesen auf dem Server bestätigen:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo headscale nodes register --user alice --key &lt;KEY&gt;</code></pre></div>
+    </section>
+
+    <section id="acl">
+      <h2><span class="n">11</span>ACLs <span class="pill">Optional</span></h2>
+      <p>Ohne Policy darf jedes Gerät jedes andere erreichen. Das Beispiel setzt drei typische Rollen um:</p>
+      <div class="table"><table>
+        <thead><tr><th>User</th><th>Rolle</th><th>Darf erreichen</th></tr></thead>
+        <tbody>
+          <tr><td><code>alice@</code>, <code>bob@</code>, <code>nas@</code></td><td>vertraut</td><td>alles</td></tr>
+          <tr><td><code>kiosk@</code></td><td>eingeschränkt</td><td>nichts von sich aus, ist aber erreichbar</td></tr>
+          <tr><td><code>gast@</code></td><td>Gast</td><td>nur <code>8096/tcp</code> auf dem Medienserver</td></tr>
+        </tbody>
+      </table></div>
+      <div class="code"><span class="label">/etc/headscale/acl.hujson</span><button class="copy" type="button">Kopieren</button><pre><code>{
+  "groups": {
+    <span class="c">// alle Geräte außer kiosk und gast</span>
+    "group:trusted": ["alice@", "bob@", "nas@"]
+  },
+  "hosts": {
+    <span class="c">// Tailnet-IP des Medienservers</span>
+    "media": "100.64.0.X/32"
+  },
+  "acls": [
+    { "action": "accept", "src": ["group:trusted"], "dst": ["*:*"] },
+    <span class="c">// gast: nur Medienserver, nur 8096/tcp</span>
+    { "action": "accept", "src": ["gast@"], "proto": "tcp", "dst": ["media:8096"] }
+    <span class="c">// kiosk@: keine Regel, darf nichts initiieren</span>
+  ]
+}</code></pre></div>
+      <ul>
+        <li>ACLs sind stateful. Antworten auf erlaubte Verbindungen kommen immer zurück, deshalb braucht <code>kiosk@</code> keine eigene Regel.</li>
+        <li>Den Medienserver über <code>hosts</code> per IP freigeben, nicht per User. Sonst wären alle Geräte dieses Users auf Port 8096 erreichbar.</li>
+        <li>Der Gast braucht einen eigenen User und gehört nicht in <code>group:trusted</code>.</li>
+        <li>Die Schreibweise mit <code>@</code> am Ende gilt ab headscale 0.26.</li>
+      </ul>
+      <p>Policy in der Config aktivieren:</p>
+      <div class="code"><span class="label">/etc/headscale/config.yaml (Auszug)</span><button class="copy" type="button">Kopieren</button><pre><code>policy:
+  mode: file
+  path: /etc/headscale/acl.hujson</code></pre></div>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo systemctl restart headscale
+journalctl -u headscale -n 20 --no-pager</code></pre></div>
+      <h3>Testen</h3>
+      <p><code>tailscale ping</code> ignoriert ACLs. Teste mit normalem <code>ping</code> und <code>curl</code>:</p>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code><span class="c"># auf einem vertrauten Gerät: klappt</span>
+ping -c2 100.64.0.1
+<span class="c"># auf kiosk: blockiert</span>
+ping -c2 -W2 100.64.0.2
+<span class="c"># auf gast: Antwort vom Medienserver</span>
+curl -sI http://100.64.0.X:8096 | head -1
+<span class="c"># auf gast: blockiert</span>
+ping -c2 -W2 100.64.0.X</code></pre></div>
+      <p>Der Gast ruft den Medienserver per IP auf. Der <code>hosts</code>-Eintrag gilt nur für IPv4. Über den MagicDNS-Namen probiert der Client eventuell zuerst IPv6 und hängt.</p>
+      <div class="note warn"><strong>Vorsicht</strong><p>Neue Geräte haben keinen Zugriff, bis ihr User in <code>group:trusted</code> steht. Eine fehlerhafte Policy kann das ganze Tailnet sperren. SSH über die öffentliche IP bleibt der Rettungsweg.</p></div>
+      <p>Soll ein eingeschränktes Gerät den Exit-Node nutzen, ergänze: <code>{ "action": "accept", "src": ["kiosk@"], "dst": ["autogroup:internet:*"] }</code></p>
+    </section>
+
+    <section id="exit">
+      <h2><span class="n">12</span>Exit-Node <span class="pill">Optional</span></h2>
+      <p>Der Server leitet den gesamten Internet-Verkehr eines Clients weiter, zum Beispiel im fremden WLAN. Dafür läuft auf dem Server zusätzlich ein Tailscale-Client, der sich am eigenen headscale anmeldet.</p>
+      <div class="code"><span class="label">Tailscale-Client aus dem offiziellen Repo</span><button class="copy" type="button">Kopieren</button><pre><code>curl -fsSL https://pkgs.tailscale.com/stable/debian/trixie.noarmor.gpg | sudo tee /usr/share/keyrings/tailscale-archive-keyring.gpg &gt;/dev/null
+curl -fsSL https://pkgs.tailscale.com/stable/debian/trixie.tailscale-keyring.list | sudo tee /etc/apt/sources.list.d/tailscale.list &gt;/dev/null
+sudo apt update &amp;&amp; sudo apt install -y tailscale</code></pre></div>
+      <div class="code"><span class="label">IP-Forwarding</span><button class="copy" type="button">Kopieren</button><pre><code>sudo tee /etc/sysctl.d/99-tailscale.conf &gt;/dev/null &lt;&lt;'EOF'
+net.ipv4.ip_forward = 1
+net.ipv6.conf.all.forwarding = 1
+EOF
+sudo sysctl --system &gt;/dev/null</code></pre></div>
+      <div class="code"><span class="label">Firewall</span><button class="copy" type="button">Kopieren</button><pre><code>WAN=$(ip route show default | awk '{print $5; exit}')
+sudo ufw allow 41641/udp
+sudo ufw route allow in on tailscale0 out on "$WAN"</code></pre></div>
+      <div class="code"><span class="label">Verbinden und Exit-Node anbieten</span><button class="copy" type="button">Kopieren</button><pre><code>sudo headscale preauthkeys create --user admin --expiration 1h
+sudo tailscale up --login-server https://hs.example.com --authkey &lt;KEY&gt; \
+  --advertise-exit-node --accept-dns=false</code></pre></div>
+      <div class="code"><span class="label">In headscale freigeben</span><button class="copy" type="button">Kopieren</button><pre><code>sudo headscale nodes list
+sudo headscale nodes approve-routes --identifier &lt;ID&gt; --routes 0.0.0.0/0,::/0
+sudo headscale nodes list-routes</code></pre></div>
+      <p>Für den Server-Client legst du vorher mit <code>headscale users create admin</code> einen User an. Nutzt du ACLs, muss dieser User in <code>group:trusted</code> stehen.</p>
+      <h3>Nutzen</h3>
+      <ul>
+        <li>iPhone: <em>Exit Node → hs</em></li>
+        <li>macOS-App: <em>Exit Nodes → hs</em></li>
+        <li>CLI: <code>tailscale set --exit-node=hs</code></li>
+      </ul>
+      <p>Test: <a href="https://ifconfig.me">ifconfig.me</a> zeigt jetzt die IP des Servers.</p>
+      <div class="note"><strong>Updates</strong><p>Tailscale kommt aus einem Fremd-Repo und wird von unattended-upgrades nicht erfasst. Entweder regelmäßig <code>apt upgrade</code> ausführen oder den Origin aus <code>apt-cache policy tailscale</code> in <code>Unattended-Upgrade::Origins-Pattern</code> aufnehmen.</p></div>
+    </section>
+
+    <section id="backup">
+      <h2><span class="n">13</span>Backup</h2>
+      <p>Diese Pfade reichen, um den Server neu aufzusetzen, ohne dass sich Clients neu anmelden müssen:</p>
+      <div class="table"><table>
+        <thead><tr><th>Pfad</th><th>Inhalt</th></tr></thead>
+        <tbody>
+          <tr><td><code>/var/lib/headscale/</code></td><td>Datenbank, Noise- und DERP-Keys</td></tr>
+          <tr><td><code>/etc/headscale/config.yaml</code></td><td>Konfiguration</td></tr>
+          <tr><td><code>/etc/headscale/acl.hujson</code></td><td>Policy, falls genutzt</td></tr>
+          <tr><td><code>/etc/caddy/Caddyfile</code></td><td>Reverse-Proxy</td></tr>
+        </tbody>
+      </table></div>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>sudo systemctl stop headscale
+sudo tar czf ~/headscale-backup-$(date +%F).tar.gz \
+  /var/lib/headscale /etc/headscale /etc/caddy/Caddyfile
+sudo systemctl start headscale</code></pre></div>
+      <p>Das Archiv enthält private Schlüssel. Lade es nur verschlüsselt auf einen anderen Rechner.</p>
+    </section>
+
+    <section id="debug">
+      <h2><span class="n">14</span>Fehlersuche</h2>
+      <div class="code"><button class="copy" type="button">Kopieren</button><pre><code>journalctl -u headscale -n 50 --no-pager
+journalctl -u caddy -n 50 --no-pager
+sudo fail2ban-client status sshd
+sudo ufw status verbose
+curl -s https://hs.example.com/health</code></pre></div>
+      <h3>Abschluss-Check</h3>
+      <ul class="checks">
+        <li>SSH-Login nur mit Key als <code>admin</code>, root-Login abgelehnt</li>
+        <li><code>ufw status</code> zeigt nur 22, 80, 443 (plus 41641/udp mit Exit-Node)</li>
+        <li><code>/health</code> antwortet mit <code>pass</code> über gültiges TLS</li>
+        <li>Mindestens zwei Clients sehen sich in <code>tailscale status</code></li>
+        <li>MagicDNS-Namen unter <code>ts.example.com</code> lösen auf</li>
+        <li>Backup liegt außerhalb des Servers</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>Alle Namen, Domains und Adressen sind Beispiele (example.com, 203.0.113.0/24, 2001:db8::/32).</footer>
+
+<script>
+document.querySelectorAll('.code .copy').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var pre = btn.parentElement.querySelector('pre');
+    var text = pre.innerText.replace(/\n$/, '');
+    var done = function (msg) { btn.textContent = msg; setTimeout(function () { btn.textContent = 'Kopieren'; }, 1500); };
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      done('Markiert');
+    };
+    try {
+      navigator.clipboard.writeText(text).then(function () { done('Kopiert'); }, fallback);
+    } catch (e) { fallback(); }
+  });
+});
+// Inhaltsverzeichnis auf schmalen Bildschirmen eingeklappt starten
+if (window.matchMedia('(max-width: 959px)').matches) {
+  var d = document.getElementById('toc-details'); if (d) d.open = false;
+}
+</script>
+
+<footer class="vlb vlb-foot"><div><span><span class="sess">[oliverheld.com]</span><a href="../">0:index</a> &nbsp;<a href="../ueber-mich.html">1:über-mich</a> &nbsp;<a href="../docs.html">2:docs</a> &nbsp;<a href="../projekte.html">3:projekte</a> &nbsp;<a href="../musik.html">4:musik</a> &nbsp;<a href="../impressum.html">5:impressum</a> &nbsp;<a href="../datenschutz.html">6:datenschutz</a></span><span>cookies:<b>0</b> tracker:<b>0</b></span></div></footer>
+</body></html>
