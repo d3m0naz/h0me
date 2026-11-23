@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Musik · ai@oliverheld.com</title>
-<meta name="description" content="Der Soundtrack zur Doku: alle zehn Studioalben von Fear Factory, eine Top-200-Liste Metal und die Top 31 aus der Commodore-Zeit.">
+<meta name="description" content="Der Soundtrack zur Doku: alle zehn Studioalben von Fear Factory, eine Top-200-Liste Metal, die Top 31 aus der Commodore-Zeit und eine audiophile Playlist.">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
@@ -33,13 +33,14 @@
   </section>
 
   <section id="inhalt" aria-labelledby="h-inhalt">
-    <div class="sh"><h2 id="h-inhalt"><span class="ps">$</span> ls <span class="arg">~/musik</span></h2><span class="count">3 playlists</span></div>
+    <div class="sh"><h2 id="h-inhalt"><span class="ps">$</span> ls <span class="arg">~/musik</span></h2><span class="count">4 playlists</span></div>
     <div class="term pl">
       <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>~/musik · ls -1</span></div>
       <ol>
         <li><span class="yr">10</span><span class="tt"><a href="#musik">fear_factory.m3u</a><small>Der Soundtrack zum Untergang? Warum alte Fear-Factory-Alben über Mensch und Maschine wahrscheinlich alles voraussahen.</small></span></li>
         <li><span class="yr">200</span><span class="tt"><a href="#top200">top200_metal.m3u</a><small>Meine Top 200 in Metal, komplett ausgeklappt, mit Link zur Tidal-Playlist.</small></span></li>
         <li><span class="yr">31</span><span class="tt"><a href="#c64">commodore_era.m3u</a><small>Die Top 31 aus der Commodore-Zeit. Privat, deshalb ohne Link, aber alle stehen auch in den Top 200.</small></span></li>
+        <li><span class="yr">35</span><span class="tt"><a href="#hifi">audiophil.m3u</a><small>Für die gute Anlage: Jazz, Klassik, Synthpop und Funk, sortiert nach Klang statt nach Genre.</small></span></li>
       </ol>
     </div>
   </section>
@@ -51,7 +52,7 @@
     Industrial Metal. Heute liest es sich wie ein Changelog.</p>
 
     <div class="term pl">
-      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>fear_factory.m3u · hellseherisch</span></div>
+      <div class="term-bar"><a class="up" href="#" title="nach oben" aria-label="Zum Seitenanfang"></a><i aria-hidden="true"></i><i aria-hidden="true"></i><span aria-hidden="true">fear_factory.m3u · hellseherisch</span></div>
       <ol>
         <li><span class="yr">1992</span><span class="tt"><a href="https://en.wikipedia.org/wiki/Soul_of_a_New_Machine" rel="noopener">Soul of a New Machine</a><small>Das Debüt, noch mehr Death Metal als Industrial. Das Thema steht aber schon im Titel: Laut Gitarrist Dino Cazares geht es um eine Maschine, die der Mensch erschafft, technisch oder als Staatsapparat.</small></span></li>
         <li><span class="yr">1995</span><span class="tt"><a href="https://en.wikipedia.org/wiki/Demanufacture" rel="noopener">Demanufacture</a><small>Mensch gegen Maschine. Ein Einzelner gegen ein System, das alles automatisiert hat.</small></span></li>
@@ -71,11 +72,10 @@
     <div class="sh"><h2 id="h-top200"><span class="ps">#</span> mpc <span class="arg">load top200_metal</span></h2><span class="count">200 tracks</span></div>
     <p class="intro">Meine Top 200 in Metal: Black, Death, Thrash, Heavy und ein paar Kiss-Soloalben
     dazwischen. Titel mit <a class="btw" href="#c64">c64</a> stehen auch in der Commodore-Liste.
-    Die Liste hat die KI aus einem
-    Handyvideo abgetippt, Tippfehler sind also möglich, und drei Titel tauchen zweimal auf.</p>
+    Drei Titel tauchen zweimal auf.</p>
     <p class="go-retro lead-in"><a href="https://tidal.com/playlist/32a158bc-66be-42ab-8e65-ffc623c9cd17" rel="noopener">tidal ↗</a><span>externe Seite, Tidal setzt eigene Cookies</span></p>
     <div class="term top200">
-      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>top200_metal.m3u · shuffle off</span></div>
+      <div class="term-bar"><a class="up" href="#" title="nach oben" aria-label="Zum Seitenanfang"></a><i aria-hidden="true"></i><i aria-hidden="true"></i><span aria-hidden="true">top200_metal.m3u · shuffle off</span></div>
       <details open>
         <summary>cat top200_metal.m3u <span>200 zeilen</span></summary>
         <ol>
@@ -99,7 +99,7 @@
           <li><span><b>Susperia</b> – Devil May Care</span></li>
           <li><span><b>Taake</b> – I Am the Black Wizards</span></li>
           <li><span><b>Uada</b> – Black Autumn, White Spring</span></li>
-          <li><span><b>Voivod</b> – Le Pont Noir</span></li>
+          <li id="t21"><span><b>Voivod</b> – Le Pont Noir <a class="btw" href="#hifi" title="steht auch in audiophil">hifi</a></span></li>
           <li><span><b>Obituary</b> – Threatening Skies (Live)</span></li>
           <li><span><b>Mötley Crüe</b> – Looks That Kill</span></li>
           <li><span><b>Kanonenfieber</b> – Die Schlacht bei Tannenberg</span></li>
@@ -267,7 +267,7 @@
           <li><span><b>At War</b> – Ordered To Kill</span></li>
           <li><span><b>Warhead</b> – Kill the Witch</span></li>
           <li><span><b>Venom</b> – Angel Dust (Demo)</span></li>
-          <li><span><b>Grip Inc.</b> – Enemy Mind</span></li>
+          <li id="t189"><span><b>Grip Inc.</b> – Enemy Mind <a class="btw" href="#hifi" title="steht auch in audiophil">hifi</a></span></li>
           <li><span><b>Hassmord</b> – Messias als Gulasch</span></li>
           <li><span><b>Bolt Thrower</b> – The Killchain</span></li>
           <li><span><b>Saltatio Mortis, Blind Guardian</b> – Finsterwacht</span></li>
@@ -288,10 +288,10 @@
     <div class="sh"><h2 id="h-c64"><span class="ps">#</span> mpc <span class="arg">load commodore_era</span></h2><span class="count">31 tracks · 8 bit</span></div>
     <p class="intro">Die Top 31 aus der Commodore-Zeit, als die Musik vom Tape kam und der Brotkasten
     nebenher lud: Heavy Metal, Bay-Area- und deutscher Thrash und zwei Kiss-Soloalben. Die Playlist
-    ist privat, deshalb gibt es hier keinen Link. Abgetippt hat sie die KI aus einem Handyvideo.
+    ist privat, deshalb gibt es hier keinen Link.
     Alle 31 stehen auch in den Top 200, die Nummer rechts springt zum Platz dort.</p>
     <div class="term top200 c64">
-      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>commodore_era.m3u · side a</span></div>
+      <div class="term-bar"><a class="up" href="#" title="nach oben" aria-label="Zum Seitenanfang"></a><i aria-hidden="true"></i><i aria-hidden="true"></i><span aria-hidden="true">commodore_era.m3u · side a</span></div>
       <details open>
         <summary>cat commodore_era.m3u <span>31 zeilen</span></summary>
         <ol>
@@ -331,6 +331,57 @@
     </div>
   </section>
 
+  <section id="hifi" aria-labelledby="h-hifi">
+    <div class="sh"><h2 id="h-hifi"><span class="ps">#</span> mpc <span class="arg">load audiophil</span></h2><span class="count">35 tracks · 16 bit / 44.1 khz</span></div>
+    <p class="intro">Für die gute Anlage: Jazz, Klassik, Synthpop, Funk, Prog, Liedermacher und ein
+    paar Ausreißer. Hier geht es weniger ums Genre als darum, wie es klingt, also um Bass, Raum,
+    Stimmen und Schlagzeug. Einen Link gibt es nicht.
+    Die zwei Titel mit Nummer stehen auch in den Top 200.</p>
+    <div class="term top200 hifi">
+      <div class="term-bar"><a class="up" href="#" title="nach oben" aria-label="Zum Seitenanfang"></a><i aria-hidden="true"></i><i aria-hidden="true"></i><span aria-hidden="true">audiophil.m3u · lossless</span></div>
+      <details open>
+        <summary>cat audiophil.m3u <span>35 zeilen</span></summary>
+        <ol>
+          <li><span><b>Friedemann</b> – My Blue Star</span></li>
+          <li><span><b>Friedemann</b> – Aquamarin</span></li>
+          <li><span><b>Friedemann</b> – Bao Lan</span></li>
+          <li><span><b>Sir Simon Rattle, Berliner Philharmoniker</b> – Pictures at an Exhibition: VII. Limoges, le marché</span></li>
+          <li><span><b>George Kranz</b> – Din Daa Daa</span></li>
+          <li><span><b>Taylor Swift</b> – Vigilante Shit</span></li>
+          <li><span><b>Bela Fleck and the Flecktones</b> – Flight of the Cosmic Hippo</span></li>
+          <li><span><b>Anika Nilles</b> – Greenfield</span></li>
+          <li><span><b>Grip Inc.</b> – Enemy Mind</span><a class="rk" href="#t189" aria-label="Platz 189 in den Top 200">#189</a></li>
+          <li><span><b>Yello</b> – Bimbo (Remastered 2005)</span></li>
+          <li><span><b>Till Brönner, Dieter Ilg</b> – A Thousand Kisses Deep</span></li>
+          <li><span><b>Miles Davis, John Coltrane, Cannonball Adderley</b> – Flamenco Sketches</span></li>
+          <li><span><b>Justin Johnson</b> – Ghost Riders in the Sky</span></li>
+          <li><span><b>Spliff</b> – Carbonara</span></li>
+          <li><span><b>Kenny Dorham</b> – Una Mas (One More Time)</span></li>
+          <li><span><b>TOTO</b> – Africa</span></li>
+          <li><span><b>Nina Hagen</b> – African Reggae</span></li>
+          <li><span><b>Keep Shelly In Athens</b> – (Don't Fear) the Reaper</span></li>
+          <li><span><b>Voivod</b> – Le Pont Noir</span><a class="rk" href="#t21" aria-label="Platz 21 in den Top 200">#21</a></li>
+          <li><span><b>New Order</b> – Blue Monday (12" Version)</span></li>
+          <li><span><b>Pete Townshend</b> – Face The Face</span></li>
+          <li><span><b>Level 42</b> – Dune Tune</span></li>
+          <li><span><b>The Alan Parsons Project</b> – I Robot</span></li>
+          <li><span><b>Taucher</b> – Happiness (Booka Shade Mix)</span></li>
+          <li><span><b>The Meters</b> – Cissy Strut</span></li>
+          <li><span><b>Submotion Orchestra</b> – Variations</span></li>
+          <li><span><b>Grauzone</b> – FILM 2</span></li>
+          <li><span><b>Unto Others</b> – Over Western Shores</span></li>
+          <li><span><b>Rainald Grebe, Die Kapelle der Versöhnung</b> – Der Bass muss laufen</span></li>
+          <li><span><b>Ferenc Snétberger, Anders Jormin</b> – Orange Tango</span></li>
+          <li><span><b>Niki Reiser</b> – Roter Salon</span></li>
+          <li><span><b>Dota Kehr</b> – Für die Sterne</span></li>
+          <li><span><b>Mike Sheridan, Frida Hilarius</b> – Stilhed (Sunget Af Frida Hilarius)</span></li>
+          <li><span><b>Francine Thirteen</b> – Queen Mary</span></li>
+          <li><span><b>Curt Cress</b> – Moon Walk</span></li>
+        </ol>
+      </details>
+    </div>
+  </section>
+
 </main>
 
 <footer class="tmux">
@@ -340,5 +391,9 @@
   </div>
 </footer>
 
+<script>
+/* Höhe der Kopfzeile für die klebenden Playlist-Leisten, speichert nichts */
+(function(){var h=document.querySelector("header.top");function s(){document.documentElement.style.setProperty("--hdr",h.offsetHeight+"px")}s();addEventListener("resize",s)})();
+</script>
 </body>
 </html>
