@@ -8,6 +8,7 @@
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
+<script src="assets/theme.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Zum Inhalt springen</a>
@@ -38,7 +39,7 @@
   <section id="plan" aria-labelledby="h-plan">
     <div class="sh"><h2 id="h-plan"><span class="ps">$</span> finger <span class="arg">oliverheld.com</span></h2><span class="count">~/.plan</span></div>
     <div class="term retro">
-      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>finger · ~/.plan</span></div>
+      <div class="term-bar"><a class="up" href="#" title="nach oben" aria-label="Zum Seitenanfang"></a><i aria-hidden="true"></i><i aria-hidden="true"></i><span aria-hidden="true">finger · ~/.plan</span></div>
 <pre class="hdrs"><span class="k">Login:</span> oliverheld.com     <span class="k">Name:</span> <span class="dim">steht im impressum</span>
 <span class="k">Shell:</span> /bin/bash          <span class="k">Home:</span> /home/h0me
 <span class="k">GitHub:</span> d3m0naz           <span class="k">Mail:</span> <span class="dim">siehe impressum (als bild)</span>
@@ -58,7 +59,7 @@
     <p class="intro">Angefangen mit Gummitastatur und Datasette, angekommen bei einem Rolling Release.
     Dazwischen jede Menge Disketten und ein paar Kartons mit Handbüchern.</p>
     <div class="term pl hist">
-      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>~/.werdegang · append only</span></div>
+      <div class="term-bar"><a class="up" href="#" title="nach oben" aria-label="Zum Seitenanfang"></a><i aria-hidden="true"></i><i aria-hidden="true"></i><span aria-hidden="true">~/.werdegang · append only</span></div>
       <ol>
         <li><span class="yr">8 bit</span><span class="tt"><b>Commodore C116</b> <a class="btw demo" href="demo/c116-rosette.html" title="BASIC-3.5-Interpreter mit TED-Grafik, läuft im Browser">▶ demo</a><small>Der kleine Bruder des Plus/4, mit Gummitastatur und 16&nbsp;KB RAM. Einschalten, BASIC&nbsp;3.5, blinkender Cursor: so fing alles an.</small></span></li>
         <li><span class="yr">8 bit</span><span class="tt"><b>Commodore C64</b><small>Der Brotkasten mit 64&nbsp;KB und dem legendären SID-Chip. Wer <code>LOAD "*",8,1</code> noch auswendig kann, weiß Bescheid.</small></span></li>
@@ -81,7 +82,7 @@
     mindestens einen Sales Guy persönlich. Jetzt steht hier diese Seite, aber die Erinnerung
     bleibt verlinkt.</p>
     <div class="term retro">
-      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>bash · aus der history</span></div>
+      <div class="term-bar"><a class="up" href="#" title="nach oben" aria-label="Zum Seitenanfang"></a><i aria-hidden="true"></i><i aria-hidden="true"></i><span aria-hidden="true">bash · aus der history</span></div>
 <pre class="hdrs"><span class="ps">$</span> whois oliverheld.com | grep -i creation
 <span class="k">Creation Date:</span> 2001-12-07
 <span class="dim"># 25 jahre am 07.12.2026.</span>
@@ -108,5 +109,9 @@
   </div>
 </footer>
 
+<script>
+/* Höhe der Kopfzeile für die klebende Werdegang-Leiste, speichert nichts */
+(function(){var h=document.querySelector("header.top");function s(){document.documentElement.style.setProperty("--hdr",h.offsetHeight+"px")}s();addEventListener("resize",s)})();
+</script>
 </body>
 </html>
