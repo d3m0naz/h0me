@@ -44,6 +44,10 @@ https://oliverheld.com über GitHub Pages (Repo `d3m0naz/h0me`, Branch `gh-pages
 - Wording: „Incidents“ statt „Probleme“ (Startseite, Docs).
 - `projekte.html`: Repo-Karten, Thumbnails lokal in `assets/thumbs/`.
 - `musik.html`, `impressum.html`, `datenschutz.html` (geht von Hosting auf GitHub Pages aus).
+- Hell/Dunkel: `site/assets/theme.js` (in jedem `<head>`, auch Dokus über `build_doku.py`) setzt
+  einen Knopf ins Menü (auto → Sonne → Mond) und `data-theme` auf `<html>`. Ohne Speicher: die Wahl
+  steht als `?theme=` in der Adresse und wird an interne Links gehängt (datenschutz §4).
+  Neue Farbregeln für Light immer für `@media light :root:not([data-theme=dark])` und `[data-theme=light]`.
 - Stil in `site/assets/style.css`. Innere Links in `.inc`-Karten brauchen
   `position:relative; z-index:1` (die Überschrift legt einen Overlay-Link über die Karte).
 

@@ -15,7 +15,10 @@ SRC, DST = ROOT / "pool", ROOT / "site" / "doku"
 
 STYLE = """<style>
 .vlb{--v-bg:#13161a;--v-line:#262c33;--v-ink:#d4d9d0;--v-muted:#7d8791;--v-dim:#535c66;--v-green:#7ee787;--v-violet:#c49bff;--v-cyan:#79c0ff;--v-on:#0d0f11}
-@media (prefers-color-scheme: light){.vlb{--v-bg:#ecebe4;--v-line:#dddbd2;--v-ink:#2a2f2b;--v-muted:#68706a;--v-dim:#9aa098;--v-green:#2f7d32;--v-violet:#7a46c9;--v-cyan:#1f6fb2;--v-on:#f4f3ee}}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .vlb{--v-bg:#ecebe4;--v-line:#dddbd2;--v-ink:#2a2f2b;--v-muted:#68706a;--v-dim:#9aa098;--v-green:#2f7d32;--v-violet:#7a46c9;--v-cyan:#1f6fb2;--v-on:#f4f3ee}}
+:root[data-theme="light"] .vlb{--v-bg:#ecebe4;--v-line:#dddbd2;--v-ink:#2a2f2b;--v-muted:#68706a;--v-dim:#9aa098;--v-green:#2f7d32;--v-violet:#7a46c9;--v-cyan:#1f6fb2;--v-on:#f4f3ee}
+.vlb .tgl{font:inherit;color:var(--v-muted);background:none;border:0;padding:2px 6px;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center}
+.vlb .tgl:hover{color:var(--v-green)}
 .vlb{font:12.5px/1.5 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;background:var(--v-bg);color:var(--v-muted);border-bottom:1px solid var(--v-line)}
 .vlb div{max-width:880px;margin:0 auto;padding:9px 24px;display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:space-between;align-items:center}
 .vlb a{color:var(--v-ink);text-decoration:none}.vlb a:hover{color:var(--v-green)}
@@ -63,6 +66,7 @@ THEME = ("<style>\n"
          "body{background:var(--bg)!important}\n"
          ".copy{background:var(--surface)!important;color:var(--muted)!important;border-color:var(--line)!important}\n"
          ".copy:hover{color:var(--accent)!important}\n"
+         "#theme.theme{display:none!important}\n"  # eigener Umschalter der Ollama-Doku, ersetzt durch assets/theme.js
          "</style>")
 
 HEAD = ('<header class="vlb"><div><a href="{R}" style="text-decoration:none"><b>ai</b><s>@</s><span class="h">oliverheld.com</span><s>$</s></a>'
@@ -85,7 +89,8 @@ def build(f, out, R, back="docs"):
     assert not re.search(r'(src|<link[^>]*href)="(https?:)?//', html), f  # externe Links per <a> erlaubt
     html = html.replace("</head>", '<meta name="referrer" content="no-referrer">\n'
                         f'<link rel="icon" href="{R}assets/favicon.svg" type="image/svg+xml">\n'
-                        + STYLE + "\n" + THEME + "\n</head>", 1)
+                        + STYLE + "\n" + THEME + "\n"
+                        f'<script src="{R}assets/theme.js"></script>\n</head>', 1)
     html = re.sub(r"(<body[^>]*>)", lambda m: m.group(1) + "\n" + HEAD.replace("{R}", R).replace("{BACK}", back), html, count=1)
     html = html.replace("</body>", FOOT.replace("{R}", R) + "\n</body>", 1)
     out.parent.mkdir(parents=True, exist_ok=True)
