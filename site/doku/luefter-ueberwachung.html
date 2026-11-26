@@ -33,6 +33,7 @@
 :root[data-theme="light"] .vlb{--v-bg:#ecebe4;--v-line:#dddbd2;--v-ink:#2a2f2b;--v-muted:#68706a;--v-dim:#9aa098;--v-green:#2f7d32;--v-violet:#7a46c9;--v-cyan:#1f6fb2;--v-on:#f4f3ee}
 .vlb .tgl{font:inherit;color:var(--v-muted);background:none;border:0;padding:2px 6px;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center}
 .vlb .tgl:hover{color:var(--v-green)}
+@media (max-width:900px){header.vlb div>a:nth-child(2){margin-left:auto}header.vlb .tgl{order:1;margin-right:-6px}header.vlb div>span{order:2;flex-basis:100%}}  /* mobil: Umschalter neben die Marke */
 .vlb{font:12.5px/1.5 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;background:var(--v-bg);color:var(--v-muted);border-bottom:1px solid var(--v-line)}
 .vlb div{max-width:880px;margin:0 auto;padding:9px 24px;display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:space-between;align-items:center}
 .vlb a{color:var(--v-ink);text-decoration:none}.vlb a:hover{color:var(--v-green)}

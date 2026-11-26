@@ -40,7 +40,7 @@
   }
 
   function init() {
-    var host = document.querySelector("header.top .wrap") || document.querySelector("header.vlb > div");
+    var host = document.querySelector("header.vlb > div") || document.querySelector("header.top .wrap");
     if (!host) return;
     var b = document.createElement("button");
     b.type = "button";
