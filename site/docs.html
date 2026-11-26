@@ -34,9 +34,21 @@
   </section>
 
   <section id="doku" aria-labelledby="h-doku">
-    <div class="sh"><h2 id="h-doku"><span class="ps">#</span> ls -lt <span class="arg">doku/</span></h2><span class="count">7 einträge</span></div>
+    <div class="sh"><h2 id="h-doku"><span class="ps">#</span> ls -lt <span class="arg">doku/</span></h2><span class="count">8 einträge</span></div>
 
     <ul class="incidents">
+      <li class="inc">
+        <span class="sev crit">CRIT</span>
+        <div>
+          <p class="meta"><time datetime="2026-11-26">2026-11-26</time><span>nas · openmediavault · asm1061</span><span class="ai">ki-generiert</span><span class="ok" title="In echt umgesetzt und läuft">✓ umgesetzt</span></p>
+          <h3><a href="doku/nas-sata-controller-ausfall.html">Zwei Laufwerke weg: der SATA-Controller war schuld</a></h3>
+          <p>Backup-HDD ausgehängt, Docker-Container verschwunden. Das Kernel-Log zeigte zwei Ausfälle im Abstand von 22 Sekunden, beide am Zusatz-Controller des Mainboards.</p>
+        </div>
+        <div class="stat" aria-label="Zwei Laufwerke am selben Controller, Ausfall im Abstand von 22 Sekunden">
+          <span class="v t-red">ata3+4</span>
+          <span class="l">gleicher controller · 22 s</span>
+        </div>
+      </li>
       <li class="inc">
         <span class="sev tool">WLAN</span>
         <div>

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NAS: SATA-Controller-Ausfall</title>
+<meta name="description" content="Fallbeschreibung: Zwei Laufwerke fallen gleichzeitig aus, ein Docker-Container verschwindet. Ursache war der Zusatz-SATA-Controller ASM1061 auf einem Mini-ITX-Board.">
+<style>
+  :root {
+    --bg: #fbfaf8; --fg: #1d1d1f; --muted: #5f6368; --line: #e2e0dc;
+    --card: #ffffff; --code-bg: #f3f2ef; --accent: #b3471d;
+    --ok: #2e7d4f; --warn: #b3471d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17181a; --fg: #e8e6e3; --muted: #a0a4a8; --line: #2e3033;
+      --card: #1f2023; --code-bg: #26282b; --accent: #f08a5d;
+      --ok: #6cc893; --warn: #f08a5d;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181a; --fg: #e8e6e3; --muted: #a0a4a8; --line: #2e3033;
+    --card: #1f2023; --code-bg: #26282b; --accent: #f08a5d;
+    --ok: #6cc893; --warn: #f08a5d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 17px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  article { max-width: 760px; margin: 0 auto; padding: 48px 16px 80px; }
+  header { border-bottom: 1px solid var(--line); margin-bottom: 32px; padding-bottom: 20px; }
+  .kicker { color: var(--accent); font-weight: 600; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; margin: 0 0 8px; }
+  h1 { font-size: 32px; line-height: 1.2; margin: 0 0 12px; }
+  .lead { color: var(--muted); font-size: 19px; margin: 0; }
+  h2 { font-size: 22px; margin: 44px 0 12px; }
+  h3 { font-size: 18px; margin: 28px 0 8px; }
+  p, li { max-width: 68ch; }
+  code { font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  pre code { background: none; padding: 0; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; margin: 16px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; background: var(--card); }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 600; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .03em; }
+  tr:last-child td { border-bottom: none; }
+  .bad { color: var(--warn); font-weight: 600; }
+  .good { color: var(--ok); font-weight: 600; }
+  .callout { border-left: 3px solid var(--accent); background: var(--card); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+  .callout p { margin: 0; }
+  footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+</style>
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+.vlb{--v-bg:#13161a;--v-line:#262c33;--v-ink:#d4d9d0;--v-muted:#7d8791;--v-dim:#535c66;--v-green:#7ee787;--v-violet:#c49bff;--v-cyan:#79c0ff;--v-on:#0d0f11}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .vlb{--v-bg:#ecebe4;--v-line:#dddbd2;--v-ink:#2a2f2b;--v-muted:#68706a;--v-dim:#9aa098;--v-green:#2f7d32;--v-violet:#7a46c9;--v-cyan:#1f6fb2;--v-on:#f4f3ee}}
+:root[data-theme="light"] .vlb{--v-bg:#ecebe4;--v-line:#dddbd2;--v-ink:#2a2f2b;--v-muted:#68706a;--v-dim:#9aa098;--v-green:#2f7d32;--v-violet:#7a46c9;--v-cyan:#1f6fb2;--v-on:#f4f3ee}
+.vlb .tgl{font:inherit;color:var(--v-muted);background:none;border:0;padding:2px 6px;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center}
+.vlb .tgl:hover{color:var(--v-green)}
+.vlb{font:12.5px/1.5 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;background:var(--v-bg);color:var(--v-muted);border-bottom:1px solid var(--v-line)}
+.vlb div{max-width:880px;margin:0 auto;padding:9px 24px;display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:space-between;align-items:center}
+.vlb a{color:var(--v-ink);text-decoration:none}.vlb a:hover{color:var(--v-green)}
+.vlb b{color:var(--v-green);font-weight:400}.vlb s{color:var(--v-dim);text-decoration:none}.vlb i{font-style:normal;color:var(--v-violet)}
+.vlb .h{color:var(--v-cyan)}
+header.vlb,footer.vlb{margin:0;padding:0;max-width:none}  /* allgemeine header/footer-Regeln der Dokus nicht erben */
+footer.vlb-foot{border-top:1px solid var(--v-line);border-bottom:0;margin-top:32px}
+.vlb-foot .sess{background:var(--v-green);color:var(--v-on);padding:2px 8px;font-weight:600;margin-right:8px}
+@media print{.vlb{display:none}}
+</style>
+<style>
+:root:root:root,:root:root:root[data-theme="dark"]{--bg:#0d0f11;--surface:#161a1e;--card:#161a1e;--sidebar:#13161a;--code:#1c2126;--code-bg:#1c2126;--soft:#1c2126;--pre-bg:#1c2126;--pre-text:#d4d9d0;--fg:#d4d9d0;--ink:#d4d9d0;--text:#d4d9d0;--muted:#7d8791;--line:#323a43;--border:#323a43;--accent:#7ee787;--accent-soft:color-mix(in srgb,#7ee787 12%,#0d0f11);--ok:#7ee787;--bad:#ff7b72;--warn:#f0b45a;--warn-soft:color-mix(in srgb,#f0b45a 12%,#0d0f11);--warnbg:color-mix(in srgb,#f0b45a 12%,#0d0f11);--warn-bg:color-mix(in srgb,#f0b45a 12%,#0d0f11);--warn-line:#f0b45a;--note-bg:color-mix(in srgb,#f0b45a 12%,#0d0f11);--note-border:#f0b45a;color-scheme:dark;}
+@media (prefers-color-scheme: light){:root:root:root:not([data-theme="dark"]){--bg:#f4f3ee;--surface:#fbfaf6;--card:#fbfaf6;--sidebar:#ecebe4;--code:#f0efe8;--code-bg:#f0efe8;--soft:#f0efe8;--pre-bg:#f0efe8;--pre-text:#2a2f2b;--fg:#2a2f2b;--ink:#2a2f2b;--text:#2a2f2b;--muted:#68706a;--line:#cfccc1;--border:#cfccc1;--accent:#2f7d32;--accent-soft:color-mix(in srgb,#2f7d32 12%,#f4f3ee);--ok:#2f7d32;--bad:#c4372c;--warn:#a86400;--warn-soft:color-mix(in srgb,#a86400 12%,#f4f3ee);--warnbg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-line:#a86400;--note-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--note-border:#a86400;color-scheme:light;}}
+:root:root:root[data-theme="light"]{--bg:#f4f3ee;--surface:#fbfaf6;--card:#fbfaf6;--sidebar:#ecebe4;--code:#f0efe8;--code-bg:#f0efe8;--soft:#f0efe8;--pre-bg:#f0efe8;--pre-text:#2a2f2b;--fg:#2a2f2b;--ink:#2a2f2b;--text:#2a2f2b;--muted:#68706a;--line:#cfccc1;--border:#cfccc1;--accent:#2f7d32;--accent-soft:color-mix(in srgb,#2f7d32 12%,#f4f3ee);--ok:#2f7d32;--bad:#c4372c;--warn:#a86400;--warn-soft:color-mix(in srgb,#a86400 12%,#f4f3ee);--warnbg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--warn-line:#a86400;--note-bg:color-mix(in srgb,#a86400 12%,#f4f3ee);--note-border:#a86400;color-scheme:light;}
+body{background:var(--bg)!important}
+.copy{background:var(--surface)!important;color:var(--muted)!important;border-color:var(--line)!important}
+.copy:hover{color:var(--accent)!important}
+#theme.theme{display:none!important}
+</style>
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<header class="vlb"><div><a href="../" style="text-decoration:none"><b>ai</b><s>@</s><span class="h">oliverheld.com</span><s>$</s></a><a href="../docs.html">← docs</a><span><i>ki-generiert</i> · von einem menschen geprüft · <i>...for now.</i></span></div></header>
+<article>
+
+<header>
+  <p class="kicker">Fallbeschreibung · Homelab</p>
+  <h1>Zwei Laufwerke weg, ein Container verschwunden: der SATA-Controller war schuld</h1>
+  <p class="lead">Auf einem selbstgebauten NAS mit openmediavault fielen nachts zwei Laufwerke gleichzeitig aus. Der Auslöser war weder eine Festplatte noch Docker, sondern der zusätzliche SATA-Controller auf dem Mainboard.</p>
+</header>
+
+<h2>Ausgangslage</h2>
+<p>Das NAS basiert auf einem Mini-ITX-Board mit Intel Pentium Silver J5005 und läuft mit openmediavault (Debian). Das Board hat vier SATA-Ports: zwei kommen direkt vom Intel-SoC, zwei von einem zusätzlich verlöteten ASMedia-Chip <strong>ASM1061</strong>.</p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Port</th><th>Controller</th><th>Laufwerk</th><th>Dateisystem</th><th>Aufgabe</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Intel</td><td>HDD 12 TB</td><td>Btrfs</td><td>NFS-Freigaben, Medien</td></tr>
+    <tr><td>2</td><td>Intel</td><td>SSD 250 GB</td><td>ext4</td><td>System</td></tr>
+    <tr><td>3</td><td>ASMedia</td><td>HDD 20 TB</td><td>Btrfs</td><td>Backups</td></tr>
+    <tr><td>4</td><td>ASMedia</td><td>SSD 250 GB</td><td>ext4</td><td>Docker, Compose-Dateien</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Symptome</h2>
+<ul>
+  <li>Die Backup-HDD war in der Oberfläche nicht mehr eingehängt.</li>
+  <li>Ein Docker-Container (Medienserver, Beta-Version) war verschwunden.</li>
+  <li>Der Wechsel in das Compose-Verzeichnis scheiterte mit „Verzeichnis nicht gefunden“.</li>
+</ul>
+<p>Ein Neustart und ein Update des Containers brachten alles wieder zum Laufen. Der erste Eindruck war deshalb: Die Backup-Platte hat gesponnen, und der Container hatte ein unabhängiges Problem.</p>
+
+<h2>Analyse</h2>
+<p>Erst das Kernel-Log vom vorherigen Boot zeigte das ganze Bild:</p>
+<pre><code>journalctl -k -b -1 | grep -iE "ata[0-9]|reset|offline|I/O error|EXT4-fs|XFS|BTRFS"</code></pre>
+
+<h3>Zeitlicher Ablauf (gekürzt)</h3>
+<pre><code>03:32:23  ata3: SError: { PHYRdyChg CommWake }
+03:32:23  ata3: hard resetting link
+03:32:45  ata4: SError: { RecovComm PHYRdyChg CommWake }
+03:32:45  ata4: hard resetting link
+03:33:34  ata3: limiting SATA link speed to 3.0 Gbps
+03:33:45  ata4: SATA link up 1.5 Gbps
+03:34:49  ata3: reset failed, giving up
+03:34:49  ata3.00: disable device
+03:34:49  BTRFS info (device sdc state EA): forced readonly
+03:34:50  ata4: reset failed, giving up
+03:34:50  ata4.00: disable device
+03:34:50  EXT4-fs error (device sdd1): Detected aborted journal
+03:34:50  EXT4-fs (sdd1): This should not happen!! Data will be lost</code></pre>
+
+<p>Daraus ergaben sich drei Erkenntnisse:</p>
+<ol>
+  <li><strong>Es waren zwei Laufwerke betroffen, nicht eines.</strong> Die Docker-SSD fiel 22 Sekunden nach der Backup-HDD ebenfalls aus. Sie war nur nicht aufgefallen, weil OMV sie weiter anzeigte.</li>
+  <li><strong>Beide hängen am selben Controller.</strong> Beim Boot meldet der Kernel für <code>ata1</code>/<code>ata2</code> eine andere Adresse und einen anderen IRQ als für <code>ata3</code>/<code>ata4</code>. <code>lspci</code> bestätigt: Der zweite Controller ist ein ASMedia ASM1061.</li>
+  <li><strong>Ein Festplattendefekt ist sehr unwahrscheinlich.</strong> Eine HDD und eine SSD fallen fast gleichzeitig aus, während die Laufwerke am Intel-Controller weiterlaufen. Das spricht klar gegen die Laufwerke.</li>
+</ol>
+
+<div class="callout">
+  <p>Der Container war nur ein Folgeschaden. Compose-Dateien und Docker-Daten lagen auf der SSD an Port 4. Als sie wegfiel, fand Docker den Container nicht mehr. Das Update war für die Lösung nicht nötig.</p>
+</div>
+
+<h2>Auswirkungen auf die Dateisysteme</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Laufwerk</th><th>Verhalten beim Ausfall</th><th>Zustand danach</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Backup-HDD (Btrfs)</td>
+      <td>Transaktion abgebrochen, Dateisystem auf „nur lesen“ gesetzt</td>
+      <td class="good">Scrub: keine Fehler</td>
+    </tr>
+    <tr>
+      <td>Docker-SSD (ext4)</td>
+      <td>Journal abgebrochen, Schreibfehler bei Postgres, Valkey und einer VM</td>
+      <td>Journal beim Boot wiederhergestellt, 10 verwaiste Inodes entfernt (fast alle 0 Byte), Status <code>clean</code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p>Btrfs hat den Ausfall dank Copy-on-Write sauber überstanden. ext4 hat ebenfalls überlebt, meldete aber ausdrücklich möglichen Datenverlust. Ein Dateisystem-Check findet nur Strukturfehler. Ob Datenbanken oder VM-Images inhaltlich beschädigt sind, muss man getrennt prüfen.</p>
+
+<h3>Stolperfalle: zurückgesetzte Fehlerzähler</h3>
+<p><code>btrfs device stats</code> zeigte nach dem Vorfall nur Nullen, obwohl das Log zehn Schreibfehler enthielt. Der Grund: Ein Monitoring-Job setzt die Zähler täglich zurück. Aussagekräftig war nur der Scrub. Er prüft übrigens nur belegte Daten. Bei 65 GiB Belegung dauerte er keine fünf Minuten, obwohl die Platte 20 TB groß ist.</p>
+
+<h2>Ursachensuche: Energiesparen?</h2>
+<p>Beim ASM1061 gelten zwei Energiesparfunktionen als typische Auslöser: SATA Link Power Management und PCIe ASPM. Die Prüfung ergab:</p>
+<pre><code>lspci -vv -s 03:00.0 | grep -i aspm
+    LnkCap: Port #1, Speed 5GT/s, Width x1, ASPM not supported
+    LnkCtl: ASPM Disabled</code></pre>
+<p>Der Chip unterstützt ASPM gar nicht. Diese Ursache scheidet also aus, und der Kernel-Parameter <code>pcie_aspm=off</code> bringt hier nichts. Übrig bleibt das SATA-Energiesparen. Es lässt sich dauerhaft abschalten:</p>
+<pre><code># /etc/default/grub
+GRUB_CMDLINE_LINUX_DEFAULT="quiet ahci.mobile_lpm_policy=1"
+
+update-grub &amp;&amp; reboot
+
+# Kontrolle: alle Ports sollten max_performance zeigen
+cat /sys/class/scsi_host/host*/link_power_management_policy</code></pre>
+<p>Hilft das nicht, liegt es am Controller selbst oder an der Stromversorgung.</p>
+
+<h2>Maßnahmen</h2>
+<ol>
+  <li><strong>SATA-Energiesparen abschalten</strong> (siehe oben).</li>
+  <li><strong>Laufwerke nach Wichtigkeit verteilen.</strong> Die Docker-SSD tauscht mit der Medien-HDD den Platz. Damit hängen System und Docker am stabilen Intel-Controller. Am ASMedia-Controller bleiben nur die beiden Btrfs-HDDs, die einen Ausfall ohne Schaden überstehen.
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Controller</th><th>vorher</th><th>nachher</th></tr></thead>
+      <tbody>
+        <tr><td>Intel</td><td>Medien-HDD, System-SSD</td><td>System-SSD, <span class="good">Docker-SSD</span></td></tr>
+        <tr><td>ASMedia</td><td>Backup-HDD, <span class="bad">Docker-SSD</span></td><td>Backup-HDD, Medien-HDD</td></tr>
+      </tbody>
+    </table>
+    </div>
+    Weil OMV alle Laufwerke über die UUID einhängt, ist nach dem Umstecken keine Anpassung nötig.
+  </li>
+  <li><strong>Langfristig: Controller ersetzen.</strong> Eine PCIe-Karte mit ASM1166 im freien x1-Slot ersetzt die Onboard-Ports 3 und 4. Der Slot ist nur PCIe 2.0 x1 (ca. 400 MB/s für alle Laufwerke zusammen). Für HDDs im normalen Betrieb reicht das.</li>
+  <li><strong>Optional:</strong> <code>tune2fs -e remount-ro</code> auf der Docker-SSD. Dann schaltet ext4 bei Fehlern auf „nur lesen“, statt weiterzuschreiben.</li>
+</ol>
+
+<h2>Was ich daraus mitnehme</h2>
+<ul>
+  <li><strong>Erst das Kernel-Log lesen, dann Schlüsse ziehen.</strong> Der offensichtliche Fehler war nur ein Teil des Problems.</li>
+  <li><strong>Wenn mehrere Laufwerke gleichzeitig ausfallen,</strong> liegt die Ursache fast immer bei dem, was sie gemeinsam haben: Controller, Stromkabel oder Netzteil.</li>
+  <li><strong>Zusatz-Controller auf günstigen Boards sind die Schwachstelle.</strong> Kritische Daten gehören an den Chipsatz-Controller.</li>
+  <li><strong>Copy-on-Write-Dateisysteme</strong> wie Btrfs überstehen harte Ausfälle deutlich gelassener als ext4.</li>
+  <li><strong>Fehlerzähler können lügen,</strong> wenn sie automatisch zurückgesetzt werden. Ein Scrub ist der verlässlichere Test.</li>
+</ul>
+
+<footer>
+  Hostnamen, Benutzernamen, Laufwerks-Labels, UUIDs und Seriennummern sind in dieser Beschreibung entfernt oder verallgemeinert.
+</footer>
+
+</article>
+<footer class="vlb vlb-foot"><div><span><span class="sess">[oliverheld.com]</span><a href="../">0:index</a> &nbsp;<a href="../ueber-mich.html">1:über-mich</a> &nbsp;<a href="../docs.html">2:docs</a> &nbsp;<a href="../projekte.html">3:projekte</a> &nbsp;<a href="../musik.html">4:musik</a> &nbsp;<a href="../impressum.html">5:impressum</a> &nbsp;<a href="../datenschutz.html">6:datenschutz</a></span><span>cookies:<b>0</b> tracker:<b>0</b></span></div></footer>
+</body>
+</html>
